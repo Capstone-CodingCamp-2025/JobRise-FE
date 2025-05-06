@@ -1,47 +1,52 @@
 import { createRouter, createWebHistory } from "vue-router";
-import LandingPageView from "../views/LandingPageView.vue";
-import SelectRole from '../views/SelectRole.vue'
-import Register from '../views/users/auth/Register.vue'
-import Login from '../views/users/auth/Login.vue'
-import LoginCompany from '../views/company/auth/LoginCompany.vue'
-import RegisterCompany from '../views/company/auth/RegisterCompany.vue'
-
+import HomePage from "../views/HomePage.vue";
+import SelectRoleLogin from "../views/SelectRoleLogin.vue";
+import SelectRoleRegister from "../views/SelectRoleRegister.vue";
+import Register from "../views/users/auth/Register.vue";
+import Login from "../views/users/auth/Login.vue";
+import LoginCompany from "../views/company/auth/LoginCompany.vue";
+import RegisterCompany from "../views/company/auth/RegisterCompany.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
-      name: "landing-page",
-      component: LandingPageView,
+      name: "home-page",
+      component: HomePage,
     },
     {
-      path: '/role',
-      name: 'role',
-      component: SelectRole,
+      path: "/role-login",
+      name: "role-login",
+      component: SelectRoleLogin,
     },
     {
-      path: '/register',
-      name: 'register',
+      path: "/role-register",
+      name: "role-register",
+      component: SelectRoleRegister,
+    },
+    {
+      path: "/register",
+      name: "register",
       component: Register,
+      meta: { isLogin: true },
     },
     {
-      path: '/login',
-      name: 'login',
+      path: "/login",
+      name: "login",
       component: Login,
+      meta: { isLogin: false },
     },
     {
-      path: '/register-company',
-      name: 'register-company',
+      path: "/register-company",
+      name: "register-company",
       component: RegisterCompany,
     },
     {
-      path: '/login-company',
-      name: 'login-company',
+      path: "/login-company",
+      name: "login-company",
       component: LoginCompany,
     },
-
-    
   ],
 });
 

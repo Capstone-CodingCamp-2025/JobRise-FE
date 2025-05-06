@@ -1,5 +1,5 @@
 <template>
-  <div class="relative pt-52 min-h-screen flex justify-between pr-40">
+  <div class="relative pt-52 min-h-screen flex justify-between">
     <div>
       <div class="text-5xl font-black text-center">
         <h1>Find Your</h1>
@@ -47,11 +47,9 @@
         </form>
       </div>
     </div>
-    <div class="">
-      <div class="">
-        <div class="bg-sky-400 w-92 h-92 rounded-full absolute right-36 top-40"></div>
-        <img src="../../../public/people.png"  alt="people" class="absolute right-0 top-[135px] rounded-full " />
-      </div>
+    <div class=" pr-64">
+      <div class="bg-sky-400 w-60 h-60 rounded-full relative"></div>
+      <img src="../../../public/people.png" alt="people" class="rounded-full w-[600px] h-[300px]  absolute inset-x-[670px] inset-y-48 " />
     </div>
   </div>
 </template>

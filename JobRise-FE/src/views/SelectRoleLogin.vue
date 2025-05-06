@@ -1,17 +1,11 @@
-<script setup>
-import Navbar from "../components/Navbar.vue";
-import { ref } from "vue";
-</script>
 
 <template>
-  <header>
-    <Navbar />
-  </header>
+
   <main class="bg-white min-h-screen pt-50 px-32">
-    <div class="bg-[#D5DEEF] m-auto place-items-center py-14 px-12">
-      <h1 class="text-3xl font-bold">Register as</h1>
+    <div class="bg-[#D5DEEF] m-auto place-items-center py-14 px-12 rounded-lg shadow-lg">
+      <h1 class="text-3xl font-bold">Login</h1>
       <div class="flex gap-10 mt-10">
-        <router-link :to="{ name: 'register' }">
+        <router-link :to="{ name: 'login' }">
           <div
             class="bg-radial from-blue-200 from-20% to-gray-100 rounded-lg px-10 py-8 shadow-md"
           >
@@ -22,7 +16,7 @@ import { ref } from "vue";
             </p>
           </div>
         </router-link>
-        <router-link :to="{ name: 'register-company' }">
+        <router-link :to="{ name: 'login-company' }">
           <div
             class="bg-radial from-blue-200 from-20% to-gray-100 rounded-lg px-10 py-8 shadow-md"
           >

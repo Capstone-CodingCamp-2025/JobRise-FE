@@ -49,4 +49,17 @@
 
 <script setup>
 import { Icon } from "@iconify/vue";
+import { watch } from "vue";
+import { ref } from "vue";
+import { useRoute } from "vue-router";
+
+
+const route = useRoute();
+const isLogin = ref(route.meta.isLogin === "true");
+watch(
+  () => route.query.login,
+  (newVal) => {
+    isLogin.value = newVal === "true";
+  }
+);
 </script>

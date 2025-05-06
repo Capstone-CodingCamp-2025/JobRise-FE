@@ -19,7 +19,7 @@ const props = defineProps({
       />
     </div>
     <div class="flex flex-col gap-y-1">
-      <label for="" class="font-bold" >E-mail*</label>
+      <label for="" class="font-bold" >E-mail Company*</label>
       <input
         class="bg-gray-100 rounded-sm shadow-lg text-center outline-none h-8"
         type="email"
