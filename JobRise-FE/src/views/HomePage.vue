@@ -7,8 +7,11 @@ import Intro from "@/components/Intro.vue";
 </script>
 
 <template>
-  <Intro />
-  <HowToWork/>
-  <FeatureJob/>
-  <BecomePart/>
+  <main class="bg-[#F0F3FA]">
+
+    <Intro />
+    <HowToWork/>
+    <FeatureJob/>
+    <BecomePart/>
+  </main>
 </template>

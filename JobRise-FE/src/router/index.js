@@ -6,6 +6,8 @@ import Register from "../views/users/auth/Register.vue";
 import Login from "../views/users/auth/Login.vue";
 import LoginCompany from "../views/company/auth/LoginCompany.vue";
 import RegisterCompany from "../views/company/auth/RegisterCompany.vue";
+import Dashboard from "../views/users/Dashboard.vue";
+import DashboardCompany from "../views/company/Dashboard.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +48,16 @@ const router = createRouter({
       path: "/login-company",
       name: "login-company",
       component: LoginCompany,
+    },
+    {
+      path: "/dashboard",
+      name: "dashboard",
+      component: Dashboard,
+    },
+    {
+      path: "/dashboard-company",
+      name: "dashboard-company",
+      component: DashboardCompany,
     },
   ],
 });

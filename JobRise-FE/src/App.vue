@@ -7,7 +7,7 @@ import Footer from './components/Footer.vue';
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#F0F3FA] ">
+  <main class="min-h-screen  ">
     <Navbar/>
     <router-view></router-view>
     <Footer/>

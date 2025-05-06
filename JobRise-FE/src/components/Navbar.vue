@@ -9,33 +9,41 @@
             <img src="../../../public/jobrise.png" class="w-28" alt="JobRise" />
           </router-link>
         </li>
-        <li class="pt-2">
-          <router-link :to="{name: 'home-page'}" class="text-lg text-[#334EAC] font-bold">
+        <li class="pt-2" v-if="$route.name === 'home-page'">
+          <router-link
+            :to="{ name: 'home-page' }"
+            class="text-lg text-[#334EAC] font-bold"
+          >
             Home
           </router-link>
         </li>
-        <li class="pt-2">
+        <li class="pt-2" v-if="$route.name === 'home-page'">
           <router-link to="" class="text-lg text-[#334EAC] font-bold">
             Find Job
           </router-link>
         </li>
-        <li class="pt-2">
+        <li class="pt-2" v-if="$route.name === 'home-page'">
           <router-link to="" class="text-lg text-[#334EAC] font-bold">
             Employers
           </router-link>
         </li>
-        <li class="pt-1 ml-36 relative">
+        <li class="pt-1 ml-36 relative" v-if="$route.name === 'home-page'">
           <input
             type="search"
             placeholder="Search text"
             class="bg-slate-200 w-max text-center rounded-full outline-none py-2 pr-5"
           />
 
-          <Icon icon="material-symbols:search" width="24" height="24" class="absolute inset-x-40 inset-y-3" />
+          <Icon
+            icon="material-symbols:search"
+            width="24"
+            height="24"
+            class="absolute inset-x-40 inset-y-3"
+          />
         </li>
       </ul>
     </div>
-    <div>
+    <div v-if="$route.name === 'home-page'">
       <ul class="flex gap-4 pt-2">
         <li>
           <router-link
