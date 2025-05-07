@@ -8,9 +8,9 @@ const props = defineProps({
 </script>
 
 <template>
-  <form action="" class="flex flex-col gap-y-3 px-20 py-10">
+  <form action="" class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24">
     <div class="flex flex-col gap-y-1" v-if="props.isRegister === false">
-      <label for="" class="font-bold" >Full Name*</label>
+      <label for="" class="font-bold">Full Name*</label>
       <input
         class="bg-gray-100 rounded-sm shadow-lg text-center outline-none h-8"
         type="text"
@@ -19,7 +19,7 @@ const props = defineProps({
       />
     </div>
     <div class="flex flex-col gap-y-1">
-      <label for="" class="font-bold" >E-mail*</label>
+      <label for="" class="font-bold">E-mail*</label>
       <input
         class="bg-gray-100 rounded-sm shadow-lg text-center outline-none h-8"
         type="email"
@@ -36,7 +36,7 @@ const props = defineProps({
         required
       />
     </div>
-    <div class="flex flex-col gap-y-1" v-if="props.isRegister === false">
+    <div class="flex flex-col gap-y-1 mb-2" v-if="props.isRegister === false">
       <label for="" class="font-bold">Confirm Password*</label>
       <input
         class="bg-gray-100 rounded-sm shadow-lg text-center outline-none h-8"
@@ -51,7 +51,7 @@ const props = defineProps({
     </div>
     <div class="flex flex-col">
       <button
-        class="bg-blue-900 py-2 rounded-lg shadow-xl text-white font-black text-2xl"
+        class="bg-blue-900 py-1 pb-2 rounded-lg shadow-xl text-white font-black text-2xl mb-2"
       >
         {{ props.isRegister ? "Login" : "Create" }}
       </button>

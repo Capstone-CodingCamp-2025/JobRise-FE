@@ -1,10 +1,10 @@
 <template>
-  <div class="px-24 pt-10 min-h-screen mb-16">
+  <div class=" py-16 min-h-screen px-3 md:px-10">
     <div class="flex justify-between">
-      <h1 class="text-5xl font-bold">Feature Job</h1>
+      <h1 class="text-xl font-bold">Feature Job</h1>
 
       <a href=""
-        class="outline-2 outline-blue-700 mt-5 py-1 rounded-sm px-5 flex font-bold text-base text-blue-700"
+        class="outline-2 outline-blue-700  py-1 rounded-sm px-5 flex font-bold text-base text-blue-700"
       >
         View all
         <Icon
@@ -16,7 +16,7 @@
         />
       </a>
     </div>
-    <div class="grid grid-cols-3 gap-x-10">
+    <div class="grid md:grid-cols-2 gap-x-4 lg:gap-x-10 xl:grid-cols-3 ">
       <JobList />
     </div>
   </div>
