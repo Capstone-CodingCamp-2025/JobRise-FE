@@ -1,8 +1,8 @@
 <template>
   <div
-    class="relative pt-74 pb-32 min-h-screen flex flex-col-reverse md:flex-row md:justify-between md:gap-10 md:px-5 md:pt-54"
+    class="relative py-20 flex flex-col-reverse md:flex-row md:justify-between md:gap-10 md:px-5"
   >
-    <div class="md:w-84 lg:w-[500px] xl:w-[700px] xl:px-14">
+    <div class="md:w-84 lg:w-[500px] xl:w-[700px] xl:px-14 pt-74 md:pt-0">
       <div class="text-5xl font-black text-center">
         <h1>Find Your</h1>
         <h1>Dream Job</h1>
@@ -58,14 +58,12 @@
         </form>
       </div>
     </div>
-    <div class="m-auto lg:mr-14">
-      <div
-        class="bg-sky-400 w-78 h-78 rounded-full mb-9 lg:mb-0 relative"
-      ></div>
+    <div class="m-auto ">
+      <div class="bg-sky-400 w-74 h-74 rounded-full md:mb-98 absolute right-10 top-16"></div>
       <img
         src="../../../public/people.png"
         alt="people"
-        class="w-max h-max absolute inset-x-10 inset-y-68 md:inset-x-[420px] md:inset-y-48 lg:inset-x-[630px] lg:inset-y-44 xl:inset-y-48 xl:inset-x-[950px]"
+        class="w-max h-max absolute right-14 top-4"
       />
     </div>
   </div>

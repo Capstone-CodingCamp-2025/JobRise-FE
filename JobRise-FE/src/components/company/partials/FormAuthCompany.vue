@@ -1,4 +1,25 @@
 <script setup>
+import { reactive } from 'vue';
+import {AuthCompanyStorage} from "@/stores/auth/companyAuth"
+
+const company = reactive({
+  name: "",
+  email: "",
+  password: "",
+  confirm_password: "",
+})
+
+const auth = AuthCompanyStorage()
+
+
+const handleSubmit = () => {
+  if (props.isRegisterCompany) {
+    auth.LoginCompany(company);
+  } else {
+    auth.RegisterCompany(company);
+  }
+};
+
 const props = defineProps({
   isRegisterCompany: {
     type: Boolean,
@@ -8,7 +29,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <form action="" class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24">
+  <form @submit.prevent="handleSubmit" class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24">
     <div class="flex flex-col gap-y-1" v-if="props.isRegisterCompany === false">
       <label for="" class="font-bold" >Company Name*</label>
       <input
@@ -16,6 +37,7 @@ const props = defineProps({
         type="text"
         placeholder="Your Full Name"
         required
+        v-model="name"
       />
     </div>
     <div class="flex flex-col gap-y-1">
@@ -25,6 +47,7 @@ const props = defineProps({
         type="email"
         placeholder="Enter Email"
         required
+        v-model="email"
       />
     </div>
     <div class="flex flex-col gap-y-1">
@@ -34,6 +57,7 @@ const props = defineProps({
         type="password"
         placeholder="Enter Password"
         required
+        v-model="password"
       />
     </div>
     <div class="flex flex-col gap-y-1 mb-2" v-if="props.isRegisterCompany === false">
@@ -43,6 +67,7 @@ const props = defineProps({
         type="password"
         placeholder="Confirm Password"
         required
+        v-model="confirm_password"
       />
     </div>
     <div v-show="props.isRegisterCompany">

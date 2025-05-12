@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-[#D5DEEF] w-full p-1 md:p-6 flex flex-col justify-between fixed top-0 z-30 shadow-lg"
+    class="bg-[#D5DEEF] w-full p-1 md:p-6 flex flex-col justify-between sticky top-0 z-30 shadow-lg"
   >
     <div class="flex justify-between">
       <div class="flex gap-2">
@@ -30,31 +30,131 @@
         </div>
 
         <div class="hidden lg:flex gap-x-4">
-          <div class="pt-2" v-if="$route.name === 'home-page'">
+          <div class="pt-2">
             <router-link
-              :to="{ name: 'home-page' }"
+              :to="{ name: 'dashboard' }"
+              class="text-lg text-[#334EAC] font-bold"
               active-class="active"
-              class="text-2xl text-[#334EAC] font-bold"
+              v-if="
+                $route.name !== 'home-page' &&
+                $route.name !== 'role-login' &&
+                $route.name !== 'role-register' &&
+                $route.name !== 'login' &&
+                $route.name !== 'register' &&
+                $route.name !== 'login-company' &&
+                $route.name !== 'register-company'
+              "
             >
-              Home
+              Dashboard
+            </router-link>
+          </div>
+          <div class="pt-2">
+            <router-link
+              :to="{ name: 'profile' }"
+              class="text-lg text-[#334EAC] font-bold"
+              active-class="active"
+              v-if="
+                $route.name !== 'home-page' &&
+                $route.name !== 'role-login' &&
+                $route.name !== 'role-register' &&
+                $route.name !== 'login' &&
+                $route.name !== 'register' &&
+                $route.name !== 'login-company' &&
+                $route.name !== 'register-company'
+              "
+            >
+              Profile
             </router-link>
           </div>
           <div class="pt-2" v-if="$route.name === 'home-page'">
             <router-link
-              :to="{name: 'login'}"
-              class="text-2xl text-[#334EAC] font-bold"
+              :to="{ name: 'home-page' }"
               active-class="active"
+              class="text-lg text-[#334EAC] font-bold"
+            >
+              Home
+            </router-link>
+          </div>
+
+          <div class="pt-2">
+            <router-link
+              :to="{ name: 'register' }"
+              class="text-lg text-[#334EAC] font-bold"
+              active-class="active"
+              v-if="
+                $route.name !== 'home-page' &&
+                $route.name !== 'role-login' &&
+                $route.name !== 'role-register' &&
+                $route.name !== 'login' &&
+                $route.name !== 'register' &&
+                $route.name !== 'login-company' &&
+                $route.name !== 'register-company'
+              "
+            >
+              CV
+            </router-link>
+          </div>
+          <div class="pt-2">
+            <router-link
+              :to="{ name: 'login' }"
+              class="text-lg text-[#334EAC] font-bold"
+              active-class="active"
+              v-if="
+                $route.name !== 'role-login' &&
+                $route.name !== 'role-register' &&
+                $route.name !== 'login' &&
+                $route.name !== 'register' &&
+                $route.name !== 'login-company' &&
+                $route.name !== 'register-company'
+              "
             >
               Find Job
             </router-link>
           </div>
           <div class="pt-2" v-if="$route.name === 'home-page'">
             <router-link
-              :to="{name: 'register'}"
-              class="text-2xl text-[#334EAC] font-bold"
+              :to="{ name: 'register' }"
+              class="text-lg text-[#334EAC] font-bold"
               active-class="active"
             >
               Employers
+            </router-link>
+          </div>
+
+          <div class="pt-2">
+            <router-link
+              :to="{ name: 'register' }"
+              class="text-lg text-[#334EAC] font-bold"
+              active-class="active"
+              v-if="
+                $route.name !== 'home-page' &&
+                $route.name !== 'role-login' &&
+                $route.name !== 'role-register' &&
+                $route.name !== 'login' &&
+                $route.name !== 'register' &&
+                $route.name !== 'login-company' &&
+                $route.name !== 'register-company'
+              "
+            >
+              Applied
+            </router-link>
+          </div>
+          <div class="pt-2">
+            <router-link
+              :to="{ name: 'register' }"
+              class="text-lg text-[#334EAC] font-bold"
+              active-class="active"
+              v-if="
+                $route.name !== 'home-page' &&
+                $route.name !== 'role-login' &&
+                $route.name !== 'role-register' &&
+                $route.name !== 'login' &&
+                $route.name !== 'register' &&
+                $route.name !== 'login-company' &&
+                $route.name !== 'register-company'
+              "
+            >
+              Favorite Job
             </router-link>
           </div>
         </div>
@@ -62,7 +162,7 @@
 
       <div
         class="pt-2 relative hidden md:block"
-        v-if="$route.name === 'home-page'"
+        v-if="$route.name === 'home-page' || $route.name === 'dashboard'"
       >
         <input
           type="text"
@@ -95,13 +195,32 @@
           </router-link>
         </div>
       </div>
+      <div
+        class="pt-2"
+        v-if="
+          $route.name !== 'home-page' &&
+          $route.name !== 'role-login' &&
+          $route.name !== 'role-register' &&
+          $route.name !== 'login' &&
+          $route.name !== 'register' &&
+          $route.name !== 'login-company' &&
+          $route.name !== 'register-company'
+        "
+      >
+        <Icon
+          icon="cuida:logout-outline"
+          width="32"
+          height="32"
+          style="color: #000"
+        />
+      </div>
     </div>
   </div>
   <!-- mobile menu -->
 
   <div
     v-if="menu"
-    class="flex flex-col gap-y-4 pt-2 w-44 md:w-64 h-full text-center fixed bg-[#D5DEEF] shadow-lg z-50"
+    class="flex flex-col gap-y-4 pt-2 w-44 md:w-64 h-full text-center fixed top-0 bg-[#D5DEEF] shadow-lg z-50"
     id="menu"
     ref="sidebar"
   >
@@ -134,6 +253,91 @@
         class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
       >
         Employers
+      </router-link>
+    </div>
+    <div>
+      <router-link
+        to=""
+        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
+        v-if="
+          $route.name !== 'home-page' &&
+          $route.name !== 'role-login' &&
+          $route.name !== 'role-register' &&
+          $route.name !== 'login' &&
+          $route.name !== 'register' &&
+          $route.name !== 'login-company' &&
+          $route.name !== 'register-company'
+        "
+      >
+        Dashboard
+      </router-link>
+    </div>
+    <div>
+      <router-link
+        to=""
+        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
+        v-if="
+          $route.name !== 'home-page' &&
+          $route.name !== 'role-login' &&
+          $route.name !== 'role-register' &&
+          $route.name !== 'login' &&
+          $route.name !== 'register' &&
+          $route.name !== 'login-company' &&
+          $route.name !== 'register-company'
+        "
+      >
+        Profile
+      </router-link>
+    </div>
+    <div>
+      <router-link
+        to=""
+        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
+        v-if="
+          $route.name !== 'home-page' &&
+          $route.name !== 'role-login' &&
+          $route.name !== 'role-register' &&
+          $route.name !== 'login' &&
+          $route.name !== 'register' &&
+          $route.name !== 'login-company' &&
+          $route.name !== 'register-company'
+        "
+      >
+        Post a job
+      </router-link>
+    </div>
+    <div>
+      <router-link
+        to=""
+        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
+        v-if="
+          $route.name !== 'home-page' &&
+          $route.name !== 'role-login' &&
+          $route.name !== 'role-register' &&
+          $route.name !== 'login' &&
+          $route.name !== 'register' &&
+          $route.name !== 'login-company' &&
+          $route.name !== 'register-company'
+        "
+      >
+        Applications
+      </router-link>
+    </div>
+    <div>
+      <router-link
+        to=""
+        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
+        v-if="
+          $route.name !== 'home-page' &&
+          $route.name !== 'role-login' &&
+          $route.name !== 'role-register' &&
+          $route.name !== 'login' &&
+          $route.name !== 'register' &&
+          $route.name !== 'login-company' &&
+          $route.name !== 'register-company'
+        "
+      >
+        Logout
       </router-link>
     </div>
   </div>
