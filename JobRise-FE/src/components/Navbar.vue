@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-[#D5DEEF] w-full p-1 md:p-6 flex flex-col justify-between sticky top-0 z-30 shadow-lg"
+    class="bg-[#D5DEEF] w-full  p-1 md:p-3 flex flex-col justify-between sticky top-0 z-30 shadow-lg"
   >
     <div class="flex justify-between">
       <div class="flex gap-2">
@@ -33,7 +33,7 @@
           <div class="pt-2">
             <router-link
               :to="{ name: 'dashboard' }"
-              class="text-lg text-[#334EAC] font-bold"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
               active-class="active"
               v-if="
                 $route.name !== 'home-page' &&
@@ -51,7 +51,7 @@
           <div class="pt-2">
             <router-link
               :to="{ name: 'profile' }"
-              class="text-lg text-[#334EAC] font-bold"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
               active-class="active"
               v-if="
                 $route.name !== 'home-page' &&
@@ -78,8 +78,8 @@
 
           <div class="pt-2">
             <router-link
-              :to="{ name: 'register' }"
-              class="text-lg text-[#334EAC] font-bold"
+              :to="{ name: 'cv' }"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
               active-class="active"
               v-if="
                 $route.name !== 'home-page' &&
@@ -97,7 +97,7 @@
           <div class="pt-2">
             <router-link
               :to="{ name: 'login' }"
-              class="text-lg text-[#334EAC] font-bold"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
               active-class="active"
               v-if="
                 $route.name !== 'role-login' &&
@@ -124,7 +124,7 @@
           <div class="pt-2">
             <router-link
               :to="{ name: 'register' }"
-              class="text-lg text-[#334EAC] font-bold"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
               active-class="active"
               v-if="
                 $route.name !== 'home-page' &&
@@ -142,7 +142,7 @@
           <div class="pt-2">
             <router-link
               :to="{ name: 'register' }"
-              class="text-lg text-[#334EAC] font-bold"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
               active-class="active"
               v-if="
                 $route.name !== 'home-page' &&

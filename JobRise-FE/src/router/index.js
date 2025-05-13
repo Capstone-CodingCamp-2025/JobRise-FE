@@ -9,6 +9,8 @@ import RegisterCompany from "../views/company/auth/RegisterCompany.vue";
 import Dashboard from "../views/users/Dashboard.vue";
 import DashboardCompany from "../views/company/Dashboard.vue";
 import Profile from "../views/users/Profile.vue";
+import Cv from "@/views/users/Cv.vue"
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,6 +67,11 @@ const router = createRouter({
       name: "profile",
       component: Profile,
     },
+    {
+      path: '/cv',
+      name: 'cv',
+      component: Cv
+    }
   ],
 });
 

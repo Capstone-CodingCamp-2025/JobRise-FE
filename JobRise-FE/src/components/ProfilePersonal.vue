@@ -44,7 +44,7 @@
           <textarea
             type="textarea"
             rows="5"
-            class="w-full bg-gray-300 rounded-lg outline-none text-md text-center shadow-lg"
+            class="w-full bg-gray-300 rounded-lg outline-none text-md text-left pl-2 shadow-lg"
           ></textarea>
         </div>
         <div class="flex flex-col place-items-end pt-4">
