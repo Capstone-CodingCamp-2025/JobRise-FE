@@ -1,6 +1,6 @@
 <template>
-  <div class="px-2 md:px-8 lg:px-14">
-    <div class="flex justify-between">
+  <div class="px-2 md:px-8 lg:px-14 ">
+    <div class="flex justify-between ">
       <h1 class="font-bold text-xl md:text-3xl">Recently Applied</h1>
       <div class="flex gap-x-1">
         <router-link to="" class="font-bold text-md lg:text-lg text-blue-800"

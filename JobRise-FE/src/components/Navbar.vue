@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-[#D5DEEF] w-full  p-1 md:p-3 flex flex-col justify-between sticky top-0 z-30 shadow-lg"
+    class="bg-[#D5DEEF] w-full p-1 md:p-3 flex flex-col justify-between sticky top-0 z-30 shadow-lg"
   >
     <div class="flex justify-between">
       <div class="flex gap-2">
@@ -32,7 +32,7 @@
         <div class="hidden lg:flex gap-x-4">
           <div class="pt-2">
             <router-link
-              :to="{ name: 'dashboard' }"
+              :to=" { name: 'dashboard' }"
               class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
               active-class="active"
               v-if="
@@ -66,6 +66,7 @@
               Profile
             </router-link>
           </div>
+          
           <div class="pt-2" v-if="$route.name === 'home-page'">
             <router-link
               :to="{ name: 'home-page' }"
@@ -208,9 +209,9 @@
         "
       >
         <Icon
-          icon="cuida:logout-outline"
-          width="32"
-          height="32"
+          icon="iconamoon:profile-fill"
+          width="42"
+          height="42"
           style="color: #000"
         />
       </div>

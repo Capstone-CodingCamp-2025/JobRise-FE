@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 md:px-8 lg:px-12">
+  <div class="px-4 md:px-8 lg:px-12 text-center">
     <h1 class="font-bold text-2xl md:text-3xl">Halo, [User]</h1>
     <p class="font-semibold text-gray-400 text-md py-3">
       Here is your daily activies and job alerts

@@ -1,5 +1,5 @@
 <script setup>
-import RecentlyApplied from "@/components/RecentlyApplied.vue";
+import RecentlyApplied from "@/components/users/RecentlyApplied.vue";
 import Statistik from "@/components/users/Statistik.vue";
 </script>
 
