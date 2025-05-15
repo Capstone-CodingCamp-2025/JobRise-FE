@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 md:px-8 lg:px-12 text-center">
-    <h1 class="font-bold text-2xl md:text-3xl">Welcome back, [Company]</h1>
+    <h1 class="font-bold text-2xl md:text-3xl">Welcome back, {{ company.name[0].toUpperCase() + company.name.substring(1) }}</h1>
     <p class="font-semibold text-gray-400 text-md py-3">This your candidates</p>
     <div class="flex gap-x-2 md:gap-x-6 lg:mx-52">
       <div
@@ -18,3 +18,11 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { useAuthCompanyStore } from '@/stores/auth/companyAuth';
+
+const company = useAuthCompanyStore().currentCompany
+console.log(company);
+
+</script>

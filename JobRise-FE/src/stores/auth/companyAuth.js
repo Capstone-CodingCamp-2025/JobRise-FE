@@ -1,93 +1,206 @@
+// import { apiClient } from "@/config/axios";
+// import { defineStore } from "pinia";
+// import Swal from "sweetalert2";
+// import { ref } from "vue";
+// import { useRouter } from "vue-router";
+
+// export const AuthCompanyStorage = defineStore("auth", () => {
+//   const router = useRouter();
+
+//   const tokenCompany = ref(
+//     localStorage.getItem("tokenCompany")
+//       ? JSON.parse(localStorage.getItem("tokenCompany"))
+//       : null
+//   );
+
+//   const currentCompany = ref(
+//     localStorage.getItem("company") && localStorage.getItem("company") != "undefined"
+//       ? JSON.parse(localStorage.getItem("company"))
+//       : null
+//   );
+
+//   const RegisterCompany = async (inputData) => {
+//     try {
+//       const { name, email, password, confirm_password } = inputData;
+//       const { data } = await apiClient.post("/register-company", {
+//         name,
+//         email,
+//         password,
+//         confirm_password,
+//       });
+
+//       const Toast = Swal.mixin({
+//         toast: true,
+//         position: "top-end",
+//         showConfirmButton: false,
+//         timer: 3000,
+//         timerProgressBar: true,
+//         didOpen: (toast) => {
+//           toast.onmouseenter = Swal.stopTimer;
+//           toast.onmouseleave = Swal.resumeTimer;
+//         },
+//       });
+//       Toast.fire({
+//         icon: "success",
+//         title: "Account Succesfully Created",
+//       });
+
+//       console.log(data);
+//       router.push("/login-company");
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+
+//   const LoginCompany = async (inputData) => {
+//     try {
+//       const { email, password } = inputData;
+//       const { data } = await apiClient.post("/login-company", {
+//         email,
+//         password,
+//       });
+
+//       const Toast = Swal.mixin({
+//         toast: true,
+//         position: "top-end",
+//         showConfirmButton: false,
+//         timer: 3000,
+//         timerProgressBar: true,
+//         didOpen: (toast) => {
+//           toast.onmouseenter = Swal.stopTimer;
+//           toast.onmouseleave = Swal.resumeTimer;
+//         },
+//       });
+//       Toast.fire({
+//         icon: "success",
+//         title: "Signed in successfully",
+//       });
+
+//       console.log(data);
+
+//       tokenCompany.value = data.token;
+//       currentCompany.value = data.user;
+
+//       localStorage.setItem("tokenCompany", JSON.stringify(tokenCompany.value));
+//       localStorage.setItem("company", JSON.stringify(currentCompany.value));
+//       router.replace("/dashboard-company");
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+
+//   return { RegisterCompany, LoginCompany, tokenCompany, currentCompany };
+// });
+
+
+
 import { apiClient } from "@/config/axios";
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import router from "@/router"; // Diubah ini
 
-export const AuthCompanyStorage = defineStore("auth", () => {
-  const router = useRouter();
-
+export const useAuthCompanyStore = defineStore("authCompany", () => {
   const tokenCompany = ref(
-    localStorage.getItem("token")
-      ? JSON.parse(localStorage.getItem("token"))
+    localStorage.getItem("tokenCompany")
+      ? JSON.parse(localStorage.getItem("tokenCompany"))
       : null
   );
 
   const currentCompany = ref(
-    localStorage.getItem("company") && localStorage.getItem("company") != "undefined"
+    localStorage.getItem("company") && localStorage.getItem("company") !== "undefined"
       ? JSON.parse(localStorage.getItem("company"))
       : null
   );
 
   const RegisterCompany = async (inputData) => {
     try {
-      const { name, email, password, confirm_password } = inputData;
-      const { data } = await apiClient.post("/register-company", {
-        name,
-        email,
-        password,
-        confirm_password,
-      });
+      const { data } = await apiClient.post("/register-company", inputData);
 
-      const Toast = Swal.mixin({
+      Swal.fire({
         toast: true,
         position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        },
-      });
-      Toast.fire({
         icon: "success",
-        title: "Account Succesfully Created",
+        title: "Account Successfully Created",
+        showConfirmButton: false,
+        timer: 3000
       });
 
-      console.log(data);
       router.push("/login-company");
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        text: error.response?.data?.message || "An error occurred"
+      });
+      throw error;
     }
   };
 
-  const LoginCompany = async (inputData) => {
+  const LoginCompany = async ({ email, password }) => {
     try {
-      const { email, password } = inputData;
-      const { data } = await apiClient.post("/login-company", {
-        email,
-        password,
-      });
-
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        },
-      });
-      Toast.fire({
-        icon: "success",
-        title: "Signed in successfully",
-      });
-
-      console.log(data);
+      const { data } = await apiClient.post("/login-company", { email, password });
 
       tokenCompany.value = data.token;
       currentCompany.value = data.user;
 
-      localStorage.setItem("token", JSON.stringify(tokenCompany.value));
-      localStorage.setItem("company", JSON.stringify(currentCompany.value));
-      router.replace("/dashboard");
+      localStorage.setItem("tokenCompany", JSON.stringify(data.token));
+      localStorage.setItem("company", JSON.stringify(data.user));
+
+      await getCompanyByAuth();
+
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Signed in successfully",
+        showConfirmButton: false,
+        timer: 2000
+      });
+
+      router.replace("/dashboard-company");
+      return data;
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: "Login Failed",
+        text: error.response?.data?.message || "Invalid credentials"
+      });
+      throw error;
     }
   };
 
-  return { RegisterCompany, LoginCompany, tokenCompany, currentCompany };
+  const getCompanyByAuth = async () => {
+    try {
+      const response = await apiClient.get("/user-auth", {
+        headers: {
+          Authorization: `Bearer ${tokenCompany.value}`
+        }
+      });
+      
+      // Update data company dengan response dari server
+      currentCompany.value = response.data.data;
+      localStorage.setItem("company", JSON.stringify(response.data.data));
+      
+      return response.data.data;
+    } catch (error) {
+      console.error("Gagal mengambil data user:", error);
+      
+      // Jika token tidak valid/expired, lakukan logout
+      if (error.response?.status === 401) {
+        logout();
+      }
+      
+      throw error;
+    }
+  };
+
+
+  return { 
+    tokenCompany, 
+    currentCompany,
+    RegisterCompany,
+    LoginCompany,
+    getCompanyByAuth
+  };
 });

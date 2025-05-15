@@ -2,14 +2,12 @@
 import { AuthUserStorage } from "@/stores/auth/userAuth";
 import { reactive } from "vue";
 
-
 const props = defineProps({
   isRegister: {
     type: Boolean,
     default: true,
   },
 });
-
 
 const user = reactive({
   name: "",
@@ -20,15 +18,46 @@ const user = reactive({
 
 const auth = AuthUserStorage();
 
-console.log(auth);
+// console.log(auth);
 
-const handleSubmit = () => {
-  if (props.isRegister) {
-    auth.LoginUser(user);
-  } else {
-    auth.RegisterUser(user);
+// const handleSubmit = () => {
+//   console.log("kirim", user);
+  
+//   if (props.isRegister) {
+//     auth.LoginUser(user);
+
+//   } else {
+//     auth.RegisterUser(user);
+//   }
+// };
+
+
+
+
+const handleSubmit = async () => { // Made async
+  try {
+    console.log("Submitting:", user);
+    
+    if (props.isRegister) {
+      await auth.LoginUser({ // Pass only needed fields
+        email: user.email,
+        password: user.password
+      });
+
+      await auth.getUserByAuth()
+    } else {
+      // Validate password match before registering
+      if (user.password !== user.confirm_password) {
+        throw new Error("Passwords don't match");
+      }
+      await auth.RegisterUser(company);
+    }
+  } catch (error) {
+    console.error("Authentication error:", error);
+    alert(error.message || "Authentication failed");
   }
 };
+
 </script>
 
 <template>
@@ -79,7 +108,7 @@ const handleSubmit = () => {
 
     <div class="flex flex-col">
       <button
-        class="bg-blue-900 py-1 pb-2 hover:bg-sky-700 rounded-lg shadow-xl text-white font-black text-2xl mb-2"
+        class="bg-blue-900 py-1 pb-2 cursor-pointer hover:bg-sky-700 rounded-lg shadow-xl text-white font-black text-2xl mb-2"
       >
         {{ props.isRegister ? "Login" : "Create" }}
       </button>

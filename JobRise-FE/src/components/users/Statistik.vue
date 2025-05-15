@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 md:px-8 lg:px-12 text-center">
-    <h1 class="font-bold text-2xl md:text-3xl">Halo, [User]</h1>
+    <h1 class="font-bold text-2xl md:text-3xl">Halo, {{ user.name[0].toUpperCase() + user.name.substring(1) }}</h1>
     <p class="font-semibold text-gray-400 text-md py-3">
       Here is your daily activies and job alerts
     </p>
@@ -26,3 +26,11 @@
     </div>
   </div>
 </template>
+<script setup>
+import { AuthUserStorage } from '@/stores/auth/userAuth';
+
+const user = AuthUserStorage().currentUser
+console.log(user);
+
+
+</script>

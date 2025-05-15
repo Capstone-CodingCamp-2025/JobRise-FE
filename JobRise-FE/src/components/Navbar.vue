@@ -29,11 +29,11 @@
           </router-link>
         </div>
 
-        <div class="hidden lg:flex gap-x-4">
+        <div class="hidden lg:flex gap-x-6">
           <div class="pt-2">
             <router-link
-              :to=" { name: 'dashboard' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
+              :to="{ name: 'dashboard' }"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
               active-class="active"
               v-if="
                 $route.name !== 'home-page' &&
@@ -48,25 +48,7 @@
               Dashboard
             </router-link>
           </div>
-          <div class="pt-2">
-            <router-link
-              :to="{ name: 'profile' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
-              active-class="active"
-              v-if="
-                $route.name !== 'home-page' &&
-                $route.name !== 'role-login' &&
-                $route.name !== 'role-register' &&
-                $route.name !== 'login' &&
-                $route.name !== 'register' &&
-                $route.name !== 'login-company' &&
-                $route.name !== 'register-company'
-              "
-            >
-              Profile
-            </router-link>
-          </div>
-          
+
           <div class="pt-2" v-if="$route.name === 'home-page'">
             <router-link
               :to="{ name: 'home-page' }"
@@ -80,7 +62,7 @@
           <div class="pt-2">
             <router-link
               :to="{ name: 'cv' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
               active-class="active"
               v-if="
                 $route.name !== 'home-page' &&
@@ -98,7 +80,7 @@
           <div class="pt-2">
             <router-link
               :to="{ name: 'login' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
               active-class="active"
               v-if="
                 $route.name !== 'role-login' &&
@@ -125,7 +107,7 @@
           <div class="pt-2">
             <router-link
               :to="{ name: 'register' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
               active-class="active"
               v-if="
                 $route.name !== 'home-page' &&
@@ -143,7 +125,7 @@
           <div class="pt-2">
             <router-link
               :to="{ name: 'register' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-sm"
+              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
               active-class="active"
               v-if="
                 $route.name !== 'home-page' &&
@@ -197,7 +179,7 @@
         </div>
       </div>
       <div
-        class="pt-2"
+        class="pt-2 flex"
         v-if="
           $route.name !== 'home-page' &&
           $route.name !== 'role-login' &&
@@ -208,16 +190,61 @@
           $route.name !== 'register-company'
         "
       >
-        <Icon
-          icon="iconamoon:profile-fill"
-          width="42"
-          height="42"
-          style="color: #000"
-        />
+        <div class="relative" ref="dropdownRef">
+          <!-- Avatar Button -->
+          <div class="flex items-center cursor-pointer" @click="toggleAvatar">
+            <Icon
+              icon="iconamoon:profile-fill"
+              width="42"
+              height="42"
+              style="color: #000"
+            />
+            <Icon
+              :icon="
+                avatarOpen
+                  ? 'iconamoon:arrow-down-2-light'
+                  : 'iconamoon:arrow-up-2-light'
+              "
+              width="24"
+              height="24"
+              class="mt-2"
+              style="color: #000"
+            />
+          </div>
+
+          <!-- Dropdown avatar -->
+          <div
+            v-show="avatarOpen"
+            class="absolute right-0 mt-2 md:mt-4 bg-[#D5DEEF] rounded shadow-lg w-22 z-50 transition-all duration-200"
+          >
+            <router-link
+              :to="{ name: 'profile' }"
+              class="block text-center py-2 text-blue-800 font-bold text-sm"
+              v-if="
+                $route.name !== 'home-page' &&
+                $route.name !== 'role-login' &&
+                $route.name !== 'role-register' &&
+                $route.name !== 'login' &&
+                $route.name !== 'register' &&
+                $route.name !== 'login-company' &&
+                $route.name !== 'register-company'
+              "
+            >
+              Profile
+            </router-link>
+            <a
+              href="#"
+              @click="logout"
+              class="block text-center py-2 text-blue-800 font-bold text-sm"
+            >
+              Logout
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <!-- mobile menu -->
+  <!-- avatar menu -->
 
   <div
     v-if="menu"
@@ -273,23 +300,7 @@
         Dashboard
       </router-link>
     </div>
-    <div>
-      <router-link
-        to=""
-        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
-        v-if="
-          $route.name !== 'home-page' &&
-          $route.name !== 'role-login' &&
-          $route.name !== 'role-register' &&
-          $route.name !== 'login' &&
-          $route.name !== 'register' &&
-          $route.name !== 'login-company' &&
-          $route.name !== 'register-company'
-        "
-      >
-        Profile
-      </router-link>
-    </div>
+
     <div>
       <router-link
         to=""
@@ -351,6 +362,44 @@ import { Icon } from "@iconify/vue";
 import { onBeforeUnmount } from "vue";
 import { onMounted } from "vue";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+
+const logout = () => {
+  // Hapus data dari localStorage
+  if (localStorage.getItem("token") || localStorage.getItem("tokenCompany")) {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    localStorage.removeItem("company")
+    localStorage.removeItem("tokenCompany")
+  } else {
+    
+  }
+
+  // Redirect ke dashboard
+  router.push({ name: "home-page" });
+};
+
+const avatarOpen = ref(false);
+const dropdownRef = ref(null);
+
+const toggleAvatar = () => {
+  avatarOpen.value = !avatarOpen.value;
+};
+
+// Optional: close dropdown if click outside
+const handleClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    avatarOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 
 const menu = ref(false);
 const sidebar = ref(null);

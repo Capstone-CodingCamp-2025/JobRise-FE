@@ -2,7 +2,7 @@
 import {  RouterView } from 'vue-router'
 import Navbar from './components/Navbar.vue';
 import Footer from './components/Footer.vue';
-
+import Chatbot from './components/users/ChatDepret.vue';
 
 </script>
 
@@ -12,6 +12,7 @@ import Footer from './components/Footer.vue';
     <router-view></router-view>
     <hr class="text-gray-400">
     <Footer/>
+    <Chatbot/>
   </main>
 </template>
 

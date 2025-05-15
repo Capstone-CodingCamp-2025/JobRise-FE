@@ -1,6 +1,8 @@
 <script setup>
 import RecentlyApplied from "@/components/users/RecentlyApplied.vue";
 import Statistik from "@/components/users/Statistik.vue";
+
+
 </script>
 
 <template>
@@ -10,4 +12,5 @@ import Statistik from "@/components/users/Statistik.vue";
 
     <RecentlyApplied />
   </main>
+  
 </template>

@@ -59,6 +59,13 @@ export const AuthUserStorage = defineStore("auth", () => {
         email,
         password,
       });
+      tokenUser.value = data.token;
+      currentUser.value = data.user;
+
+      localStorage.setItem("token", JSON.stringify(tokenUser.value));
+      localStorage.setItem("user", JSON.stringify(currentUser.value));
+
+      await getUserByAuth();
 
       const Toast = Swal.mixin({
         toast: true,
@@ -76,23 +83,38 @@ export const AuthUserStorage = defineStore("auth", () => {
         title: "Signed in successfully",
       });
 
-      console.log(data);
-
-      tokenUser.value = data.token;
-      currentUser.value = data.user;
-
-      localStorage.setItem("token", JSON.stringify(tokenUser.value));
-      localStorage.setItem("user", JSON.stringify(currentUser.value));
       router.replace("/dashboard");
+      return data;
     } catch (error) {
       console.log(error);
     }
   };
 
+  // Fungsi baru untuk mendapatkan user berdasarkan token
+  const getUserByAuth = async () => {
+    try {
+      const response = await apiClient.get("/user-auth", {
+        headers: {
+          Authorization: `Bearer ${tokenUser.value}`,
+        },
+      });
 
+      // Update data company dengan response dari server
+      currentUser.value = response.data.data;
+      localStorage.setItem("user", JSON.stringify(response.data.data));
 
+      return response.data.data;
+    } catch (error) {
+      console.error("Gagal mengambil data user:", error);
 
+      // Jika token tidak valid/expired, lakukan logout
+      if (error.response?.status === 401) {
+        logout();
+      }
 
+      throw error;
+    }
+  };
 
-  return { RegisterUser, LoginUser, tokenUser, currentUser };
+  return { RegisterUser, LoginUser, tokenUser, currentUser, getUserByAuth };
 });
