@@ -13,10 +13,17 @@ import ProfileCompany from "../views/company/Profile.vue";
 import Cv from "@/views/users/Cv.vue";
 import { AuthUserStorage } from "@/stores/auth/userAuth";
 import { useAuthCompanyStore } from "@/stores/auth/companyAuth";
+import Navigate from "@/views/Navigate.vue"
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/nav',
+      name: 'nav',
+      component: Navigate
+    },
     {
       path: "/",
       name: "home-page",

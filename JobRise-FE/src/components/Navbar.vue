@@ -32,11 +32,11 @@
         <div class="hidden lg:flex gap-x-6">
           <div class="pt-2">
             <router-link
-              :to="{ name: 'dashboard' }"
+              :to="getDashboardRoute"
               class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
               active-class="active"
               v-if="
-                $route.name !== 'home-page' &&
+                
                 $route.name !== 'role-login' &&
                 $route.name !== 'role-register' &&
                 $route.name !== 'login' &&
@@ -49,15 +49,7 @@
             </router-link>
           </div>
 
-          <div class="pt-2" v-if="$route.name === 'home-page'">
-            <router-link
-              :to="{ name: 'home-page' }"
-              active-class="active"
-              class="text-lg text-[#334EAC] font-bold"
-            >
-              Home
-            </router-link>
-          </div>
+          
 
           <div class="pt-2">
             <router-link
@@ -358,22 +350,32 @@
 </template>
 
 <script setup>
+import { useAuthCompanyStore } from "@/stores/auth/companyAuth";
+import { AuthUserStorage } from "@/stores/auth/userAuth";
 import { Icon } from "@iconify/vue";
+import { computed } from "vue";
 import { onBeforeUnmount } from "vue";
 import { onMounted } from "vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+
+const getDashboardRoute = computed(() => {
+  if (useAuthCompanyStore.currentCompany) {
+    return { name: "dashboard-company" };
+  } else if (AuthUserStorage.currentUser) {
+    return { name: "dashboard" };
+  }
+});
 const router = useRouter();
 
 const logout = () => {
   // Hapus data dari localStorage
   if (localStorage.getItem("token") || localStorage.getItem("tokenCompany")) {
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    localStorage.removeItem("company")
-    localStorage.removeItem("tokenCompany")
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("company");
+    localStorage.removeItem("tokenCompany");
   } else {
-    
   }
 
   // Redirect ke dashboard
