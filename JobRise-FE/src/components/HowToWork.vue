@@ -2,119 +2,148 @@
   <div class="bg-blue-200/50 text-center py-20">
     <h1 class="md:text-5xl text-4xl font-bold">How JobRise Work</h1>
     <div
-      class="pt-14 md:px-9 flex flex-col gap-y-20 xl:px-32 md:flex-row justify-between relative"
+      class="pt-14 md:px-9 flex flex-col gap-y-20 xl:px-32 md:flex-row justify-center relative"
     >
+      <!-- Item 1 -->
       <div class="flex flex-col">
         <div class="flex">
           <div
-            class="bg-white w-20 h-20 m-auto place-content-center pl-5 rounded-full mb-4"
+            class="bg-white w-20 h-20 m-auto place-content-center rounded-full mb-4 relative"
           >
             <Icon
               icon="lucide:user-plus"
               width="48"
               height="48"
               style="color: #1b00fb"
+              class="absolute inset-y-4 inset-x-4.5"
+            />
+            <!-- Garis horizontal (desktop) -->
+            <div
+              class="hidden md:block absolute md:inset-x-20 md:inset-y-10 xl:w-44 xl:inset-x-24 w-29 lg:w-44 h-0.5 bg-gray-700"
+            ></div>
+            <!-- Panah horizontal (desktop) -->
+            <Icon
+              icon="weui:arrow-filled"
+              width="12"
+              height="24"
+              style="color: #000"
+              class="hidden md:block absolute md:inset-x-47 md:inset-y-7 lg:inset-x-62 xl:inset-x-[265px]"
+            />
+            <!-- Garis vertikal (mobile) -->
+            <div
+              class="md:hidden absolute inset-x-10 inset-y-32 w-0.5 h-16 bg-gray-700"
+            ></div>
+            <!-- Panah vertikal (mobile) -->
+            <Icon
+              icon="weui:arrow-filled"
+              width="24"
+              height="24"
+              style="color: #000"
+              class="md:hidden absolute inset-x-7 inset-y-44 rotate-90"
             />
           </div>
-
-          <div
-            class="hidden md:block absolute inset-x-32.5 inset-y-23.5 xl:w-70 xl:inset-x-55 w-29 lg:w-48 h-0.5 bg-gray-700"
-          ></div>
-          <Icon
-            icon="weui:arrow-filled"
-            width="12"
-            height="24"
-            style="color: #000"
-            class="hidden md:block absolute inset-x-59 inset-y-21 lg:inset-x-80 xl:inset-x-[488px]"
-          />
         </div>
         <p class="font-semibold">Create account</p>
       </div>
-      <div class="h-20 w-0.5 bg-gray-700 m-auto relative md:hidden">
-        <Icon
-          icon="iconamoon:arrow-down-2-light"
-          width="32"
-          height="32"
-          style="color: #000"
-          class="md:hidden absolute -inset-x-4 inset-y-15"
-        />
-      </div>
-      <div>
-        <div
-          class="bg-white w-20 h-20 m-auto place-content-center pl-4 rounded-full mb-4"
-        >
-          <Icon
-            icon="mynaui:cloud-upload"
-            width="48"
-            height="48"
-            style="color: #1b00fb"
-          />
-        </div>
-        <div
-          class="hidden md:block absolute inset-x-81.5 inset-y-23.5 w-30.5 xl:inset-x-[580px] xl:w-71 lg:w-52 lg:inset-x-[411px] bg-gray-200 h-0.5 dark:bg-gray-700"
-        ></div>
-        <Icon
-          icon="weui:arrow-filled"
-          width="12"
-          height="24"
-          style="color: #000"
-          class="hidden md:block absolute inset-x-[440px] xl:inset-x-[856px] inset-y-21 lg:inset-x-[610px]"
-        />
 
+      <!-- Item 2 -->
+      <div class="flex flex-col md:ml-32 lg:ml-44 xl:ml-48">
+        <div class="flex">
+          <div
+            class="bg-white w-20 h-20 m-auto place-content-center rounded-full mb-4 relative"
+          >
+            <Icon
+              icon="mynaui:cloud-upload"
+              width="48"
+              height="48"
+              style="color: #1b00fb"
+              class="absolute inset-y-4 inset-x-4.5"
+            />
+            <!-- Garis horizontal (desktop) -->
+            <div
+              class="hidden md:block absolute md:inset-x-20 md:inset-y-10 xl:w-44 xl:inset-x-24 w-29 lg:w-44 h-0.5 bg-gray-700"
+            ></div>
+            <!-- Panah horizontal (desktop) -->
+            <Icon
+              icon="weui:arrow-filled"
+              width="12"
+              height="24"
+              style="color: #000"
+              class="hidden md:block absolute md:inset-x-47 md:inset-y-7 lg:inset-x-62 xl:inset-x-[262px]"
+            />
+            <!-- Garis vertikal (mobile) -->
+            <div
+              class="md:hidden absolute inset-x-10 inset-y-32 w-0.5 h-16 bg-gray-700"
+            ></div>
+            <!-- Panah vertikal (mobile) -->
+            <Icon
+              icon="weui:arrow-filled"
+              width="24"
+              height="24"
+              style="color: #000"
+              class="md:hidden absolute inset-x-7 inset-y-44 rotate-90"
+            />
+          </div>
+        </div>
         <p class="font-semibold">Upload CV</p>
       </div>
-      <div class="h-20 w-0.5 bg-gray-700 m-auto relative md:hidden">
-        <Icon
-          icon="iconamoon:arrow-down-2-light"
-          width="32"
-          height="32"
-          style="color: #000"
-          class="md:hidden absolute -inset-x-4 inset-y-15"
-        />
-      </div>
-      <div>
-        <div
-          class="bg-white w-20 h-20 m-auto place-content-center pl-5 rounded-full mb-4"
-        >
-          <Icon
-            icon="ri:search-line"
-            width="2.5em"
-            height="2.5em"
-            style="color: #1b00fb"
-          />
-        </div>
-        <div
-          class="hidden md:block absolute inset-x-[529px] xl:inset-x-[948px] xl:w-70.5 inset-y-23.5 w-30.5 lg:w-52 lg:inset-x-[700px] bg-gray-200 h-0.5 dark:bg-gray-700"
-        ></div>
-        <Icon
-          icon="weui:arrow-filled"
-          width="12"
-          height="24"
-          style="color: #000"
-          class="hidden md:block absolute inset-x-[641px] inset-y-21 lg:inset-x-[898px] xl:inset-x-[1218px]"
-        />
 
+      <!-- Item 3 -->
+      <div class="flex flex-col md:ml-32 lg:ml-44 xl:ml-48">
+        <div class="flex">
+          <div
+            class="bg-white w-20 h-20 m-auto place-content-center rounded-full mb-4 relative"
+          >
+            <Icon
+              icon="iconamoon:search"
+              width="48"
+              height="48"
+              style="color: #1b00fb"
+              class="absolute inset-y-4 inset-x-4.5"
+            />
+            <!-- Garis horizontal (desktop) -->
+            <div
+              class="hidden md:block absolute md:inset-x-20 md:inset-y-10  xl:inset-x-24 w-29 lg:w-42 h-0.5 bg-gray-700"
+            ></div>
+            <!-- Panah horizontal (desktop) -->
+            <Icon
+              icon="weui:arrow-filled"
+              width="12"
+              height="24"
+              style="color: #000"
+              class="hidden md:block absolute md:inset-x-47 md:inset-y-7 lg:inset-x-60 xl:inset-x-[253px]"
+            />
+            <!-- Garis vertikal (mobile) -->
+            <div
+              class="md:hidden absolute inset-x-10 inset-y-32 w-0.5 h-16 bg-gray-700"
+            ></div>
+            <!-- Panah vertikal (mobile) -->
+            <Icon
+              icon="weui:arrow-filled"
+              width="24"
+              height="24"
+              style="color: #000"
+              class="md:hidden absolute inset-x-7 inset-y-44 rotate-90"
+            />
+          </div>
+        </div>
         <p class="font-semibold">Find suitable job</p>
       </div>
-      <div class="h-20 w-0.5 bg-gray-700 m-auto relative md:hidden">
-        <Icon
-          icon="iconamoon:arrow-down-2-light"
-          width="32"
-          height="32"
-          style="color: #000"
-          class="md:hidden absolute -inset-x-4 inset-y-15"
-        />
-      </div>
-      <div>
-        <div
-          class="bg-white w-20 h-20 m-auto place-content-center pl-5 rounded-full mb-4"
-        >
-          <Icon
-            icon="lucide:circle-check-big"
-            width="2.5em"
-            height="2.5em"
-            style="color: #1b00fb"
-          />
+
+      <!-- Item 4 (tanpa garis/panah) -->
+      <div class="flex flex-col md:ml-32 lg:ml-44 xl:ml-48">
+        <div class="flex">
+          <div
+            class="bg-white w-20 h-20 m-auto place-content-center rounded-full mb-4 relative"
+          >
+            <Icon
+              icon="prime:check-circle"
+              width="48"
+              height="48"
+              style="color: #1b00fb"
+              class="absolute inset-y-4 inset-x-4.5"
+            />
+          </div>
         </div>
         <p class="font-semibold">Apply job</p>
       </div>

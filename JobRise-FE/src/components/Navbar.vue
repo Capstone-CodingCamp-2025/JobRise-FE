@@ -32,11 +32,10 @@
         <div class="hidden lg:flex gap-x-6">
           <div class="pt-2">
             <router-link
-              :to="getDashboardRoute"
+              :to="{ name: 'dashboard' }"
               class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
               active-class="active"
               v-if="
-                
                 $route.name !== 'role-login' &&
                 $route.name !== 'role-register' &&
                 $route.name !== 'login' &&
@@ -48,8 +47,6 @@
               Dashboard
             </router-link>
           </div>
-
-          
 
           <div class="pt-2">
             <router-link
@@ -360,8 +357,6 @@ import { onMounted } from "vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
-
-
 const getDashboardRoute = computed(() => {
   if (useAuthCompanyStore.currentCompany) {
     return { name: "dashboard-company" };
@@ -379,14 +374,14 @@ const logout = () => {
     localStorage.removeItem("company");
     localStorage.removeItem("tokenCompany");
     Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "warning",
-        title: "Account Successfully Logout",
-        showConfirmButton: false,
-        timer: 3000
-      });
-  } 
+      toast: true,
+      position: "top-end",
+      icon: "warning",
+      title: "Account Successfully Logout",
+      showConfirmButton: false,
+      timer: 3000,
+    });
+  }
 
   // Redirect ke dashboard
   router.push({ name: "home-page" });
