@@ -29,7 +29,7 @@
               />
               <input
                 type="text"
-                class="text-black text-center h-10 xl:h-10 w-full placeholder:text-white outline-none lg:placeholder:pl-2"
+                class="text-white text-center h-10 xl:h-10 w-full placeholder:text-white outline-none lg:placeholder:pl-2"
                 placeholder="Job title, keyword"
               />
             </div>
@@ -45,7 +45,7 @@
               <input
                 type="text"
                 placeholder="Your location"
-                class="text-black h-10 xl:h-10 w-full text-center outline-none placeholder:text-white"
+                class="text-white h-10 xl:h-10 w-full text-center outline-none placeholder:text-white"
               />
             </div>
 

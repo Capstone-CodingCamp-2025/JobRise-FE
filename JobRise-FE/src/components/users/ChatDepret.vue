@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-4 right-5 flex flex-col gap-y-4">
+  <div class="fixed bottom-4 right-5 flex flex-col gap-y-4 z-30">
     <div>
       <div @click="toggleChat" class="cursor-pointer">
         <img src="../../../public/chatbot.png" alt="" class="h-22" />

@@ -10,9 +10,8 @@ import Chatbot from './components/users/ChatDepret.vue';
   <main class="min-h-screen relative ">
     <Navbar/>
     <router-view></router-view>
-    <hr class="text-gray-400">
-    <Footer/>
-    <Chatbot/>
+    <Chatbot />
+    <Footer class="xl:absolute w-full bottom-0 z-0"/>
   </main>
 </template>
 

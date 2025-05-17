@@ -18,14 +18,14 @@
           </div>
 
           <div
-            class="hidden md:block absolute inset-x-32.5 inset-y-23.5 xl:w-62 xl:inset-x-55 w-29 lg:w-50 h-0.5 bg-gray-700"
+            class="hidden md:block absolute inset-x-32.5 inset-y-23.5 xl:w-70 xl:inset-x-55 w-29 lg:w-48 h-0.5 bg-gray-700"
           ></div>
           <Icon
             icon="weui:arrow-filled"
             width="12"
             height="24"
             style="color: #000"
-            class="hidden md:block absolute inset-x-59 inset-y-21 lg:inset-x-80 xl:inset-x-[460px]"
+            class="hidden md:block absolute inset-x-59 inset-y-21 lg:inset-x-80 xl:inset-x-[488px]"
           />
         </div>
         <p class="font-semibold">Create account</p>
@@ -51,14 +51,14 @@
           />
         </div>
         <div
-          class="hidden md:block absolute inset-x-81.5 inset-y-23.5 w-30.5 xl:inset-x-[550px] xl:w-62.5 lg:w-52 lg:inset-x-[411px] bg-gray-200 h-0.5 dark:bg-gray-700"
+          class="hidden md:block absolute inset-x-81.5 inset-y-23.5 w-30.5 xl:inset-x-[580px] xl:w-71 lg:w-52 lg:inset-x-[411px] bg-gray-200 h-0.5 dark:bg-gray-700"
         ></div>
         <Icon
           icon="weui:arrow-filled"
           width="12"
           height="24"
           style="color: #000"
-          class="hidden md:block absolute inset-x-[440px] xl:inset-x-[790px] inset-y-21 lg:inset-x-[610px]"
+          class="hidden md:block absolute inset-x-[440px] xl:inset-x-[856px] inset-y-21 lg:inset-x-[610px]"
         />
 
         <p class="font-semibold">Upload CV</p>
@@ -84,14 +84,14 @@
           />
         </div>
         <div
-          class="hidden md:block absolute inset-x-[529px] xl:inset-x-[880px] xl:w-63 inset-y-23.5 w-30.5 lg:w-52 lg:inset-x-[700px] bg-gray-200 h-0.5 dark:bg-gray-700"
+          class="hidden md:block absolute inset-x-[529px] xl:inset-x-[948px] xl:w-70.5 inset-y-23.5 w-30.5 lg:w-52 lg:inset-x-[700px] bg-gray-200 h-0.5 dark:bg-gray-700"
         ></div>
         <Icon
           icon="weui:arrow-filled"
           width="12"
           height="24"
           style="color: #000"
-          class="hidden md:block absolute inset-x-[641px] inset-y-21 lg:inset-x-[898px] xl:inset-x-[1122px]"
+          class="hidden md:block absolute inset-x-[641px] inset-y-21 lg:inset-x-[898px] xl:inset-x-[1218px]"
         />
 
         <p class="font-semibold">Find suitable job</p>

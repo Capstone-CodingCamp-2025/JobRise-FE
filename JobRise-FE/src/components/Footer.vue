@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-radial from-cyan-200 from-10% to-gray-200 p-8">
+  <footer class="bg-radial from-cyan-200 from-10% to-gray-200 p-8 border-t-1">
     <router-link :to="{ name: 'home-page' }">
       <img src="../../public/jobrise.png" alt="" />
     </router-link>

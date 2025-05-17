@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-white min-h-screen py-14 px-4 xl:px-44">
+  <main class="m-auto w-sm md:w-svw md:px-10 lg:px-44 py-10 lg:py-20">
     <div
       class="bg-[#D5DEEF] m-auto place-items-center rounded-lg shadow-lg md:py-10"
     >

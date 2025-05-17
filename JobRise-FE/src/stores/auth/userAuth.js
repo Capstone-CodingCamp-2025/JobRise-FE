@@ -80,7 +80,7 @@ export const AuthUserStorage = defineStore("auth", () => {
       });
       Toast.fire({
         icon: "success",
-        title: "Signed in successfully",
+        title: "Signed In Successfully",
       });
 
       router.replace("/dashboard");

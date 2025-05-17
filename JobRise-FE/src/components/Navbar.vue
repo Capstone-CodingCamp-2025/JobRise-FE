@@ -353,11 +353,14 @@
 import { useAuthCompanyStore } from "@/stores/auth/companyAuth";
 import { AuthUserStorage } from "@/stores/auth/userAuth";
 import { Icon } from "@iconify/vue";
+import Swal from "sweetalert2";
 import { computed } from "vue";
 import { onBeforeUnmount } from "vue";
 import { onMounted } from "vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+
+
 
 const getDashboardRoute = computed(() => {
   if (useAuthCompanyStore.currentCompany) {
@@ -375,8 +378,15 @@ const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("company");
     localStorage.removeItem("tokenCompany");
-  } else {
-  }
+    Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "warning",
+        title: "Account Successfully Logout",
+        showConfirmButton: false,
+        timer: 3000
+      });
+  } 
 
   // Redirect ke dashboard
   router.push({ name: "home-page" });
