@@ -138,7 +138,7 @@ const handleSubmit = async () => {
 <template>
   <form
     @submit.prevent="handleSubmit"
-    class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24"
+    class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24 lg:py-8 xl:py-12"
   >
     <!-- General error message -->
     <div v-if="errors.general" class="text-red-500 text-sm p-2 bg-red-50 rounded">

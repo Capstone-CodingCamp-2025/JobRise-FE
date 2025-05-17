@@ -11,8 +11,8 @@ import Chatbot from './components/users/ChatDepret.vue';
     <Navbar/>
     <router-view></router-view>
     <Chatbot />
-    <Footer class="xl:absolute bottom-0 w-full"/>
   </main>
+  <Footer class=""/>
 </template>
 
 
