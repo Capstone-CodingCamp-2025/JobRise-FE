@@ -1,446 +1,62 @@
 <template>
-  <div
-    class="bg-[#D5DEEF] w-full p-1 md:p-3 flex flex-col justify-between sticky top-0 z-30 shadow-lg"
-  >
-    <div class="flex justify-between">
-      <div class="flex gap-2">
-        <div
-          class="pt-2 lg:hidden"
-          @click="openMenu"
-          v-if="
-            $route.name !== 'role-login' &&
-            $route.name !== 'role-register' &&
-            $route.name !== 'login' &&
-            $route.name !== 'register' &&
-            $route.name !== 'login-company' &&
-            $route.name !== 'register-company'
-          "
-        >
-          <Icon
-            icon="material-symbols:menu-rounded"
-            width="32"
-            height="32"
-            style="color: #000"
-          />
-        </div>
-        <div>
-          <router-link :to="{ name: 'home-page' }">
-            <img src="../../../public/jobrise.png" class="w-28" alt="JobRise" />
-          </router-link>
-        </div>
+  <nav class="bg-[#D5DEEF] flex justify-between px-5">
+    <!-- logo and text -->
 
-        <div class="hidden lg:flex gap-x-6">
-          <div class="pt-2">
-            <router-link
-              :to="{ name: 'dashboard' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
-              active-class="active"
-              v-if="
-                $route.name !== 'role-login' &&
-                $route.name !== 'role-register' &&
-                $route.name !== 'login' &&
-                $route.name !== 'register' &&
-                $route.name !== 'login-company' &&
-                $route.name !== 'register-company'
-              "
-            >
-              Dashboard
-            </router-link>
-          </div>
-
-          <div class="pt-2">
-            <router-link
-              :to="{ name: 'cv' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
-              active-class="active"
-              v-if="
-                $route.name !== 'home-page' &&
-                $route.name !== 'role-login' &&
-                $route.name !== 'role-register' &&
-                $route.name !== 'login' &&
-                $route.name !== 'register' &&
-                $route.name !== 'login-company' &&
-                $route.name !== 'register-company'
-              "
-            >
-              CV
-            </router-link>
-          </div>
-          <div class="pt-2">
-            <router-link
-              :to="{ name: 'login' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
-              active-class="active"
-              v-if="
-                $route.name !== 'role-login' &&
-                $route.name !== 'role-register' &&
-                $route.name !== 'login' &&
-                $route.name !== 'register' &&
-                $route.name !== 'login-company' &&
-                $route.name !== 'register-company'
-              "
-            >
-              Find Job
-            </router-link>
-          </div>
-          <div class="pt-2" v-if="$route.name === 'home-page'">
-            <router-link
-              :to="{ name: 'register' }"
-              class="text-lg text-[#334EAC] font-bold"
-              active-class="active"
-            >
-              Employers
-            </router-link>
-          </div>
-
-          <div class="pt-2">
-            <router-link
-              :to="{ name: 'register' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
-              active-class="active"
-              v-if="
-                $route.name !== 'home-page' &&
-                $route.name !== 'role-login' &&
-                $route.name !== 'role-register' &&
-                $route.name !== 'login' &&
-                $route.name !== 'register' &&
-                $route.name !== 'login-company' &&
-                $route.name !== 'register-company'
-              "
-            >
-              Applied
-            </router-link>
-          </div>
-          <div class="pt-2">
-            <router-link
-              :to="{ name: 'register' }"
-              class="text-lg text-[#334EAC] font-bold hover:border-b-2 border-b-fuchsia-500 hover:text-xl"
-              active-class="active"
-              v-if="
-                $route.name !== 'home-page' &&
-                $route.name !== 'role-login' &&
-                $route.name !== 'role-register' &&
-                $route.name !== 'login' &&
-                $route.name !== 'register' &&
-                $route.name !== 'login-company' &&
-                $route.name !== 'register-company'
-              "
-            >
-              Favorite Job
-            </router-link>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="pt-2 relative hidden md:block"
-        v-if="$route.name === 'home-page' || $route.name === 'dashboard'"
-      >
-        <input
-          type="text"
-          placeholder="Search text"
-          class="bg-[#ECE6F0] w-max text-center rounded-full outline-none py-2 placeholder:pr-10"
-        />
-
+    <div class="flex gap-x-4">
+      <div class="hidden">
         <Icon
-          icon="material-symbols:search"
+          icon="material-symbols:menu-rounded"
           width="24"
           height="24"
-          class="absolute inset-x-36 inset-y-4"
+          style="color: #1c00ff"
         />
       </div>
-
-      <div v-if="$route.name === 'home-page'">
-        <div class="flex gap-4 pt-3 md:pt-2">
-          <router-link
-            :to="{ name: 'role-login' }"
-            class="md:text-xl font-semibold text-blue-800 outline rounded-full w-20 md:w-full md:px-6 text-center md:pb-2 md:pt-1 outline-blue-800 hover:bg-blue-300"
-          >
-            Sign in
-          </router-link>
-
-          <router-link
-            :to="{ name: 'role-register' }"
-            class="text-white bg-blue-900 rounded-full md:text-xl font-semibold pb-0.5 w-20 md:w-full md:px-6 md:pb-2 md:pt-1 text-center hover:bg-blue-950"
-          >
-            Register
-          </router-link>
-        </div>
+      <div>
+        <router-link :to="{ name: 'home-page' }">
+          <img src="../../public/jobrise.png" alt="jobrise" class="w-32" />
+        </router-link>
       </div>
-      <div
-        class="pt-2 flex"
-        v-if="
-          $route.name !== 'home-page' &&
-          $route.name !== 'role-login' &&
-          $route.name !== 'role-register' &&
-          $route.name !== 'login' &&
-          $route.name !== 'register' &&
-          $route.name !== 'login-company' &&
-          $route.name !== 'register-company'
-        "
-      >
-        <div class="relative" ref="dropdownRef">
-          <!-- Avatar Button -->
-          <div class="flex items-center cursor-pointer" @click="toggleAvatar">
-            <Icon
-              icon="iconamoon:profile-fill"
-              width="42"
-              height="42"
-              style="color: #000"
-            />
-            <Icon
-              :icon="
-                avatarOpen
-                  ? 'iconamoon:arrow-down-2-light'
-                  : 'iconamoon:arrow-up-2-light'
-              "
-              width="24"
-              height="24"
-              class="mt-2"
-              style="color: #000"
-            />
-          </div>
 
-          <!-- Dropdown avatar -->
-          <div
-            v-show="avatarOpen"
-            class="absolute right-0 mt-2 md:mt-4 bg-[#D5DEEF] rounded shadow-lg w-22 z-50 transition-all duration-200"
-          >
-            <router-link
-              :to="{ name: 'profile' }"
-              class="block text-center py-2 text-blue-800 font-bold text-sm"
-              v-if="
-                $route.name !== 'home-page' &&
-                $route.name !== 'role-login' &&
-                $route.name !== 'role-register' &&
-                $route.name !== 'login' &&
-                $route.name !== 'register' &&
-                $route.name !== 'login-company' &&
-                $route.name !== 'register-company'
-              "
-            >
-              Profile
-            </router-link>
-            <a
-              href="#"
-              @click="logout"
-              class="block text-center py-2 text-blue-800 font-bold text-sm"
-            >
-              Logout
-            </a>
-          </div>
-        </div>
+      <!-- guest -->
+      <div class="mt-3.5 flex gap-x-6">
+        <router-link to="" class="font-bold text-blue-800 text-lg">
+          Dashboard
+        </router-link>
+        <router-link to="" class="font-bold text-blue-800 text-lg">
+          Find Job
+        </router-link>
+        <router-link to="" class="font-bold text-blue-800 text-lg">
+          Company
+        </router-link>
       </div>
     </div>
-  </div>
-  <!-- avatar menu -->
 
-  <div
-    v-if="menu"
-    class="flex flex-col gap-y-4 pt-2 w-44 md:w-64 h-full text-center fixed top-0 bg-[#D5DEEF] shadow-lg z-50"
-    id="menu"
-    ref="sidebar"
-  >
-    <div class="pl-10 md:pl-20 mb-8">
-      <router-link :to="{ name: 'home-page' }">
-        <img src="../../../public/jobrise.png" class="w-28" alt="JobRise" />
-      </router-link>
+    <!-- search -->
+    <div class="relative py-3">
+      <input
+        type="text"
+        placeholder="Search text"
+        class="bg-[#ECE6F0] py-2 rounded-full text-center pr-4"
+      />
+      
     </div>
 
-    <div v-if="$route.name === 'home-page'">
-      <router-link
-        :to="{ name: 'home-page' }"
-        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
-      >
-        Home
-      </router-link>
-    </div>
-
-    <div v-if="$route.name === 'home-page'">
+    <!-- auth -->
+    <div class="py-4 flex gap-x-4">
       <router-link
         to=""
-        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
+        class="font-bold text-lg text-blue-800 border rounded-full  px-6 "
+        >Login</router-link
       >
-        Find Job
-      </router-link>
-    </div>
-    <div v-if="$route.name === 'home-page'">
       <router-link
         to=""
-        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
+        class="font-bold text-lg text-white  px-6  bg-blue-950 rounded-full"
+        >Register</router-link
       >
-        Employers
-      </router-link>
     </div>
-    <div>
-      <router-link
-        to=""
-        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
-        v-if="
-          $route.name !== 'home-page' &&
-          $route.name !== 'role-login' &&
-          $route.name !== 'role-register' &&
-          $route.name !== 'login' &&
-          $route.name !== 'register' &&
-          $route.name !== 'login-company' &&
-          $route.name !== 'register-company'
-        "
-      >
-        Dashboard
-      </router-link>
-    </div>
-
-    <div>
-      <router-link
-        to=""
-        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
-        v-if="
-          $route.name !== 'home-page' &&
-          $route.name !== 'role-login' &&
-          $route.name !== 'role-register' &&
-          $route.name !== 'login' &&
-          $route.name !== 'register' &&
-          $route.name !== 'login-company' &&
-          $route.name !== 'register-company'
-        "
-      >
-        Post a job
-      </router-link>
-    </div>
-    <div>
-      <router-link
-        to=""
-        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
-        v-if="
-          $route.name !== 'home-page' &&
-          $route.name !== 'role-login' &&
-          $route.name !== 'role-register' &&
-          $route.name !== 'login' &&
-          $route.name !== 'register' &&
-          $route.name !== 'login-company' &&
-          $route.name !== 'register-company'
-        "
-      >
-        Applications
-      </router-link>
-    </div>
-    <div>
-      <router-link
-        to=""
-        class="text-2xl text-[#334EAC] font-bold focus:text-blue-950 focus:text-lg"
-        v-if="
-          $route.name !== 'home-page' &&
-          $route.name !== 'role-login' &&
-          $route.name !== 'role-register' &&
-          $route.name !== 'login' &&
-          $route.name !== 'register' &&
-          $route.name !== 'login-company' &&
-          $route.name !== 'register-company'
-        "
-      >
-        Logout
-      </router-link>
-    </div>
-  </div>
-
-  <!-- end mobile menu -->
+  </nav>
 </template>
 
 <script setup>
-import { useAuthCompanyStore } from "@/stores/auth/companyAuth";
-import { AuthUserStorage } from "@/stores/auth/userAuth";
 import { Icon } from "@iconify/vue";
-import Swal from "sweetalert2";
-import { computed } from "vue";
-import { onBeforeUnmount } from "vue";
-import { onMounted } from "vue";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-
-const getDashboardRoute = computed(() => {
-  if (useAuthCompanyStore.currentCompany) {
-    return { name: "dashboard-company" };
-  } else if (AuthUserStorage.currentUser) {
-    return { name: "dashboard" };
-  }
-});
-const router = useRouter();
-
-const logout = () => {
-  // Hapus data dari localStorage
-  if (localStorage.getItem("token") || localStorage.getItem("tokenCompany")) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("company");
-    localStorage.removeItem("tokenCompany");
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: "warning",
-      title: "Account Successfully Logout",
-      showConfirmButton: false,
-      timer: 3000,
-    });
-  }
-
-  // Redirect ke dashboard
-  router.push({ name: "home-page" });
-};
-
-const avatarOpen = ref(false);
-const dropdownRef = ref(null);
-
-const toggleAvatar = () => {
-  avatarOpen.value = !avatarOpen.value;
-};
-
-// Optional: close dropdown if click outside
-const handleClickOutside = (event) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
-    avatarOpen.value = false;
-  }
-};
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
-
-const menu = ref(false);
-const sidebar = ref(null);
-
-const openMenu = () => {
-  menu.value = !menu.value;
-};
-
-const closeMenuOnClickOutside = (event) => {
-  if (!menu.value || !sidebar.value) return; // Jika menu sudah tertutup atau sidebar tidak ada, keluar
-
-  const clickedElement = event.target;
-  const isSidebarClicked = sidebar.value.contains(clickedElement);
-  const isMenuButtonClicked = clickedElement.closest(".pt-2.lg\\:hidden"); // Cek apakah elemen yang diklik adalah tombol menu atau anaknya
-
-  if (!isSidebarClicked && !isMenuButtonClicked) {
-    menu.value = false; // Tutup menu hanya jika klik di luar sidebar DAN bukan tombol menu
-  }
-};
-
-// Tambahkan event listener ketika komponen dimount
-onMounted(() => {
-  document.addEventListener("click", closeMenuOnClickOutside);
-});
-
-// Hapus event listener ketika komponen di-unmount
-onBeforeUnmount(() => {
-  document.removeEventListener("click", closeMenuOnClickOutside);
-});
 </script>
-
-<style scoped>
-.active {
-  border-bottom: 2px solid rgb(182, 85, 238);
-  padding-bottom: 1px;
-}
-</style>
