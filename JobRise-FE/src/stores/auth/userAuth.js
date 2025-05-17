@@ -29,26 +29,26 @@ export const AuthUserStorage = defineStore("auth", () => {
         confirm_password,
       });
 
-      const Toast = Swal.mixin({
+      Swal.fire({
         toast: true,
         position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        },
-      });
-      Toast.fire({
         icon: "success",
-        title: "Account Succesfully Created",
+        title: "Account Successfully Created",
+        showConfirmButton: false,
+        timer: 3000
       });
-
       console.log(data);
       router.push("/login");
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "warning",
+        title: "Register Failed",
+        showConfirmButton: false,
+        timer: 2000
+      });
+      throw error;
     }
   };
 
@@ -67,26 +67,27 @@ export const AuthUserStorage = defineStore("auth", () => {
 
       await getUserByAuth();
 
-      const Toast = Swal.mixin({
+      Swal.fire({
         toast: true,
         position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        },
-      });
-      Toast.fire({
         icon: "success",
         title: "Signed In Successfully",
+        showConfirmButton: false,
+        timer: 2000
       });
 
       router.replace("/dashboard");
       return data;
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Login Failed",
+        showConfirmButton: false,
+        timer: 2000
+      });
+      throw error;
     }
   };
 
@@ -116,5 +117,18 @@ export const AuthUserStorage = defineStore("auth", () => {
     }
   };
 
-  return { RegisterUser, LoginUser, tokenUser, currentUser, getUserByAuth };
+  const logout = () => {
+    // Clear local storage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Reset state
+    currentUser.value = null;
+    tokenUser.value = null;
+    
+    // Redirect to login page
+    router.push({ name: 'home-page' });
+  };
+
+  return { RegisterUser, LoginUser, tokenUser, currentUser, getUserByAuth, logout };
 });

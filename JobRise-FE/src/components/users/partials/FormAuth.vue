@@ -1,7 +1,9 @@
 <script setup>
 import { AuthUserStorage } from "@/stores/auth/userAuth";
 import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const props = defineProps({
   isRegister: {
     type: Boolean,
@@ -29,7 +31,6 @@ const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 const auth = AuthUserStorage();
 
-// Validasi nama (hanya huruf dan spasi)
 const validateName = (name) => {
   const re = /^[a-zA-Z\s]*$/;
   return re.test(name);
@@ -46,16 +47,6 @@ const validatePassword = (password) => {
   return password.length >= 8;
 };
 
-// Toggle view password
-const togglePasswordVisibility = () => {
-  showPassword.value = !showPassword.value;
-};
-
-// Toggle view confirm password
-const toggleConfirmPasswordVisibility = () => {
-  showConfirmPassword.value = !showConfirmPassword.value;
-};
-
 // Validasi form
 const validateForm = () => {
   let isValid = true;
@@ -68,7 +59,7 @@ const validateForm = () => {
       errors.name = "Full name is required";
       isValid = false;
     } else if (!validateName(user.name)) {
-      errors.name = "Name should only contain letters";
+      errors.name = "Name should only contain letters (no numbers or special characters)";
       isValid = false;
     } else if (user.name.trim().length < 3) {
       errors.name = "Name should be at least 3 characters";
@@ -112,23 +103,52 @@ const handleSubmit = async () => {
   errors.general = "";
   
   try {
-    console.log("Submitting:", user);
-    
     if (props.isRegister) {
+      // Login
       await auth.LoginUser({
         email: user.email,
         password: user.password
       });
+      
+      // Jika login berhasil, ambil data user
       await auth.getUserByAuth();
+      
+      // Redirect ke dashboard setelah login berhasil
+      router.push({ name: 'dashboard' });
     } else {
+      // Register
       await auth.RegisterUser(user);
+      
+      // Redirect ke halaman login setelah registrasi berhasil
+      router.push({ name: 'login' });
     }
-    
-    // Redirect after successful auth
-    // router.push({ name: 'dashboard' });
   } catch (error) {
     console.error("Authentication error:", error);
-    errors.general = error.message || "Authentication failed. Please try again.";
+    
+    // Handle error spesifik untuk login
+    if (props.isRegister) {
+      if (error.response && error.response.status === 400) {
+        // Asumsi response API mengembalikan message spesifik
+        const errorMessage = error.response.data?.message?.toLowerCase() || '';
+        
+        if (errorMessage.includes('email') || errorMessage.includes('user')) {
+          errors.general = "Unregistered or invalid email";
+        } else if (errorMessage.includes('password')) {
+          errors.general = "Password is wrong!";
+        } else {
+          errors.general = "Invalid e-mail or password";
+        }
+      } else {
+        errors.general = error.message || "Login failed. Please try again.";
+      }
+    } else {
+      // Handle error untuk registrasi
+      if (error.response && error.response.status === 400) {
+        errors.general = "Email already registered or invalid data";
+      } else {
+        errors.general = error.message || "Registration failed. Please try again.";
+      }
+    }
   } finally {
     isLoading.value = false;
   }

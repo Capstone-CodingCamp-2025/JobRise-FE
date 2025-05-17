@@ -33,9 +33,12 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
       router.push("/login-company");
     } catch (error) {
       Swal.fire({
-        icon: "error",
-        title: "Registration Failed",
-        text: error.response?.data?.message || "An error occurred"
+        toast: true,
+        position: "top-end",
+        icon: "warning",
+        title: "Register Failed",
+        showConfirmButton: false,
+        timer: 2000
       });
       throw error;
     }
@@ -66,9 +69,12 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
       return data;
     } catch (error) {
       Swal.fire({
+        toast: true,
+        position: "top-end",
         icon: "error",
         title: "Login Failed",
-        text: error.response?.data?.message || "Invalid credentials"
+        showConfirmButton: false,
+        timer: 2000
       });
       throw error;
     }
@@ -100,11 +106,26 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
   };
 
 
+  const logout = () => {
+    // Clear local storage
+    localStorage.removeItem('tokenCompany');
+    localStorage.removeItem('company');
+    
+    // Reset state
+    currentCompany.value = null;
+    tokenCompany.value = null;
+    
+    // Redirect to login page
+    router.push({ name: 'home-page' });
+  };
+
+
   return { 
     tokenCompany, 
     currentCompany,
     RegisterCompany,
     LoginCompany,
-    getCompanyByAuth
+    getCompanyByAuth,
+    logout
   };
 });

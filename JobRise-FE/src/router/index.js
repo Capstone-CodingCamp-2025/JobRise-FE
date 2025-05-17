@@ -90,6 +90,31 @@ const router = createRouter({
       name: "cv",
       component: Cv,
     },
+    {
+      path: "/find-job",
+      name: "find-job",
+      component: Cv,
+    },
+    {
+      path: "/applied",
+      name: "applied",
+      component: Cv,
+    },
+    {
+      path: "/favorite-job",
+      name: "favorite-job",
+      component: Cv,
+    },
+    {
+      path: "/post-job",
+      name: "post-job",
+      component: Cv,
+    },
+    {
+      path: "/aplication",
+      name: "aplication",
+      component: Cv,
+    },
     
   ],
 });
