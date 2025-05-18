@@ -107,9 +107,35 @@
   <!-- end chatbot -->
 
    <!-- depretion -->
-    <div v-if="showDepret">
-
+   <div
+    class="absolute top-0 bg-slate-400/80 min-h-screen w-full z-50 place-content-center"
+    v-if="showDepret"
+  >
+    <div class="max-w-xl mx-auto bg-white">
+      <div class="bg-[#D5DEEF] flex justify-between px-4">
+        <img src="../../../public/jobrise.png" alt="jobrise" class="w-28" />
+        <button
+          @click="closeDepret"
+          class="text-2xl text-gray-600 cursor-pointer"
+        >
+          <Icon
+            icon="ic:baseline-close"
+            width="24"
+            height="24"
+            style="color: #000"
+          />
+        </button>
+      </div>
+      <div>
+        <h1 class="text-center font-bold font-[shrikhand] text-2xl">How is your emotional day ?</h1>
+        <div>
+          <div>
+            
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
    <!-- depretion -->
 </template>
 <script setup>
@@ -132,6 +158,10 @@ const closeChat = () => {
 
 const toggleDepret = () => {
   showDepret.value = !showDepret.value
+}
+
+const closeDepret = () => {
+  showDepret.value = false
 }
 
 </script>

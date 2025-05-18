@@ -1,9 +1,9 @@
 <template>
-  <main class="m-auto w-sm md:w-svw md:px-10 lg:px-44 py-10 lg:py-20 xl:pt-48">
+  <main class="m-auto w-sm md:w-svw md:px-10 lg:px-44 py-10 lg:py-20 xl:pt-32">
     <div
       class="bg-[#D5DEEF] m-auto place-items-center rounded-lg shadow-lg md:py-10"
     >
-      <h1 class="text-3xl pt-4 font-bold">Register as</h1>
+      <h1 class="text-3xl pt-4 font-bold text-center">Register as</h1>
       <div
         class="grid py-6 px-2 gap-y-6 md:grid-cols-2 md:gap-x-4 md:px-10 xl:gap-x-12 xl:px-24"
       >
