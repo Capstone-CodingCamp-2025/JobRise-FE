@@ -31,6 +31,15 @@ const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 const auth = AuthUserStorage();
 
+// Add these toggle functions
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value;
+};
+
+const toggleConfirmPasswordVisibility = () => {
+  showConfirmPassword.value = !showConfirmPassword.value;
+};
+
 const validateName = (name) => {
   const re = /^[a-zA-Z\s]*$/;
   return re.test(name);

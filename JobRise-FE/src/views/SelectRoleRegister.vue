@@ -11,7 +11,7 @@
           <div
             class="bg-radial from-blue-200 from-20% to-gray-100 rounded-lg px-10 py-8 shadow-md"
           >
-            <h2 class="text-center font-bold text-xl mb-5">Candiate</h2>
+            <h2 class="text-center font-bold text-xl mb-5">Jobseekers</h2>
             <p class="px-10 text-center text-sm md:text-justify">
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores,
               dolorum!
@@ -22,7 +22,7 @@
           <div
             class="bg-radial from-blue-200 from-20% to-gray-100 rounded-lg px-10 py-8 shadow-md"
           >
-            <h2 class="text-center font-bold text-xl mb-5">Employer</h2>
+            <h2 class="text-center font-bold text-xl mb-5">Company</h2>
             <p class="px-10 text-center text-sm md:text-justify">
               Lorem ipsum dolor sit amet, consectetur adipisicing elit.
               Eligendi, beatae!
