@@ -144,7 +144,7 @@
           </div>
         </div>
         <p class="text-center text-black font-medium text-base py-5">
-          Please select one of emoticons
+          Please select one of the available emoticons
         </p>
         
         <!-- Display the random article link when selected -->
