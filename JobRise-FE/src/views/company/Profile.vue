@@ -1,5 +1,5 @@
 <script setup>
-import ProfilePersonal from "../../components/ProfilePersonal.vue";
+import ProfilePersonal from "../../components/company/ProfileCompany.vue";
 </script>
 
 <template>

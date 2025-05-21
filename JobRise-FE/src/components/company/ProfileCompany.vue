@@ -1,24 +1,24 @@
 <template>
-  <div class="flex flex-col lg:flex-row px-8 lg:justify-between bg-slate-300/30 py-10 mb-14 mx-8 lg:px-28">
-    <div class="w-max flex m-auto lg:m-0">
+  <div class="flex flex-col lg:flex-row px-8 lg:justify-between  pb-10 mb-14 mx-8 lg:px-28">
+    <div class="w-max flex m-auto lg:m-0 bg-slate-300/30 h-max p-10">
       <img
         src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGVvcGxlfGVufDB8fDB8fHww"
         alt=""
-        class="rounded-full w-52 h-52 object-cover"
+        class="rounded-lg w-52 h-52 object-cover"
       />
     </div>
-    <div>
+    <div class="bg-slate-300/30 p-8">
       <form>
         <div class="grid md:grid-cols-2 md:gap-x-20 lg:gap-x-14 gap-y-6">
           <div class="flex flex-col gap-y-2">
-            <label for="" class="font-bold text-lg">Full Name</label>
+            <label for="" class="font-bold text-lg">Company Name</label>
             <input
               type="text"
               class="bg-gray-300 rounded-lg outline-none text-md text-center shadow-lg py-2 lg:w-74 w-full"
             />
           </div>
           <div class="flex flex-col gap-y-2">
-            <label for="" class="font-bold text-lg">Phone</label>
+            <label for="" class="font-bold text-lg">Industry</label>
             <input
               type="text"
               class="bg-gray-300 rounded-lg outline-none text-md text-center shadow-lg py-2 lg:w-74 w-full"
@@ -31,8 +31,9 @@
               class="bg-gray-300 rounded-lg outline-none text-md text-center shadow-lg py-2 lg:w-74 w-full"
             />
           </div>
-          <div class="flex flex-col gap-y-2">
-            <label for="" class="font-bold text-lg">Age</label>
+          <div class="flex flex-col ">
+            <label for="" class="font-bold text-lg">Website</label>
+            <span class="pl-2 text-sm text-gray-500">Format :</span>
             <input
               type="text"
               class="bg-gray-300 rounded-lg outline-none text-md text-center shadow-lg py-2 lg:w-74 w-full"
