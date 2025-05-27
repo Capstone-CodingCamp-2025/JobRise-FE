@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "../views/HomePage.vue";
 import SelectRoleLogin from "../views/SelectRoleLogin.vue";
-import SelectRoleRegister from "../views/SelectRoleRegister.vue";
 import Register from "../views/users/auth/Register.vue";
 import Login from "../views/users/auth/Login.vue";
 import LoginCompany from "../views/company/auth/LoginCompany.vue";
@@ -14,6 +13,9 @@ import Cv from "@/views/users/Cv.vue";
 import { AuthUserStorage } from "@/stores/auth/userAuth";
 import { useAuthCompanyStore } from "@/stores/auth/companyAuth";
 import Navigate from "@/views/Navigate.vue"
+import FindJob from "@/views/users/FindJob.vue"
+import Applied from "@/views/users/Applied.vue"
+import JobDetail from "@/views/JobDetail.vue"
 
 
 const router = createRouter({
@@ -34,11 +36,7 @@ const router = createRouter({
       name: "role-login",
       component: SelectRoleLogin,
     },
-    {
-      path: "/role-register",
-      name: "role-register",
-      component: SelectRoleRegister,
-    },
+    
     {
       path: "/register",
       name: "register",
@@ -93,12 +91,12 @@ const router = createRouter({
     {
       path: "/find-job",
       name: "find-job",
-      component: Cv,
+      component: FindJob,
     },
     {
       path: "/applied",
       name: "applied",
-      component: Cv,
+      component: Applied,
     },
     {
       path: "/favorite-job",
@@ -115,7 +113,11 @@ const router = createRouter({
       name: "aplication",
       component: Cv,
     },
-    
+    // {
+    //   path: 'job/',
+    //   name: 'job',
+    //   component: JobDetail
+    // }
   ],
 });
 

@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-blue-200/50 text-center py-20">
-    <h1 class="md:text-5xl text-4xl font-bold">How JobRise Work</h1>
+  <div class="bg-[#D5DEEF] text-center py-20">
+    <h1 class="md:text-4xl text-3xl font-bold">How JobRise Work</h1>
     <div
       class="pt-14 md:px-9 flex flex-col gap-y-20 xl:px-32 md:flex-row justify-center relative"
     >

@@ -2,7 +2,7 @@ import { apiClient } from "@/config/axios";
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
 import { ref } from "vue";
-import router from "@/router"; // Diubah ini
+import router from "@/router"; 
 
 export const useAuthCompanyStore = defineStore("authCompany", () => {
   const tokenCompany = ref(

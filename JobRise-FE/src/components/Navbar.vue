@@ -38,13 +38,15 @@
         <router-link
           :to="{ name: 'find-job' }"
           class="font-bold text-blue-800 text-lg hover:border-b-2 border-b-fuchsia-500 h-max"
-        >
+          active-class="active"
+          >
           Find Job
         </router-link>
         <router-link
           :to="{ name: 'applied' }"
           class="font-bold text-blue-800 text-lg hover:border-b-2 border-b-fuchsia-500 h-max"
-        >
+          active-class="active"
+          >
           Applied
         </router-link>
         <router-link
@@ -82,16 +84,12 @@
     <div class="py-4 flex gap-x-1 md:gap-x-4" v-if="!isLoggedIn">
       <router-link
         :to="{ name: 'role-login' }"
-        class="font-bold text-lg text-blue-800 border rounded-full px-6 hover:bg-blue-50 transition"
-      >
+        class="font-bold text-lg text-blue-950 border rounded-lg px-6  hover:bg-blue-950 hover:text-white pb-1"
+        
+        >
         Login
       </router-link>
-      <router-link
-        :to="{ name: 'role-register' }"
-        class="font-bold text-lg text-white px-6 bg-blue-950 rounded-full hover:bg-blue-900 transition"
-      >
-        Register
-      </router-link>
+      
     </div>
 
     <!-- User dropdown - shown when logged in -->

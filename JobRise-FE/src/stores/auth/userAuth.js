@@ -35,7 +35,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         icon: "success",
         title: "Account Successfully Created",
         showConfirmButton: false,
-        timer: 3000
+        timer: 3000,
       });
       console.log(data);
       router.push("/login");
@@ -46,7 +46,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         icon: "warning",
         title: "Register Failed",
         showConfirmButton: false,
-        timer: 2000
+        timer: 2000,
       });
       throw error;
     }
@@ -73,7 +73,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         icon: "success",
         title: "Signed In Successfully",
         showConfirmButton: false,
-        timer: 2000
+        timer: 2000,
       });
 
       router.replace("/dashboard");
@@ -85,13 +85,12 @@ export const AuthUserStorage = defineStore("auth", () => {
         icon: "error",
         title: "Login Failed",
         showConfirmButton: false,
-        timer: 2000
+        timer: 2000,
       });
       throw error;
     }
   };
 
-  // Fungsi baru untuk mendapatkan user berdasarkan token
   const getUserByAuth = async () => {
     try {
       const response = await apiClient.get("/user-auth", {
@@ -100,7 +99,6 @@ export const AuthUserStorage = defineStore("auth", () => {
         },
       });
 
-      // Update data company dengan response dari server
       currentUser.value = response.data.data;
       localStorage.setItem("user", JSON.stringify(response.data.data));
 
@@ -108,7 +106,6 @@ export const AuthUserStorage = defineStore("auth", () => {
     } catch (error) {
       console.error("Gagal mengambil data user:", error);
 
-      // Jika token tidak valid/expired, lakukan logout
       if (error.response?.status === 401) {
         logout();
       }
@@ -119,16 +116,81 @@ export const AuthUserStorage = defineStore("auth", () => {
 
   const logout = () => {
     // Clear local storage
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
     // Reset state
     currentUser.value = null;
     tokenUser.value = null;
-    
+
     // Redirect to login page
-    router.push({ name: 'home-page' });
+    router.push({ name: "home-page" });
   };
 
-  return { RegisterUser, LoginUser, tokenUser, currentUser, getUserByAuth, logout };
+  const createProfile = async (profileData) => {
+    try {
+      const { data } = await apiClient.post("/profile", profileData, {
+        headers: {
+          Authorization: `Bearer ${tokenUser.value}`,
+          
+        },
+      });
+
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Profile Created Successfully",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      console.log("Profile created:", data);
+      await getUserByAuth(); 
+      return data;
+    } catch (error) {
+      console.error("Failed to create profile:", error);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Failed to Create Profile",
+        text: error.response?.data?.message || "Something went wrong.",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
+
+  const getProfile = async () => {
+    try {
+      const response = await apiClient.get("/profile", {
+        headers: {
+          Authorization: `Bearer ${tokenUser.value}`,
+        },
+      });
+
+      console.log("Profile data fetched:", response.data.data);
+      
+      if (response.data && response.data.data) {
+        currentUser.value = { ...currentUser.value, ...response.data.data };
+        localStorage.setItem("user", JSON.stringify(currentUser.value));
+      }
+      return response.data.data;
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+      throw error;
+    }
+  };
+
+  return {
+    RegisterUser,
+    LoginUser,
+    tokenUser,
+    currentUser,
+    getUserByAuth,
+    logout,
+    createProfile,
+    getProfile
+  };
 });

@@ -6,19 +6,19 @@
     </p>
     <div class="flex gap-x-2 md:gap-x-6">
       <div
-        class="bg-blue-700/50 w-full rounded-lg shadow-lg m-auto place-items-center text-justify py-2 md:py-6"
+        class="bg-[#b8caecda] outline w-full rounded-lg shadow-lg m-auto place-items-center text-justify py-2 md:py-6"
       >
         <h2 class="font-bold text-xl">XXX</h2>
         <p class="text-md font-semibold text-slate-700">Applied jobs</p>
       </div>
       <div
-        class="bg-blue-600/30 w-full rounded-lg shadow-lg m-auto place-items-center text-justify py-2 md:py-6"
+        class="bg-[#b8caecda] outline w-full rounded-lg shadow-lg m-auto place-items-center text-justify py-2 md:py-6"
       >
         <h2 class="font-bold text-xl">XXX</h2>
         <p class="text-md font-semibold text-slate-700">Favorite jobs</p>
       </div>
       <div
-        class="bg-blue-400/20 w-full rounded-lg shadow-lg m-auto place-items-center text-justify py-2 md:py-6"
+        class="bg-[#b8caecda] outline w-full rounded-lg shadow-lg m-auto place-items-center text-justify py-2 md:py-6"
       >
         <h2 class="font-bold text-xl">XXX</h2>
         <p class="text-md font-semibold text-slate-700">Jobs alerts</p>

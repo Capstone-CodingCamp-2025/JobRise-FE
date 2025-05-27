@@ -1,0 +1,164 @@
+{
+  "jobs": [
+    {
+      "id": 1,
+      "posisi": "Back-end Developer",
+      "type": "Paruh Waktu",
+      "salary": "1 JT - 3 JT",
+      "logo": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y29tcGFueXxlbnwwfHwwfHx8MA%3D%3D",
+      "company": "PT. Solusi Digital"
+    },
+    {
+      "id": 2,
+      "posisi": "Front-end Developer",
+      "type": "Penuh Waktu",
+      "salary": "3 JT - 5 JT",
+      "logo": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y29tcGFueXxlbnwwfHwwfHx8MA%3D%3D",
+      "company": "PT. Tech Innovate"
+    },
+    {
+      "id": 3,
+      "posisi": "UI/UX Designer",
+      "type": "Freelance",
+      "salary": "2.5 JT - 4 JT",
+      "logo": "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y29tcGFueXxlbnwwfHwwfHx8MA%3D%3D",
+      "company": "Creative Design Studio"
+    },
+    {
+      "id": 4,
+      "posisi": "Data Scientist",
+      "type": "Penuh Waktu",
+      "salary": "5 JT - 8 JT",
+      "logo": "https://example.com/data-ai.png",
+      "company": "Data AI Solutions"
+    },
+    {
+      "id": 5,
+      "posisi": "Mobile Developer",
+      "type": "Paruh Waktu",
+      "salary": "2 JT - 4 JT",
+      "logo": "https://example.com/app-masters.png",
+      "company": "App Masters"
+    },
+    {
+      "id": 6,
+      "posisi": "DevOps Engineer",
+      "type": "Penuh Waktu",
+      "salary": "6 JT - 10 JT",
+      "logo": "https://example.com/cloud-tech.png",
+      "company": "Cloud Tech Indonesia"
+    },
+    {
+      "id": 7,
+      "posisi": "Product Manager",
+      "type": "Penuh Waktu",
+      "salary": "8 JT - 12 JT",
+      "logo": "https://example.com/product-labs.png",
+      "company": "Product Labs"
+    },
+    {
+      "id": 8,
+      "posisi": "Quality Assurance",
+      "type": "Kontrak",
+      "salary": "3 JT - 5 JT",
+      "logo": "https://example.com/qa-specialists.png",
+      "company": "QA Specialists"
+    },
+    {
+      "id": 9,
+      "posisi": "System Analyst",
+      "type": "Penuh Waktu",
+      "salary": "5 JT - 7 JT",
+      "logo": "https://example.com/system-arch.png",
+      "company": "System Architecture Co."
+    },
+    {
+      "id": 10,
+      "posisi": "Network Engineer",
+      "type": "Penuh Waktu",
+      "salary": "4 JT - 6 JT",
+      "logo": "https://example.com/net-solutions.png",
+      "company": "Network Solutions"
+    },
+    {
+      "id": 11,
+      "posisi": "Digital Marketing",
+      "type": "Freelance",
+      "salary": "2 JT - 4 JT",
+      "logo": "https://example.com/marketing-plus.png",
+      "company": "Marketing Plus"
+    },
+    {
+      "id": 12,
+      "posisi": "Content Writer",
+      "type": "Remote",
+      "salary": "1.5 JT - 3 JT",
+      "logo": "https://example.com/content-creators.png",
+      "company": "Content Creators Inc."
+    },
+    {
+      "id": 13,
+      "posisi": "Graphic Designer",
+      "type": "Paruh Waktu",
+      "salary": "2 JT - 3.5 JT",
+      "logo": "https://example.com/visual-arts.png",
+      "company": "Visual Arts Studio"
+    },
+    {
+      "id": 14,
+      "posisi": "Database Administrator",
+      "type": "Penuh Waktu",
+      "salary": "4 JT - 6 JT",
+      "logo": "https://example.com/data-manage.png",
+      "company": "Data Management Ltd."
+    },
+    {
+      "id": 15,
+      "posisi": "Cybersecurity Specialist",
+      "type": "Penuh Waktu",
+      "salary": "7 JT - 12 JT",
+      "logo": "https://example.com/secure-tech.png",
+      "company": "Secure Tech Indonesia"
+    },
+    {
+      "id": 16,
+      "posisi": "Business Analyst",
+      "type": "Kontrak",
+      "salary": "5 JT - 8 JT",
+      "logo": "https://example.com/business-solutions.png",
+      "company": "Business Solutions"
+    },
+    {
+      "id": 17,
+      "posisi": "Full-stack Developer",
+      "type": "Remote",
+      "salary": "4 JT - 7 JT",
+      "logo": "https://example.com/web-creators.png",
+      "company": "Web Creators"
+    },
+    {
+      "id": 18,
+      "posisi": "IT Support",
+      "type": "Paruh Waktu",
+      "salary": "2 JT - 3 JT",
+      "logo": "https://example.com/it-helpdesk.png",
+      "company": "IT Helpdesk Services"
+    },
+    {
+      "id": 19,
+      "posisi": "Project Manager",
+      "type": "Penuh Waktu",
+      "salary": "9 JT - 14 JT",
+      "logo": "https://example.com/project-leaders.png",
+      "company": "Project Leaders"
+    },
+    {
+      "id": 20,
+      "posisi": "AI Engineer",
+      "type": "Penuh Waktu",
+      "salary": "8 JT - 15 JT",
+      "logo": "https://example.com/ai-future.png",
+      "company": "AI Future Technologies"
+    }
+  ]
+}

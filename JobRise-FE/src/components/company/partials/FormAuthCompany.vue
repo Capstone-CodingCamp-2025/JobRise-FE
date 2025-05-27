@@ -31,7 +31,7 @@ const showConfirmPassword = ref(false);
 const auth = useAuthCompanyStore();
 
 const validateName = (name) => {
-  const re = /^[a-zA-Z\s]*$/;
+  const re = /^[a-zA-Z\s] $/;
   return re.test(name);
 };
 
@@ -154,10 +154,10 @@ const handleSubmit = async () => {
   <form @submit.prevent="handleSubmit" class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24 lg:py-8 xl:py-12">
     <!-- Company Name Field -->
     <div class="flex flex-col gap-y-1" v-if="!props.isRegisterCompany">
-      <label for="companyName" class="font-bold">Company Name*</label>
+      <label for="companyName" class="font-medium">Company Name <span class="text-red-600"> </span></label>
       <input
         id="companyName"
-        class="bg-gray-100 rounded-sm shadow-lg text-center outline-none h-8"
+        class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8"
         :class="{ 'border-red-500': errors.name }"
         type="text"
         placeholder="Your Company Name"
@@ -171,10 +171,10 @@ const handleSubmit = async () => {
     
     <!-- Email Field -->
     <div class="flex flex-col gap-y-1">
-      <label for="companyEmail" class="font-bold">E-mail Company*</label>
+      <label for="companyEmail" class="font-medium">E-mail Company <span class="text-red-600">*</span></label>
       <input
         id="companyEmail"
-        class="bg-gray-100 rounded-sm shadow-lg text-center outline-none h-8"
+        class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8"
         :class="{ 'border-red-500': errors.email }"
         type="email"
         placeholder="Enter Email"
@@ -188,11 +188,11 @@ const handleSubmit = async () => {
     
     <!-- Password Field -->
     <div class="flex flex-col gap-y-1">
-      <label for="companyPassword" class="font-bold">Password*</label>
+      <label for="companyPassword" class="font-medium">Password <span class="text-red-600">*</span></label>
       <div class="relative">
         <input
           id="companyPassword"
-          class="bg-gray-100 rounded-sm shadow-lg text-center outline-none h-8 w-full"
+          class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8 w-full"
           :class="{ 'border-red-500': errors.password }"
           :type="showPassword ? 'text' : 'password'"
           placeholder="Enter Password"
@@ -241,11 +241,11 @@ const handleSubmit = async () => {
     
     <!-- Confirm Password Field -->
     <div class="flex flex-col gap-y-1 mb-2" v-if="!props.isRegisterCompany">
-      <label for="confirmPassword" class="font-bold">Confirm Password*</label>
+      <label for="confirmPassword" class="font-medium">Confirm Password <span class="text-red-600">*</span></label>
       <div class="relative">
         <input
           id="confirmPassword"
-          class="bg-gray-100 rounded-sm shadow-lg text-center outline-none h-8 w-full"
+          class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8 w-full"
           :class="{ 'border-red-500': errors.confirm_password }"
           :type="showConfirmPassword ? 'text' : 'password'"
           placeholder="Confirm Password"
@@ -302,7 +302,7 @@ const handleSubmit = async () => {
     <div class="flex flex-col">
       <button
         type="submit"
-        class="bg-blue-900 py-1 pb-2 rounded-lg shadow-xl text-white font-black text-2xl mb-2"
+        class="bg-[#0c1f61d3] py-1 pb-2 rounded-lg  text-white text-2xl mb-2"
         :class="{
           'hover:bg-sky-700 cursor-pointer': !isLoading,
           'opacity-50 cursor-not-allowed': isLoading
@@ -312,7 +312,7 @@ const handleSubmit = async () => {
         {{ isLoading ? "Processing..." : (props.isRegisterCompany ? "Login" : "Create") }}
       </button>
       
-      <p class="text-center font-bold">
+      <p class="text-center">
         {{
           props.isRegisterCompany
             ? "Don't have an account?"
@@ -320,7 +320,7 @@ const handleSubmit = async () => {
         }}
         <router-link
           :to="props.isRegisterCompany ? { name: 'register-company' } : { name: 'login-company' }"
-          class="text-blue-700 underline hover:text-blue-800"
+          class="text-blue-900  hover:text-blue-800"
         >
           {{ props.isRegisterCompany ? "Sign up" : "Login" }}
         </router-link>
