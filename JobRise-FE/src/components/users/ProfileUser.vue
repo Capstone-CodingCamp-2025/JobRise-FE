@@ -6,14 +6,19 @@
   >
     <div class="flex flex-col items-center gap-6 col-span-1">
       <div
-        class="w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden relative"
+        class="w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden relative cursor-pointer"
+        @click="!isEditing && $refs.fileInput.click()"
       >
         <input
+          ref="fileInput"
           type="file"
           class="absolute w-40 h-40 opacity-0 cursor-pointer z-10"
           @change="handleImageChange"
         />
-        <span class="text-3xl font-semibold text-gray-500 z-0">
+        <span
+          v-if="!isEditing && !profileForm.imageURL"
+          class="text-3xl font-semibold text-gray-500 z-0"
+        >
           <Icon
             icon="material-symbols-light:add-box-outline-sharp"
             width="32"
@@ -21,11 +26,12 @@
             style="color: #606060"
           />
         </span>
+
         <img
           v-if="profileForm.imageURL"
           :src="profileForm.imageURL"
           :key="profileForm.imageURL"
-          class="absolute w-full h-full object-cover pt-10"
+          class="absolute w-full h-full object-cover"
           alt="Profile Image"
         />
       </div>
@@ -46,6 +52,7 @@
           type="text"
           class="bg-gray-300 w-full rounded-lg py-2 px-3 outline outline-blue-900 text-center"
           v-model="profileForm.linkedin"
+          :disabled="!isEditing"
         />
       </div>
 
@@ -55,6 +62,7 @@
           type="text"
           class="bg-gray-300 w-full rounded-lg py-2 px-3 outline outline-blue-900 text-center"
           v-model="profileForm.portofolio_url"
+          :disabled="!isEditing"
         />
       </div>
     </div>
@@ -66,6 +74,7 @@
           type="text"
           class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           v-model="profileForm.username"
+          :disabled="!isEditing"
         />
       </div>
 
@@ -75,6 +84,7 @@
           type="text"
           class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           v-model="profileForm.full_name"
+          :disabled="!isEditing"
         />
       </div>
 
@@ -84,6 +94,7 @@
           type="text"
           class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           v-model="profileForm.phone"
+          :disabled="!isEditing"
         />
       </div>
 
@@ -93,6 +104,7 @@
           type="text"
           class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           v-model="profileForm.age"
+          :disabled="!isEditing"
         />
       </div>
 
@@ -102,6 +114,7 @@
           type="text"
           class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           v-model="profileForm.address"
+          :disabled="!isEditing"
         />
       </div>
 
@@ -111,6 +124,7 @@
           type="text"
           class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           v-model="profileForm.city"
+          :disabled="!isEditing"
         />
       </div>
 
@@ -120,11 +134,32 @@
           rows="5"
           class="bg-gray-300 w-full rounded-lg py-2 px-3 outline outline-blue-900 resize-none text-left"
           v-model="profileForm.bio"
+          :disabled="!isEditing"
         ></textarea>
       </div>
 
       <div class="w-full flex gap-x-3 justify-end md:col-span-2 pt-2">
         <button
+          v-if="!isEditing"
+          type="button"
+          class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md"
+          @click="isEditing = true"
+        >
+          Edit
+        </button>
+        <button
+          v-if="isEditing"
+          type="button"
+          class="text-gray-800 bg-gray-300 font-semibold text-lg px-6 py-2 rounded-lg shadow-md"
+          @click="
+            isEditing = false;
+            fetchProfileData();
+          "
+        >
+          Cancel
+        </button>
+        <button
+          v-if="isEditing"
           type="submit"
           class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md"
         >
@@ -147,16 +182,19 @@ const profileForm = ref({
   full_name: "",
   age: "",
   address: "",
-  image: null, 
-  imageURL: "", 
+  image: null,
+  imageURL: "",
   phone: "",
   bio: "",
   linkedin: "",
   portofolio_url: "",
   city: "",
 });
+const isEditing = ref(false);
+const fileInput = ref(null);
 
 const handleImageChange = (event) => {
+  if (!isEditing.value) return;
   const file = event.target.files[0];
   if (file) {
     profileForm.value.image = file;
@@ -165,51 +203,49 @@ const handleImageChange = (event) => {
 };
 
 const handleSubmit = async () => {
-  try {
-    const formData = new FormData();
-    for (const key in profileForm.value) {
-      if (key === "image") {
-        if (profileForm.value.image) {
-          formData.append("image", profileForm.value.image);
-        }
-      } else if (key !== "imageURL") {
-        formData.append(key, profileForm.value[key]);
-      }
-    }
-    console.log(
-      "FormData before sending:",
-      Object.fromEntries(formData.entries())
-    );
-
-    const response = await authStore.createProfile(formData);
-    console.log("Profile successfully saved!", response);
-
-    if (response && response.data) {
-      for (const key in response.data) {
-        if (profileForm.value.hasOwnProperty(key)) {
-          profileForm.value[key] = response.data[key];
+  if (isEditing.value) {
+    try {
+      const formData = new FormData();
+      for (const key in profileForm.value) {
+        if (key === "image") {
+          formData.append("image", profileForm.value.image || null); // Kirim null jika tidak ada file baru
+        } else if (
+          key !== "imageURL" &&
+          key !== "email" &&
+          key !== "username"
+        ) {
+          formData.append(key, profileForm.value[key]);
         }
       }
-      if (response.data.image) {
-        profileForm.value.imageURL = `/public/${response.data.image}`;
-      } else {
-        
-        profileForm.value.imageURL = ""; 
-      }
+      console.log(
+        "FormData before sending:",
+        Object.fromEntries(formData.entries())
+      );
 
-      profileForm.value.image = null;
+      const response = await authStore.updateProfile(formData);
+      console.log("Profile successfully updated!", response);
+      isEditing.value = false;
+      await fetchProfileData();
+      await authStore.getUserByAuth();
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Update Failed",
+        text: error.response?.data?.message || "Something went wrong.",
+        showConfirmButton: false,
+        timer: 3000,
+      });
     }
-
-    await authStore.getUserByAuth();
-  } catch (error) {
-    console.error("Failed to save profile:", error);
   }
 };
 
-onMounted(async () => {
+const fetchProfileData = async () => {
   try {
     const profileData = await authStore.getProfile();
-    console.log("Profile data fetched on mount:", profileData);
+    console.log("Profile data fetched:", profileData);
 
     if (profileData) {
       for (const key in profileData) {
@@ -218,18 +254,22 @@ onMounted(async () => {
         }
       }
       if (profileData.image) {
-        profileForm.value.imageURL = `/public/${profileData.image}`;
+        profileForm.value.imageURL = `/public/img_ProfileUser/${profileData.image}`;
       } else {
-        profileForm.value.imageURL = ""; 
+        profileForm.value.imageURL = "";
       }
     }
   } catch (error) {
-    console.error("Failed to fetch profile on component mount:", error);
+    console.error("Failed to fetch profile:", error);
   }
 
   if (authStore.currentUser && !profileForm.value.full_name) {
     profileForm.value.email = authStore.currentUser.email || "";
     profileForm.value.full_name = authStore.currentUser.full_name || "";
   }
+};
+
+onMounted(async () => {
+  await fetchProfileData();
 });
 </script>

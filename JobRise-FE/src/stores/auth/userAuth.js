@@ -183,6 +183,44 @@ export const AuthUserStorage = defineStore("auth", () => {
     }
   };
 
+  const updateProfile = async (updatedData) => {
+    try {
+      const { data } = await apiClient.put("/profile-update", updatedData, {
+        headers: {
+          Authorization: `Bearer ${tokenUser.value}`,
+        },
+      });
+
+      // Optionally update the currentUser state with the new data
+      currentUser.value = { ...currentUser.value, ...data.data };
+      localStorage.setItem("user", JSON.stringify(currentUser.value));
+
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Profile Updated Successfully",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      console.log("Profile updated:", data);
+      await getUserByAuth(); // Refresh user data after update
+      return data;
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Failed to Update Profile",
+        text: error.response?.data?.message || "Something went wrong.",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
+
   return {
     RegisterUser,
     LoginUser,
@@ -191,6 +229,7 @@ export const AuthUserStorage = defineStore("auth", () => {
     getUserByAuth,
     logout,
     createProfile,
-    getProfile
+    getProfile,
+    updateProfile
   };
 });
