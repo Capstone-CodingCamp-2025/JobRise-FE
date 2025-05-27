@@ -127,12 +127,12 @@ export const AuthUserStorage = defineStore("auth", () => {
     router.push({ name: "home-page" });
   };
 
-  const createProfile = async (profileData) => {
+  const createProfile = async (profileFormData) => {
     try {
-      const { data } = await apiClient.post("/profile", profileData, {
+      const { data } = await apiClient.post("/profile", profileFormData, {
         headers: {
           Authorization: `Bearer ${tokenUser.value}`,
-          
+          'Content-Type': 'multipart/form-data', // Tambahkan header ini
         },
       });
 
@@ -145,7 +145,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         timer: 3000,
       });
       console.log("Profile created:", data);
-      await getUserByAuth(); 
+      await getUserByAuth();
       return data;
     } catch (error) {
       console.error("Failed to create profile:", error);
@@ -162,38 +162,29 @@ export const AuthUserStorage = defineStore("auth", () => {
     }
   };
 
-  const getProfile = async () => {
+  const getProfileUser = async () => {
     try {
       const response = await apiClient.get("/profile", {
         headers: {
           Authorization: `Bearer ${tokenUser.value}`,
         },
       });
-
-      console.log("Profile data fetched:", response.data.data);
-      
-      if (response.data && response.data.data) {
-        currentUser.value = { ...currentUser.value, ...response.data.data };
-        localStorage.setItem("user", JSON.stringify(currentUser.value));
-      }
       return response.data.data;
     } catch (error) {
-      console.error("Failed to fetch profile:", error);
+      console.error("Failed to fetch user profile:", error);
+      // Tidak menampilkan Swal disini, biar ditangani di component
       throw error;
     }
   };
 
-  const updateProfile = async (updatedData) => {
+  const updateProfileUser = async (profileFormData) => {
     try {
-      const { data } = await apiClient.put("/profile-update", updatedData, {
+      const { data } = await apiClient.put("/profile-update", profileFormData, {
         headers: {
           Authorization: `Bearer ${tokenUser.value}`,
+          'Content-Type': 'multipart/form-data', // Pastikan ini ada jika Anda mengupload file
         },
       });
-
-      // Optionally update the currentUser state with the new data
-      currentUser.value = { ...currentUser.value, ...data.data };
-      localStorage.setItem("user", JSON.stringify(currentUser.value));
 
       Swal.fire({
         toast: true,
@@ -204,7 +195,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         timer: 3000,
       });
       console.log("Profile updated:", data);
-      await getUserByAuth(); // Refresh user data after update
+      await getProfileUser(); // Atau getUserByAuth jika Anda ingin memperbarui info user di navbar dll.
       return data;
     } catch (error) {
       console.error("Failed to update profile:", error);
@@ -229,7 +220,7 @@ export const AuthUserStorage = defineStore("auth", () => {
     getUserByAuth,
     logout,
     createProfile,
-    getProfile,
-    updateProfile
+    getProfileUser,
+    updateProfileUser, // Tambahkan fungsi updateProfileUser ke dalam return
   };
 });

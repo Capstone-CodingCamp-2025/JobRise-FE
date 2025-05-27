@@ -30,10 +30,6 @@ const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 const auth = useAuthCompanyStore();
 
-const validateName = (name) => {
-  const re = /^[a-zA-Z\s] $/;
-  return re.test(name);
-};
 
 const validateEmail = (email) => {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,9 +49,7 @@ const validateForm = () => {
     if (!company.name.trim()) {
       errors.name = "Company name is required";
       isValid = false;
-    } else if (!validateName(company.name)) {
-      errors.name = "Name should only contain letters";
-      isValid = false;
+    
     } else if (company.name.trim().length < 3) {
       errors.name = "Name should be at least 3 characters";
       isValid = false;
@@ -154,7 +148,7 @@ const handleSubmit = async () => {
   <form @submit.prevent="handleSubmit" class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24 lg:py-8 xl:py-12">
     <!-- Company Name Field -->
     <div class="flex flex-col gap-y-1" v-if="!props.isRegisterCompany">
-      <label for="companyName" class="font-medium">Company Name <span class="text-red-600"> </span></label>
+      <label for="companyName" class="font-medium">Company Name <span class="text-red-600">*</span></label>
       <input
         id="companyName"
         class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8"
@@ -163,10 +157,8 @@ const handleSubmit = async () => {
         placeholder="Your Company Name"
         required
         v-model="company.name"
-        @input="validateForm"
-        @blur="validateForm"
+        
       />
-      <span v-if="errors.name" class="text-red-500 text-xs">{{ errors.name }}</span>
     </div>
     
     <!-- Email Field -->
