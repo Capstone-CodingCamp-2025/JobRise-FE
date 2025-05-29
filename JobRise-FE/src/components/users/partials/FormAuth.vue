@@ -2,6 +2,7 @@
 import { AuthUserStorage } from "@/stores/auth/userAuth";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 const router = useRouter();
 const props = defineProps({
@@ -23,7 +24,7 @@ const errors = reactive({
   email: "",
   password: "",
   confirm_password: "",
-  general: ""
+  general: "",
 });
 
 const isLoading = ref(false);
@@ -59,23 +60,24 @@ const validatePassword = (password) => {
 // Validasi form
 const validateForm = () => {
   let isValid = true;
-  
+
   // Reset errors
-  Object.keys(errors).forEach(key => errors[key] = "");
-  
+  Object.keys(errors).forEach((key) => (errors[key] = ""));
+
   if (!props.isRegister) {
     if (!user.name.trim()) {
       errors.name = "Full name is required";
       isValid = false;
     } else if (!validateName(user.name)) {
-      errors.name = "Name should only contain letters (no numbers or special characters)";
+      errors.name =
+        "Name should only contain letters (no numbers or special characters)";
       isValid = false;
     } else if (user.name.trim().length < 3) {
       errors.name = "Name should be at least 3 characters";
       isValid = false;
     }
   }
-  
+
   if (!user.email) {
     errors.email = "Email is required";
     isValid = false;
@@ -83,7 +85,7 @@ const validateForm = () => {
     errors.email = "Please enter a valid email address";
     isValid = false;
   }
-  
+
   if (!user.password) {
     errors.password = "Password is required";
     isValid = false;
@@ -91,7 +93,7 @@ const validateForm = () => {
     errors.password = "Password must be at least 8 characters";
     isValid = false;
   }
-  
+
   if (!props.isRegister) {
     if (!user.confirm_password) {
       errors.confirm_password = "Please confirm your password";
@@ -101,48 +103,45 @@ const validateForm = () => {
       isValid = false;
     }
   }
-  
+
   return isValid;
 };
 
 const handleSubmit = async () => {
   if (!validateForm()) return;
-  
+
   isLoading.value = true;
   errors.general = "";
-  
+
   try {
     if (props.isRegister) {
-      // Login
-      await auth.LoginUser({
+      // Login - logika redirect dan penolakan role company ada di store
+      const loginSuccess = await auth.LoginUser({
         email: user.email,
-        password: user.password
+        password: user.password,
       });
-      
-      // Jika login berhasil, ambil data user
-      await auth.getUserByAuth();
-      
-      // Redirect ke dashboard setelah login berhasil
-      router.push({ name: 'dashboard' });
+
+      // Hanya redirect ke dashboard jika login berhasil dan bukan role company
+      if (loginSuccess === true) {
+        router.push({ name: "dashboard" });
+      }
+      // Jika login ditolak (kembali false dari store), tidak ada redirect ke dashboard
+      // karena redirect ke login sudah ditangani di store.
     } else {
       // Register
       await auth.RegisterUser(user);
-      
-      // Redirect ke halaman login setelah registrasi berhasil
-      router.push({ name: 'login' });
+      router.push({ name: "login" });
     }
   } catch (error) {
     console.error("Authentication error:", error);
-    
+
     // Handle error spesifik untuk login
     if (props.isRegister) {
       if (error.response && error.response.status === 400) {
-        // Asumsi response API mengembalikan message spesifik
-        const errorMessage = error.response.data?.message?.toLowerCase() || '';
-        
-        if (errorMessage.includes('email') || errorMessage.includes('user')) {
+        const errorMessage = error.response.data?.message?.toLowerCase() || "";
+        if (errorMessage.includes("email") || errorMessage.includes("user")) {
           errors.general = "Unregistered or invalid email";
-        } else if (errorMessage.includes('password')) {
+        } else if (errorMessage.includes("password")) {
           errors.general = "Password is wrong!";
         } else {
           errors.general = "Invalid e-mail or password";
@@ -155,7 +154,8 @@ const handleSubmit = async () => {
       if (error.response && error.response.status === 400) {
         errors.general = "Email already registered or invalid data";
       } else {
-        errors.general = error.message || "Registration failed. Please try again.";
+        errors.general =
+          error.message || "Registration failed. Please try again.";
       }
     }
   } finally {
@@ -169,17 +169,20 @@ const handleSubmit = async () => {
     @submit.prevent="handleSubmit"
     class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24 lg:py-8 xl:py-6"
   >
-    <!-- General error message -->
-    <div v-if="errors.general" class="text-red-500 text-sm p-2 bg-red-50 rounded">
+    <div
+      v-if="errors.general"
+      class="text-red-500 text-sm p-2 bg-red-50 rounded"
+    >
       {{ errors.general }}
     </div>
 
-    <!-- Full Name Field -->
     <div class="flex flex-col gap-y-1" v-if="!props.isRegister">
-      <label for="fullName" class="font-medium">Full Name <span class="text-red-600">*</span></label>
+      <label for="fullName" class="font-medium"
+        >Full Name <span class="text-red-600">*</span></label
+      >
       <input
         id="fullName"
-        class="bg-gray-100 rounded-sm  text-center outline outline-blue-800 h-8"
+        class="bg-gray-100 rounded-sm text-center outline outline-blue-800 h-8"
         :class="{ 'border-red-500': errors.name }"
         type="text"
         placeholder="Your Full Name"
@@ -188,15 +191,18 @@ const handleSubmit = async () => {
         @blur="validateForm"
         required
       />
-      <span v-if="errors.name" class="text-red-500 text-xs">{{ errors.name }}</span>
+      <span v-if="errors.name" class="text-red-500 text-xs">{{
+        errors.name
+      }}</span>
     </div>
 
-    <!-- Email Field -->
     <div class="flex flex-col gap-y-1">
-      <label for="email" class="font-medium">E-mail <span class="text-red-600">*</span></label>
+      <label for="email" class="font-medium"
+        >E-mail <span class="text-red-600">*</span></label
+      >
       <input
         id="email"
-        class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8"
+        class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8"
         :class="{ 'border-red-500': errors.email }"
         type="email"
         placeholder="Enter Email"
@@ -205,16 +211,19 @@ const handleSubmit = async () => {
         @blur="validateForm"
         required
       />
-      <span v-if="errors.email" class="text-red-500 text-xs">{{ errors.email }}</span>
+      <span v-if="errors.email" class="text-red-500 text-xs">{{
+        errors.email
+      }}</span>
     </div>
 
-    <!-- Password Field -->
     <div class="flex flex-col gap-y-1">
-      <label for="password" class="font-medium">Password <span class="text-red-600">*</span></label>
+      <label for="password" class="font-medium"
+        >Password <span class="text-red-600">*</span></label
+      >
       <div class="relative">
         <input
           id="password"
-          class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8 w-full"
+          class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8 w-full"
           :class="{ 'border-red-500': errors.password }"
           :type="showPassword ? 'text' : 'password'"
           placeholder="Enter Password"
@@ -258,16 +267,19 @@ const handleSubmit = async () => {
           </svg>
         </button>
       </div>
-      <span v-if="errors.password" class="text-red-500 text-xs">{{ errors.password }}</span>
+      <span v-if="errors.password" class="text-red-500 text-xs">{{
+        errors.password
+      }}</span>
     </div>
 
-    <!-- Confirm Password Field -->
     <div class="flex flex-col gap-y-1 mb-2" v-if="!props.isRegister">
-      <label for="confirmPassword" class="font-medium">Confirm Password <span class="text-red-600">*</span></label>
+      <label for="confirmPassword" class="font-medium"
+        >Confirm Password <span class="text-red-600">*</span></label
+      >
       <div class="relative">
         <input
           id="confirmPassword"
-          class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8 w-full"
+          class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8 w-full"
           :class="{ 'border-red-500': errors.confirm_password }"
           :type="showConfirmPassword ? 'text' : 'password'"
           placeholder="Confirm Password"
@@ -311,23 +323,36 @@ const handleSubmit = async () => {
           </svg>
         </button>
       </div>
-      <span v-if="errors.confirm_password" class="text-red-500 text-xs">{{ errors.confirm_password }}</span>
+      <span v-if="errors.confirm_password" class="text-red-500 text-xs">{{
+        errors.confirm_password
+      }}</span>
     </div>
 
-    <!-- Submit Button -->
+    <div class="flex justify-between">
+      <div>
+        <input type="checkbox" id="saveHistory" />
+        <label for="saveHistory" class="text-sm">Remember me</label>
+      </div>
+      <router-link to="" class="text-blue-800 text-xs font-medium">
+      Forget Password?</router-link
+      >
+    </div>
+
     <div class="flex flex-col">
       <button
         type="submit"
-        class="bg-[#0c1f61d3] py-1 pb-2 rounded-lg  text-white  text-2xl mb-2"
+        class="bg-[#0c1f61d3] py-1 pb-2 rounded-lg text-white text-2xl mb-2"
         :class="{
           'hover:bg-sky-700 cursor-pointer': !isLoading,
-          'opacity-50 cursor-not-allowed': isLoading
+          'opacity-50 cursor-not-allowed': isLoading,
         }"
         :disabled="isLoading"
       >
-        {{ isLoading ? "Processing..." : (props.isRegister ? "Login" : "Create") }}
+        {{
+          isLoading ? "Processing..." : props.isRegister ? "Login" : "Create"
+        }}
       </button>
-      <p class="text-center ">
+      <p class="text-center">
         {{
           props.isRegister
             ? "Don't have any account?"
@@ -335,7 +360,7 @@ const handleSubmit = async () => {
         }}
         <router-link
           :to="props.isRegister ? { name: 'register' } : { name: 'login' }"
-          class="text-blue-900  hover:text-blue-800"
+          class="text-blue-900 hover:text-blue-800"
         >
           {{ props.isRegister ? "Sign up" : "Login" }}
         </router-link>

@@ -14,7 +14,9 @@
 
       <!-- Logo -->
       <div>
-        <router-link :to="{ name: 'home-page' }">
+        <router-link
+          :to="isLoggedIn ? (isUser ? { name: 'dashboard' } : { name: 'dashboard-company' }) : { name: 'home-page' }"
+        >
           <img src="../../public/jobrise.png" alt="jobrise" class="w-32" />
         </router-link>
       </div>
@@ -72,10 +74,10 @@
           >Post a Job</router-link
         >
         <router-link
-          :to="{ name: 'aplication' }"
+          :to="{ name: 'job-list' }"
           class="font-bold text-blue-800 text-lg hover:border-b-2 border-b-fuchsia-500 h-max"
           active-class="active"
-          >Applicatins</router-link
+          >Job List</router-link
         >
       </div>
     </div>
@@ -198,10 +200,10 @@
               >Post a Job</router-link
             >
             <router-link
-              :to="{ name: 'aplication' }"
+              :to="{ name: 'job-list' }"
               class="font-bold text-lg"
               @click="menu = false"
-              >Applications</router-link
+              >Job List</router-link
             >
           </div>
         </div>
@@ -248,6 +250,7 @@ const isLoggedIn = computed(() => {
 const isUser = computed(() => {
   return !!userStore.currentUser;
 });
+
 const isCompany = computed(() => {
   return !!companyStore.currentCompany;
 });

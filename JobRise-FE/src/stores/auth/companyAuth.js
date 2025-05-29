@@ -12,7 +12,8 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
   );
 
   const currentCompany = ref(
-    localStorage.getItem("company") && localStorage.getItem("company") !== "undefined"
+    localStorage.getItem("company") &&
+      localStorage.getItem("company") !== "undefined"
       ? JSON.parse(localStorage.getItem("company"))
       : null
   );
@@ -27,7 +28,7 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         icon: "success",
         title: "Account Successfully Created",
         showConfirmButton: false,
-        timer: 3000
+        timer: 3000,
       });
 
       router.push("/login-company");
@@ -38,7 +39,7 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         icon: "warning",
         title: "Register Failed",
         showConfirmButton: false,
-        timer: 2000
+        timer: 2000,
       });
       throw error;
     }
@@ -46,15 +47,34 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
 
   const LoginCompany = async ({ email, password }) => {
     try {
-      const { data } = await apiClient.post("/login-company", { email, password });
+      const { data } = await apiClient.post("/login-company", {
+        email,
+        password,
+      });
 
       tokenCompany.value = data.token;
       currentCompany.value = data.user;
 
       localStorage.setItem("tokenCompany", JSON.stringify(data.token));
-      localStorage.setItem("company", JSON.stringify(data.user));
+      localStorage.setItem("company", JSON.stringify(data.user)); // Ambil data company lengkap setelah login
 
-      await getCompanyByAuth();
+      const fullCompanyData = await getCompanyByAuth(); // Periksa role setelah mendapatkan data company lengkap
+
+      if (fullCompanyData?.role === "user") {
+        // Hapus token dan company dari localStorage karena login ditolak
+        localStorage.removeItem("tokenCompany");
+        localStorage.removeItem("company"); // Reset state
+        currentCompany.value = null;
+        tokenCompany.value = null;
+
+        Swal.fire({
+          icon: "warning",
+          title: "Akses Ditolak",
+          text: "Anda login sebagai user dan tidak dapat mengakses halaman login company.",
+        });
+        router.replace("/login-company");
+        return false; // Menghentikan proses login company
+      }
 
       Swal.fire({
         toast: true,
@@ -62,19 +82,25 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         icon: "success",
         title: "Signed In Successfully",
         showConfirmButton: false,
-        timer: 2000
+        timer: 2000,
       });
 
       router.replace("/dashboard-company");
-      return data;
+      return true; // Login company berhasil
     } catch (error) {
+      // Hapus token dan company dari localStorage jika login gagal
+      localStorage.removeItem("tokenCompany");
+      localStorage.removeItem("company"); // Reset state
+      currentCompany.value = null;
+      tokenCompany.value = null;
+
       Swal.fire({
         toast: true,
         position: "top-end",
         icon: "error",
         title: "Login Failed",
         showConfirmButton: false,
-        timer: 2000
+        timer: 2000,
       });
       throw error;
     }
@@ -84,8 +110,8 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     try {
       const response = await apiClient.get("/user-auth", {
         headers: {
-          Authorization: `Bearer ${tokenCompany.value}`
-        }
+          Authorization: `Bearer ${tokenCompany.value}`,
+        },
       });
 
       // Update data company dengan response dari server
@@ -185,7 +211,9 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         position: "top-end",
         icon: "error",
         title: "Error Fetching Profile",
-        text: error.response?.data?.message || "Something went wrong while fetching profile.",
+        text:
+          error.response?.data?.message ||
+          "Something went wrong while fetching profile.",
         showConfirmButton: false,
         timer: 3000,
       });
@@ -228,18 +256,17 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     }
   };
 
-
   const logout = () => {
     // Clear local storage
-    localStorage.removeItem('tokenCompany');
-    localStorage.removeItem('company');
+    localStorage.removeItem("tokenCompany");
+    localStorage.removeItem("company");
 
     // Reset state
     currentCompany.value = null;
     tokenCompany.value = null;
 
     // Redirect to login page
-    router.push({ name: 'home-page' });
+    router.push({ name: "home-page" });
   };
 
   return {
@@ -251,6 +278,6 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     createProfileCompany,
     getProfileCompany,
     updateProfileCompany, // Tambahkan fungsi updateProfileCompany
-    logout
+    logout,
   };
 });

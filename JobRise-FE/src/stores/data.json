@@ -6,7 +6,8 @@
       "type": "Paruh Waktu",
       "salary": "1 JT - 3 JT",
       "logo": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y29tcGFueXxlbnwwfHwwfHx8MA%3D%3D",
-      "company": "PT. Solusi Digital"
+      "company": "PT. Solusi Digital",
+      "status": "active"
     },
     {
       "id": 2,
@@ -14,7 +15,8 @@
       "type": "Penuh Waktu",
       "salary": "3 JT - 5 JT",
       "logo": "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y29tcGFueXxlbnwwfHwwfHx8MA%3D%3D",
-      "company": "PT. Tech Innovate"
+      "company": "PT. Tech Innovate",
+      "status": "active"
     },
     {
       "id": 3,
@@ -22,7 +24,8 @@
       "type": "Freelance",
       "salary": "2.5 JT - 4 JT",
       "logo": "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y29tcGFueXxlbnwwfHwwfHx8MA%3D%3D",
-      "company": "Creative Design Studio"
+      "company": "Creative Design Studio",
+      "status": "inactive"
     },
     {
       "id": 4,
@@ -30,7 +33,8 @@
       "type": "Penuh Waktu",
       "salary": "5 JT - 8 JT",
       "logo": "https://example.com/data-ai.png",
-      "company": "Data AI Solutions"
+      "company": "Data AI Solutions",
+      "status": "active"
     },
     {
       "id": 5,
@@ -38,7 +42,8 @@
       "type": "Paruh Waktu",
       "salary": "2 JT - 4 JT",
       "logo": "https://example.com/app-masters.png",
-      "company": "App Masters"
+      "company": "App Masters",
+      "status": "inactive"
     },
     {
       "id": 6,
@@ -46,7 +51,8 @@
       "type": "Penuh Waktu",
       "salary": "6 JT - 10 JT",
       "logo": "https://example.com/cloud-tech.png",
-      "company": "Cloud Tech Indonesia"
+      "company": "Cloud Tech Indonesia",
+      "status": "active"
     },
     {
       "id": 7,
@@ -54,7 +60,8 @@
       "type": "Penuh Waktu",
       "salary": "8 JT - 12 JT",
       "logo": "https://example.com/product-labs.png",
-      "company": "Product Labs"
+      "company": "Product Labs",
+      "status": "active"
     },
     {
       "id": 8,
@@ -62,7 +69,8 @@
       "type": "Kontrak",
       "salary": "3 JT - 5 JT",
       "logo": "https://example.com/qa-specialists.png",
-      "company": "QA Specialists"
+      "company": "QA Specialists",
+      "status": "inactive"
     },
     {
       "id": 9,
@@ -70,7 +78,8 @@
       "type": "Penuh Waktu",
       "salary": "5 JT - 7 JT",
       "logo": "https://example.com/system-arch.png",
-      "company": "System Architecture Co."
+      "company": "System Architecture Co.",
+      "status": "active"
     },
     {
       "id": 10,
@@ -78,7 +87,8 @@
       "type": "Penuh Waktu",
       "salary": "4 JT - 6 JT",
       "logo": "https://example.com/net-solutions.png",
-      "company": "Network Solutions"
+      "company": "Network Solutions",
+      "status": "inactive"
     },
     {
       "id": 11,
@@ -86,7 +96,8 @@
       "type": "Freelance",
       "salary": "2 JT - 4 JT",
       "logo": "https://example.com/marketing-plus.png",
-      "company": "Marketing Plus"
+      "company": "Marketing Plus",
+      "status": "active"
     },
     {
       "id": 12,
@@ -94,7 +105,8 @@
       "type": "Remote",
       "salary": "1.5 JT - 3 JT",
       "logo": "https://example.com/content-creators.png",
-      "company": "Content Creators Inc."
+      "company": "Content Creators Inc.",
+      "status": "inactive"
     },
     {
       "id": 13,
@@ -102,7 +114,8 @@
       "type": "Paruh Waktu",
       "salary": "2 JT - 3.5 JT",
       "logo": "https://example.com/visual-arts.png",
-      "company": "Visual Arts Studio"
+      "company": "Visual Arts Studio",
+      "status": "active"
     },
     {
       "id": 14,
@@ -110,7 +123,8 @@
       "type": "Penuh Waktu",
       "salary": "4 JT - 6 JT",
       "logo": "https://example.com/data-manage.png",
-      "company": "Data Management Ltd."
+      "company": "Data Management Ltd.",
+      "status": "inactive"
     },
     {
       "id": 15,
@@ -118,7 +132,8 @@
       "type": "Penuh Waktu",
       "salary": "7 JT - 12 JT",
       "logo": "https://example.com/secure-tech.png",
-      "company": "Secure Tech Indonesia"
+      "company": "Secure Tech Indonesia",
+      "status": "active"
     },
     {
       "id": 16,
@@ -126,7 +141,8 @@
       "type": "Kontrak",
       "salary": "5 JT - 8 JT",
       "logo": "https://example.com/business-solutions.png",
-      "company": "Business Solutions"
+      "company": "Business Solutions",
+      "status": "inactive"
     },
     {
       "id": 17,
@@ -134,7 +150,8 @@
       "type": "Remote",
       "salary": "4 JT - 7 JT",
       "logo": "https://example.com/web-creators.png",
-      "company": "Web Creators"
+      "company": "Web Creators",
+      "status": "active"
     },
     {
       "id": 18,
@@ -142,7 +159,8 @@
       "type": "Paruh Waktu",
       "salary": "2 JT - 3 JT",
       "logo": "https://example.com/it-helpdesk.png",
-      "company": "IT Helpdesk Services"
+      "company": "IT Helpdesk Services",
+      "status": "inactive"
     },
     {
       "id": 19,
@@ -150,7 +168,8 @@
       "type": "Penuh Waktu",
       "salary": "9 JT - 14 JT",
       "logo": "https://example.com/project-leaders.png",
-      "company": "Project Leaders"
+      "company": "Project Leaders",
+      "status": "active"
     },
     {
       "id": 20,
@@ -158,7 +177,8 @@
       "type": "Penuh Waktu",
       "salary": "8 JT - 15 JT",
       "logo": "https://example.com/ai-future.png",
-      "company": "AI Future Technologies"
+      "company": "AI Future Technologies",
+      "status": "inactive"
     }
   ]
 }

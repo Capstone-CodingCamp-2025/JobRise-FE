@@ -63,9 +63,28 @@ export const AuthUserStorage = defineStore("auth", () => {
       currentUser.value = data.user;
 
       localStorage.setItem("token", JSON.stringify(tokenUser.value));
-      localStorage.setItem("user", JSON.stringify(currentUser.value));
+      localStorage.setItem("user", JSON.stringify(currentUser.value)); // Ambil data user lengkap setelah login berhasil
 
-      await getUserByAuth();
+      const fullUserData = await getUserByAuth(); // Periksa role setelah mendapatkan data user lengkap
+
+      if (fullUserData?.role === "company") {
+        // Hapus token dan user dari localStorage karena login ditolak
+        localStorage.removeItem("token");
+        localStorage.removeItem("user"); // Reset state
+        currentUser.value = null;
+        tokenUser.value = null;
+
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "warning",
+          title: "Your Account Is Register For Company",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        router.replace("/login");
+        return false; // Mengembalikan false jika login ditolak
+      }
 
       Swal.fire({
         toast: true,
@@ -76,9 +95,14 @@ export const AuthUserStorage = defineStore("auth", () => {
         timer: 2000,
       });
 
-      router.replace("/dashboard");
-      return data;
+      return true; // Mengembalikan true jika login berhasil
     } catch (error) {
+      // Hapus token dan user dari localStorage jika login gagal
+      localStorage.removeItem("token");
+      localStorage.removeItem("user"); // Reset state
+      currentUser.value = null;
+      tokenUser.value = null;
+
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -132,7 +156,7 @@ export const AuthUserStorage = defineStore("auth", () => {
       const { data } = await apiClient.post("/profile", profileFormData, {
         headers: {
           Authorization: `Bearer ${tokenUser.value}`,
-          'Content-Type': 'multipart/form-data', // Tambahkan header ini
+          "Content-Type": "multipart/form-data", // Tambahkan header ini
         },
       });
 
@@ -182,7 +206,7 @@ export const AuthUserStorage = defineStore("auth", () => {
       const { data } = await apiClient.put("/profile-update", profileFormData, {
         headers: {
           Authorization: `Bearer ${tokenUser.value}`,
-          'Content-Type': 'multipart/form-data', // Pastikan ini ada jika Anda mengupload file
+          "Content-Type": "multipart/form-data", // Pastikan ini ada jika Anda mengupload file
         },
       });
 

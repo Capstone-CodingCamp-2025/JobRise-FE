@@ -1,32 +1,34 @@
 <template>
-  <div
-    class="shadow8-xl shadow-sky-100/90 text-white px-5 py-4 rounded-lg bg-blue-500"
-  >
-    <div >
-      <h1 class="font-bold text-xl">{{ job.posisi }}</h1>
-      <div class="flex justify-between py-6 lg:py-8">
-        <p class="bg-[#B1C9EF] text-blue-800 font-bold px-2">{{ job.type }}</p>
-        <p class="font-bold text-lg">Salary: {{ job.salary }}</p>
+  <div class="px-5 py-4 rounded-lg bg-[#b8caecda] outline outline-blue-800">
+    <div>
+      <h1 class="font-bold text-2xl mb-2">{{ job.posisi }}</h1>
+      <div class="flex gap-x-4 mb-4">
+        <p class="text-blue-800 text-xs font-bold">
+          {{ job.type.toUpperCase() }}
+        </p>
+        <p class="text-xs text-gray-700 font-medium">
+          Salary : {{ job.salary }}
+        </p>
       </div>
-      <div class="flex gap-9">
-        <div class="rounded-lg flex items-center justify-center">
+      <div class="flex gap-x-6">
+        <div class="flex items-center justify-center">
           <img
             :src="job.logo"
             :alt="job.company"
-            class="object-cover w-18 h-18 md:w-20 md:h-20 rounded-lg"
+            class="object-cover w-14 h-14 md:w-16 md:h-16"
           />
         </div>
-        
-          <p class="pt-3 text-xl font-bold">{{ job.company }}</p>
-        
+
+        <p class="md:pt-4 lg:pt-5 pt-3 text-md text-blue-900 font-medium">
+          {{ job.company }}
+        </p>
       </div>
-      <div class="place-content-end flex pt-6">
+      <div class="flex justify-end">
         <Icon
-          icon="lucide:bookmark"
-          width="32"
-          height="32"
-          style="color: #000"
-          class=""
+          icon="material-symbols:bookmark-outline"
+          width="24"
+          height="24"
+          style="color: #606060"
         />
       </div>
     </div>
@@ -43,5 +45,4 @@ import { Icon } from "@iconify/vue";
 const { job } = defineProps({
   job: Object,
 });
-
 </script>

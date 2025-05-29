@@ -7,7 +7,7 @@ const router = useRouter();
 const props = defineProps({
   isRegisterCompany: {
     type: Boolean,
-    default: true,
+    default: true, // Jika default true, maka komponen ini defaultnya untuk login
   },
 });
 
@@ -30,7 +30,6 @@ const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 const auth = useAuthCompanyStore();
 
-
 const validateEmail = (email) => {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return re.test(email);
@@ -42,20 +41,20 @@ const validatePassword = (password) => {
 
 const validateForm = () => {
   let isValid = true;
-  
-  Object.keys(errors).forEach(key => errors[key] = "");
-  
-  if (!props.isRegisterCompany) {
+
+  Object.keys(errors).forEach((key) => (errors[key] = ""));
+
+  // Logika validasi untuk register (jika isRegisterCompany false)
+  if (!props.isRegisterCompany) { // Jika ini adalah form register
     if (!company.name.trim()) {
       errors.name = "Company name is required";
       isValid = false;
-    
     } else if (company.name.trim().length < 3) {
       errors.name = "Name should be at least 3 characters";
       isValid = false;
     }
   }
-  
+
   if (!company.email) {
     errors.email = "Email is required";
     isValid = false;
@@ -63,7 +62,7 @@ const validateForm = () => {
     errors.email = "Please enter a valid email address";
     isValid = false;
   }
-  
+
   if (!company.password) {
     errors.password = "Password is required";
     isValid = false;
@@ -71,8 +70,9 @@ const validateForm = () => {
     errors.password = "Password must be at least 8 characters";
     isValid = false;
   }
-  
-  if (!props.isRegisterCompany) {
+
+  // Logika validasi untuk register (jika isRegisterCompany false)
+  if (!props.isRegisterCompany) { // Jika ini adalah form register
     if (!company.confirm_password) {
       errors.confirm_password = "Please confirm your password";
       isValid = false;
@@ -81,11 +81,10 @@ const validateForm = () => {
       isValid = false;
     }
   }
-  
+
   return isValid;
 };
 
-// Add these toggle functions
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
@@ -96,30 +95,41 @@ const toggleConfirmPasswordVisibility = () => {
 
 const handleSubmit = async () => {
   if (!validateForm()) return;
-  
+
   isLoading.value = true;
-  Object.keys(errors).forEach(key => errors[key] = "");
-  
+  Object.keys(errors).forEach((key) => (errors[key] = ""));
+
   try {
-    if (props.isRegisterCompany) {
+    if (props.isRegisterCompany) { // Jika ini adalah form LOGIN (berdasarkan default prop)
+      // Cukup panggil fungsi LoginCompany dari store.
+      // Navigasi ke dashboard-company sudah ditangani di dalam store action.
+      // Store akan mengembalikan true jika login berhasil dan role cocok,
+      // atau false jika login ditolak karena role tidak cocok (misalnya user mencoba login company).
+      // Atau akan throw error jika login gagal.
       await auth.LoginCompany({
         email: company.email,
-        password: company.password
+        password: company.password,
       });
-      await auth.getCompanyByAuth();
-      router.push({ name: 'dashboard-company' });
-    } else {
+      // TIDAK PERLU router.push() DI SINI LAGI!
+      // Karena store sudah melakukan router.replace("/dashboard-company")
+      // jika login berhasil dan role adalah 'company'.
+      // Jika login ditolak karena role 'user', store sudah melakukan router.replace("/login-company").
+
+    } else { // Jika ini adalah form REGISTER
       await auth.RegisterCompany(company);
-      router.push({ name: 'login-company' });
+      router.push({ name: "login-company" });
     }
   } catch (error) {
     console.error("Authentication error:", error);
-    
-    if (props.isRegisterCompany) {
+
+    // Penanganan error yang lebih spesifik
+    if (props.isRegisterCompany) { // Untuk Login
       if (error.response) {
-        if (error.response.data?.message?.toLowerCase().includes('password')) {
+        if (error.response.data?.message?.toLowerCase().includes("password")) {
           errors.password = "Incorrect password. Please try again.";
-        } else if (error.response.data?.message?.toLowerCase().includes('email')) {
+        } else if (
+          error.response.data?.message?.toLowerCase().includes("email")
+        ) {
           errors.email = "Email not found. Please check or register.";
         } else {
           errors.password = "Invalid email or password combination";
@@ -127,7 +137,7 @@ const handleSubmit = async () => {
       } else {
         errors.password = "Login failed. Please try again.";
       }
-    } else {
+    } else { // Untuk Register
       if (error.response && error.response.status === 400) {
         if (error.response.data?.errors?.email) {
           errors.email = error.response.data.errors.email[0];
@@ -145,28 +155,32 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit" class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24 lg:py-8 xl:py-12">
-    <!-- Company Name Field -->
+  <form
+    @submit.prevent="handleSubmit"
+    class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24 lg:py-8 xl:py-12"
+  >
     <div class="flex flex-col gap-y-1" v-if="!props.isRegisterCompany">
-      <label for="companyName" class="font-medium">Company Name <span class="text-red-600">*</span></label>
+      <label for="companyName" class="font-medium"
+        >Company Name <span class="text-red-600">*</span></label
+      >
       <input
         id="companyName"
-        class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8"
+        class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8"
         :class="{ 'border-red-500': errors.name }"
         type="text"
         placeholder="Your Company Name"
         required
         v-model="company.name"
-        
       />
     </div>
-    
-    <!-- Email Field -->
+
     <div class="flex flex-col gap-y-1">
-      <label for="companyEmail" class="font-medium">E-mail Company <span class="text-red-600">*</span></label>
+      <label for="companyEmail" class="font-medium"
+        >E-mail Company <span class="text-red-600">*</span></label
+      >
       <input
         id="companyEmail"
-        class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8"
+        class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8"
         :class="{ 'border-red-500': errors.email }"
         type="email"
         placeholder="Enter Email"
@@ -175,16 +189,19 @@ const handleSubmit = async () => {
         @input="validateForm"
         @blur="validateForm"
       />
-      <span v-if="errors.email" class="text-red-500 text-xs">{{ errors.email }}</span>
+      <span v-if="errors.email" class="text-red-500 text-xs">{{
+        errors.email
+      }}</span>
     </div>
-    
-    <!-- Password Field -->
+
     <div class="flex flex-col gap-y-1">
-      <label for="companyPassword" class="font-medium">Password <span class="text-red-600">*</span></label>
+      <label for="companyPassword" class="font-medium"
+        >Password <span class="text-red-600">*</span></label
+      >
       <div class="relative">
         <input
           id="companyPassword"
-          class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8 w-full"
+          class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8 w-full"
           :class="{ 'border-red-500': errors.password }"
           :type="showPassword ? 'text' : 'password'"
           placeholder="Enter Password"
@@ -228,16 +245,19 @@ const handleSubmit = async () => {
           </svg>
         </button>
       </div>
-      <span v-if="errors.password" class="text-red-500 text-xs">{{ errors.password }}</span>
+      <span v-if="errors.password" class="text-red-500 text-xs">{{
+        errors.password
+      }}</span>
     </div>
-    
-    <!-- Confirm Password Field -->
+
     <div class="flex flex-col gap-y-1 mb-2" v-if="!props.isRegisterCompany">
-      <label for="confirmPassword" class="font-medium">Confirm Password <span class="text-red-600">*</span></label>
+      <label for="confirmPassword" class="font-medium"
+        >Confirm Password <span class="text-red-600">*</span></label
+      >
       <div class="relative">
         <input
           id="confirmPassword"
-          class="bg-gray-100 rounded-sm  text-center outline outline-blue-900 h-8 w-full"
+          class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8 w-full"
           :class="{ 'border-red-500': errors.confirm_password }"
           :type="showConfirmPassword ? 'text' : 'password'"
           placeholder="Confirm Password"
@@ -281,29 +301,40 @@ const handleSubmit = async () => {
           </svg>
         </button>
       </div>
-      <span v-if="errors.confirm_password" class="text-red-500 text-xs">{{ errors.confirm_password }}</span>
+      <span v-if="errors.confirm_password" class="text-red-500 text-xs">{{
+        errors.confirm_password
+      }}</span>
     </div>
-    
-    <!-- Remember Me Checkbox -->
-    <div v-show="props.isRegisterCompany" class="flex items-center gap-2">
-      <input type="checkbox" id="saveHistory" />
-      <label for="saveHistory" class="text-sm">Remember me</label>
+
+    <div v-show="props.isRegisterCompany" class="flex justify-between gap-2">
+      <div>
+        <input type="checkbox" id="saveHistory" />
+        <label for="saveHistory" class="text-sm">Remember me</label>
+      </div>
+      <router-link to="" class="text-blue-800 text-xs font-medium">
+      Forget Password?</router-link
+      >
     </div>
-    
-    <!-- Submit Button -->
+
     <div class="flex flex-col">
       <button
         type="submit"
-        class="bg-[#0c1f61d3] py-1 pb-2 rounded-lg  text-white text-2xl mb-2"
+        class="bg-[#0c1f61d3] py-1 pb-2 rounded-lg text-white text-2xl mb-2"
         :class="{
           'hover:bg-sky-700 cursor-pointer': !isLoading,
-          'opacity-50 cursor-not-allowed': isLoading
+          'opacity-50 cursor-not-allowed': isLoading,
         }"
         :disabled="isLoading"
       >
-        {{ isLoading ? "Processing..." : (props.isRegisterCompany ? "Login" : "Create") }}
+        {{
+          isLoading
+            ? "Processing..."
+            : props.isRegisterCompany
+            ? "Login"
+            : "Create"
+        }}
       </button>
-      
+
       <p class="text-center">
         {{
           props.isRegisterCompany
@@ -311,8 +342,12 @@ const handleSubmit = async () => {
             : "Already have an account?"
         }}
         <router-link
-          :to="props.isRegisterCompany ? { name: 'register-company' } : { name: 'login-company' }"
-          class="text-blue-900  hover:text-blue-800"
+          :to="
+            props.isRegisterCompany
+              ? { name: 'register-company' }
+              : { name: 'login-company' }
+          "
+          class="text-blue-900 hover:text-blue-800"
         >
           {{ props.isRegisterCompany ? "Sign up" : "Login" }}
         </router-link>
