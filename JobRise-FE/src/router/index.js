@@ -16,7 +16,11 @@ import Navigate from "@/views/Navigate.vue";
 import FindJob from "@/views/users/FindJob.vue";
 import Applied from "@/views/users/Applied.vue";
 import PostJob from "@/views/company/PostJob.vue";
-import JobList from "@/views/company/JobList.vue"
+import JobList from "@/views/company/JobList.vue";
+import ForgetPasswordCompany from "@/views/company/auth/ForgetPassword.vue"
+import ForgetPassword from "@/views/users/auth/ForgetPassword.vue"
+import JobDetail from "@/views/company/JobDetail.vue"
+
 
 
 const router = createRouter({
@@ -63,6 +67,18 @@ const router = createRouter({
       name: "login-company",
       component: LoginCompany,
       meta: { isAuth: false }, // Public route
+    },
+    {
+      path: "/forget-password",
+      name: "forget-password",
+      component: ForgetPassword,
+      meta: { isAuth: false },
+    },
+    {
+      path: "/forget-password-company",
+      name: "forget-password-company",
+      component: ForgetPasswordCompany,
+      meta: { isAuth: false },
     },
     {
       path: "/dashboard",
@@ -124,7 +140,12 @@ const router = createRouter({
       component: JobList, // Assuming Cv is used here, as in your original code
       meta: { isAuth: true, roles: ["company"] }, // Only companies can access
     },
-    
+    {
+      path: "/job", // Corrected to "application" if it's a typo, but kept as "aplication" based on your input
+      name: "job-detail",
+      component: JobDetail, // Assuming Cv is used here, as in your original code
+      meta: { isAuth: true, roles: ["company"] }, // Only companies can access
+    },
   ],
 });
 

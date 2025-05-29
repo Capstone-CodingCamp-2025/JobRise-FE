@@ -63,7 +63,7 @@
       <img
         src="../../../public/people.png"
         alt="people"
-        class="w-max h-max absolute right-14 top-4"
+        class="w-max h-max absolute right-14 top-2"
       />
     </div>
     

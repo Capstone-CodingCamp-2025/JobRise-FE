@@ -77,8 +77,8 @@ export const AuthUserStorage = defineStore("auth", () => {
         Swal.fire({
           toast: true,
           position: "top-end",
-          icon: "warning",
-          title: "Your Account Is Register For Company",
+          icon: "error",
+          title: "Login Failed",
           showConfirmButton: false,
           timer: 2000,
         });

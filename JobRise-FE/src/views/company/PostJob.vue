@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 sm:px-8">
+  <div class="px-4 pb-10 sm:px-8">
     <h1 class="font-bold text-xl sm:text-2xl py-4">Post a Job</h1>
     <div class="bg-[#D5DEEF] w-full px-4 py-4 sm:px-8 sm:py-6 rounded-md shadow-xs">
       <div>
@@ -30,7 +30,7 @@
           </div>
 
           <div>
-            <p class="text-blue-900/70 font-bold text-sm sm:text-base">Salary</p>
+            <p class="text-blue-800/90 font-bold text-sm sm:text-base">Salary</p>
             <div class="flex flex-col sm:flex-row gap-x-4 gap-y-2">
               <div class="flex flex-col gap-y-1 w-full">
                 <label for="" class="font-semibold text-sm sm:text-base">Min.</label>

@@ -1,124 +1,130 @@
 <template>
-  <div
-    class="flex flex-col lg:flex-row px-8 lg:justify-between pb-10 mb-14 mx-8 lg:px-28"
-  >
-    <div class="w-max flex m-auto lg:m-0 bg-slate-300/30 h-max p-10">
-      <div
-        class="w-40 h-40 rounded-lg bg-gray-300 flex items-center justify-center overflow-hidden relative cursor-pointer"
-        @click="fileInput.click()"
-      >
-        <input
-          ref="fileInput"
-          type="file"
-          class="absolute w-40 h-40 opacity-0 cursor-pointer z-10"
-          @change="handleImageChange"
-          :disabled="!isEditing"
-          accept="image/*"
-        />
-        <span
-          v-if="!companyForm.logoPreview && !companyData?.logo"
-          class="text-3xl font-semibold text-gray-500 z-0"
-        >
-          <Icon
-            icon="material-symbols-light:add-box-outline-sharp"
-            width="32"
-            height="32"
-            style="color: #606060"
-          />
-        </span>
-        <img
-          v-if="companyForm.logoPreview"
-          :src="companyForm.logoPreview"
-          class="absolute w-full h-full object-cover"
-          alt="Company Logo Preview"
-        />
-        <img
-          v-if="companyData?.logo && !companyForm.logoPreview"
-          :src="`http://localhost:3888/public/${companyData.logo}`"
-          class="absolute w-full h-full object-cover"
-          alt="Company Logo"
-        />
-      </div>
-    </div>
-    <div class="bg-slate-300/30 p-8">
-      <form @submit.prevent="submitCompanyInfo">
-        <div class="grid md:grid-cols-2 md:gap-x-20 lg:gap-x-14 gap-y-6">
-          <div class="flex flex-col gap-y-2">
-            <label for="companyName" class="font-bold text-lg">Company Name</label>
-            <input
-              type="text"
-              id="companyName"
-              class="bg-gray-300 rounded-lg outline-none text-md text-center shadow-lg py-2 lg:w-74 w-full"
-              v-model="companyForm.companyName"
-              :disabled="!isEditing"
-            />
-          </div>
-          <div class="flex flex-col gap-y-2">
-            <label for="industry" class="font-bold text-lg">Industry</label>
-            <input
-              type="text"
-              id="industry"
-              class="bg-gray-300 rounded-lg outline-none text-md text-center shadow-lg py-2 lg:w-74 w-full"
-              v-model="companyForm.industry"
-              :disabled="!isEditing"
-            />
-          </div>
-          <div class="flex flex-col gap-y-2">
-            <label for="address" class="font-bold text-lg">Address</label>
-            <input
-              type="text"
-              id="address"
-              class="bg-gray-300 rounded-lg outline-none text-md text-center shadow-lg py-2 lg:w-74 w-full"
-              v-model="companyForm.address"
-              :disabled="!isEditing"
-            />
-          </div>
-          <div class="flex flex-col">
-            <label for="website" class="font-bold text-lg">Website</label>
-            <span class="pl-2 text-sm text-gray-500">Format :</span>
-            <input
-              type="text"
-              id="website"
-              class="bg-gray-300 rounded-lg outline-none text-md text-center shadow-lg py-2 lg:w-74 w-full"
-              v-model="companyForm.website"
-              :disabled="!isEditing"
-            />
-          </div>
-        </div>
-        <div class="pt-4">
-          <label for="bio" class="font-bold text-lg">Bio</label>
-          <textarea
-            id="bio"
-            rows="5"
-            class="w-full bg-gray-300 rounded-lg outline-none text-md text-left pl-2 shadow-lg resize-none"
-            v-model="companyForm.bio"
-            :disabled="!isEditing"
-          ></textarea>
-        </div>
-        <div class="w-full flex gap-x-3 justify-end md:col-span-2 pt-2">
-          <button
-            v-if="!isEditing"
-            type="button"
-            class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md"
-            @click="enableEdit"
+  <div class="p-4 md:p-10">
+    <h1 class="text-xl md:text-3xl mb-4 text-center font-bold">Company Information</h1>
+    <div class="bg-slate-300/30 p-4 md:p-10 rounded-md">
+      <form action="" class="flex flex-col md:flex-row gap-y-6 md:gap-x-10">
+        <div class="flex flex-col gap-y-4">
+          <div
+            class="w-32 h-32  md:w-40 md:h-40 rounded-md outline outline-blue-900 bg-blue-400/10 flex items-center justify-center m-auto md:m-0 overflow-hidden relative cursor-pointer"
           >
-            Edit
-          </button>
-          <template v-if="isEditing">
-            <button
-              type="button"
-              class="text-gray-700 bg-gray-300 font-semibold text-lg px-6 py-2 rounded-lg shadow-md mr-2"
-              @click="cancelEdit"
-            >
-              Cancel
+            <input
+              ref="fileInput"
+              type="file"
+              class="absolute w-full h-full opacity-0 cursor-pointer z-10"
+            />
+            <span class="text-xl md:text-3xl font-semibold text-gray-500 z-0">
+              <Icon
+                icon="material-symbols-light:add-box-outline-sharp"
+                width="24"
+                height="24"
+                md:width="32"
+                md:height="32"
+                style="color: #606060"
+              />
+            </span>
+            <img src="" class="absolute w-full h-full object-cover" alt="" />
+          </div>
+
+          <div class="flex flex-col gap-y-2">
+            <div class="flex justify-between items-center">
+              <label for="" class="font-medium text-sm md:text-base">
+                Email
+                <span class="text-xs md:text-sm font-normal text-blue-900">Verify</span>
+              </label>
+              <button
+                @click.prevent="showOtpPopup = true"
+                class="bg-blue-950/90 text-white text-xs md:text-sm px-2 md:px-3 rounded-sm cursor-pointer h-6 md:h-auto"
+              >
+                Verify
+              </button>
+            </div>
+            <input
+              type="text"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 w-full md:w-52 text-sm"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-9 gap-y-3 w-full">
+          <div class="flex flex-col gap-y-2">
+            <label for="" class="font-medium text-sm md:text-base">Company Name</label>
+            <input
+              type="text"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full"
+            />
+          </div>
+          <div class="flex flex-col gap-y-2">
+            <label for="" class="font-medium text-sm md:text-base">Another Field</label>
+            <input
+              type="text"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full"
+            />
+          </div>
+          <div class="flex flex-col gap-y-2">
+            <label for="" class="font-medium text-sm md:text-base">Yet Another</label>
+            <input
+              type="text"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full"
+            />
+          </div>
+          <div class="flex flex-col gap-y-2">
+            <label for="" class="font-medium text-sm md:text-base">One More</label>
+            <input
+              type="text"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full"
+            />
+          </div>
+          <div class="flex flex-col gap-y-2 col-span-1 md:col-span-2">
+            <label for="" class="font-medium text-sm md:text-base">Description</label>
+            <textarea
+              name=""
+              id=""
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-24 md:h-32 w-full text-sm"
+            ></textarea>
+          </div>
+          <div class="flex gap-x-2 justify-end col-span-1 md:col-span-2">
+            <button class="bg-blue-950/90 text-white px-3 md:px-5 rounded-md py-1 text-sm cursor-pointer">
+              Edit
             </button>
-            <button
-              type="submit"
-              class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md"
-            >
+            <button class="bg-blue-950/90 text-white px-3 md:px-5 rounded-md py-1 text-sm cursor-pointer">
               Save
             </button>
-          </template>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div
+    v-if="showOtpPopup"
+    class="fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center z-50"
+  >
+    <div class="rounded-md shadow bg-gray-300 py-6 md:py-10 px-6 md:px-8 w-full sm:w-md">
+      <form @submit.prevent="handleVerifyOtp">
+        <div class="flex flex-col gap-y-2">
+          <label for="otp" class="font-medium text-sm md:text-base">
+            Enter the OTP code <span class="text-red-600">*</span>
+          </label>
+          <input
+            type="text"
+            id="otp"
+            class="bg-blue-400/30 outline outline-blue-900 rounded-sm h-7 md:h-8 text-center text-sm"
+          />
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-2 mt-4 md:mt-6">
+          <button
+            class="bg-gray-400 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
+            @click="showOtpPopup = false"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="bg-blue-950/90 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
+          >
+            Verify OTP Code
+          </button>
         </div>
       </form>
     </div>
@@ -126,99 +132,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from 'vue';
 import { Icon } from "@iconify/vue";
-import { useAuthCompanyStore } from "@/stores/auth/companyAuth"; // Pastikan path ini benar
 
-const authCompanyStore = useAuthCompanyStore();
+const showOtpPopup = ref(false);
 
-const fileInput = ref(null);
-const companyForm = ref({
-  companyName: "",
-  industry: "",
-  address: "",
-  website: "",
-  bio: "",
-  logo: null,
-  logoPreview: "",
-});
-const companyData = ref(null);
-const isEditing = ref(false);
-const originalCompanyData = ref(null);
-
-const handleImageChange = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    companyForm.value.logo = file;
-    companyForm.value.logoPreview = URL.createObjectURL(file);
-  }
+const handleVerifyOtp = () => {
+  // Add your OTP verification logic here
+  console.log('Verifying OTP...');
+  // After successful verification, you might want to hide the popup
+  // showOtpPopup.value = false;
 };
-
-const enableEdit = () => {
-  isEditing.value = true;
-};
-
-const cancelEdit = () => {
-  isEditing.value = false;
-  if (originalCompanyData.value) {
-    companyForm.value.companyName = originalCompanyData.value.companyName || "";
-    companyForm.value.industry = originalCompanyData.value.industry || "";
-    companyForm.value.address = originalCompanyData.value.address || "";
-    companyForm.value.website = originalCompanyData.value.website || "";
-    companyForm.value.bio = originalCompanyData.value.bio || "";
-    companyForm.value.logo = null;
-    companyForm.value.logoPreview = "";
-  }
-};
-
-const submitCompanyInfo = async () => {
-  if (isEditing.value) {
-    try {
-      const formData = new FormData();
-      formData.append("company_name", companyForm.value.companyName);
-      formData.append("industry", companyForm.value.industry);
-      formData.append("address", companyForm.value.address);
-      formData.append("website", companyForm.value.website);
-      formData.append("description", companyForm.value.bio);
-      if (companyForm.value.logo) {
-        formData.append(
-          "logo",
-          companyForm.value.logo,
-          companyForm.value.logo.name
-        );
-      }
-
-      await authCompanyStore.updateProfileCompany(formData); // Use updateProfileCompany
-      await fetchCompanyData(); // Refresh data
-      isEditing.value = false;
-    } catch (error) {
-      console.error("Failed to update company info", error);
-      // Handle error
-    }
-  }
-};
-
-const fetchCompanyData = async () => {
-  try {
-    const data = await authCompanyStore.getProfileCompany(); // Menggunakan fungsi getProfileCompany
-    companyData.value = data;
-    originalCompanyData.value = { ...data };
-    companyForm.value.companyName = data?.company_name || "";
-    companyForm.value.industry = data?.industry || "";
-    companyForm.value.address = data?.address || "";
-    companyForm.value.website = data?.website || "";
-    companyForm.value.bio = data?.description || "";
-    if (data?.logo) {
-      // Set logo preview jika ada logo dari server
-      companyForm.value.logoPreview = `http://localhost:3888/public/${data.logo}`;
-    }
-  } catch (error) {
-    console.error("Failed to fetch company data", error);
-    // Handle error (mungkin redirect ke halaman error atau menampilkan pesan)
-  }
-};
-
-onMounted(async () => {
-  await fetchCompanyData();
-});
 </script>

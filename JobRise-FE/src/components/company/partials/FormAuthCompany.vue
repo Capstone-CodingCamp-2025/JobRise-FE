@@ -311,7 +311,7 @@ const handleSubmit = async () => {
         <input type="checkbox" id="saveHistory" />
         <label for="saveHistory" class="text-sm">Remember me</label>
       </div>
-      <router-link to="" class="text-blue-800 text-xs font-medium">
+      <router-link :to="{name: 'forget-password-company'}" class="text-blue-800 text-xs font-medium">
       Forget Password?</router-link
       >
     </div>
