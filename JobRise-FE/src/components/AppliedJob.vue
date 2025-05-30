@@ -2,18 +2,7 @@
   <div class="px-2 md:px-8 lg:px-14 pt-6">
     <div class="flex justify-between ">
       <h1 class="font-bold text-xl md:text-3xl">Applied Job</h1>
-      <div class="flex gap-x-1">
-        <router-link to="" class="font-bold text-md lg:text-lg text-blue-800"
-          >View all
-        </router-link>
-        <Icon
-          icon="solar:arrow-right-outline"
-          width="20"
-          height="20"
-          style="color: #3b25db"
-          class="mt-0.5 lg:mt-1"
-        />
-      </div>
+      
     </div>
     <div class="relative my-5">
       <div class="overflow-auto">

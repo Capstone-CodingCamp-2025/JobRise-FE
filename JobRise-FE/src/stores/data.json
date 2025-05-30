@@ -180,5 +180,25 @@
       "company": "AI Future Technologies",
       "status": "inactive"
     }
+  ],
+  "aplications" : [
+    {
+      "id":1,
+      "name": "Abdul",
+      "date": "March 10, 2025 10:10",
+      "status": "Accepted"
+    },
+    {
+      "id":2,
+      "name": "Asep",
+      "date": "March 1, 2025 10:10",
+      "status": "Rejected"
+    },
+    {
+      "id":3,
+      "name": "Mamat",
+      "date": "March 8, 2025 10:10",
+      "status": "Screening"
+    }
   ]
 }

@@ -4,7 +4,7 @@
       <h1 class="font-bold text-xl md:text-2xl">Recently Applied</h1>
       <div class="flex gap-x-1">
         <router-link
-          to=""
+          :to="{name: 'job-list'}"
           class="font-semibold text-md lg:text-lg text-blue-800"
           >View all
         </router-link>
