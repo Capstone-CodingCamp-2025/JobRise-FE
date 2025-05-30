@@ -179,6 +179,69 @@
       "logo": "https://example.com/ai-future.png",
       "company": "AI Future Technologies",
       "status": "inactive"
+    },
+    {
+      "id": 21,
+      "posisi": "AI Engineer",
+      "type": "Penuh Waktu",
+      "salary": "8 JT - 15 JT",
+      "logo": "https://example.com/ai-future.png",
+      "company": "AI Future Technologies",
+      "status": "inactive"
+    },
+    {
+      "id": 22,
+      "posisi": "AI Engineer",
+      "type": "Penuh Waktu",
+      "salary": "8 JT - 15 JT",
+      "logo": "https://example.com/ai-future.png",
+      "company": "AI Future Technologies",
+      "status": "inactive"
+    },
+    {
+      "id": 23,
+      "posisi": "AI Engineer",
+      "type": "Penuh Waktu",
+      "salary": "8 JT - 15 JT",
+      "logo": "https://example.com/ai-future.png",
+      "company": "AI Future Technologies",
+      "status": "inactive"
+    },
+    {
+      "id": 24,
+      "posisi": "AI Engineer",
+      "type": "Penuh Waktu",
+      "salary": "8 JT - 15 JT",
+      "logo": "https://example.com/ai-future.png",
+      "company": "AI Future Technologies",
+      "status": "inactive"
+    },
+    {
+      "id": 25,
+      "posisi": "AI Engineer",
+      "type": "Penuh Waktu",
+      "salary": "8 JT - 15 JT",
+      "logo": "https://example.com/ai-future.png",
+      "company": "AI Future Technologies",
+      "status": "inactive"
+    },
+    {
+      "id": 26,
+      "posisi": "AI Engineer",
+      "type": "Penuh Waktu",
+      "salary": "8 JT - 15 JT",
+      "logo": "https://example.com/ai-future.png",
+      "company": "AI Future Technologies",
+      "status": "inactive"
+    },
+    {
+      "id": 27,
+      "posisi": "AI Engineer",
+      "type": "Penuh Waktu",
+      "salary": "8 JT - 15 JT",
+      "logo": "https://example.com/ai-future.png",
+      "company": "AI Future Technologies",
+      "status": "inactive"
     }
   ],
   "aplications" : [

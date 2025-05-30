@@ -15,11 +15,14 @@ import { useAuthCompanyStore } from "@/stores/auth/companyAuth";
 import Navigate from "@/views/Navigate.vue";
 import FindJob from "@/views/users/FindJob.vue";
 import Applied from "@/views/users/Applied.vue";
+import AppliedDetail from "@/views/users/AppliedDetail.vue";
 import PostJob from "@/views/company/PostJob.vue";
 import JobList from "@/views/company/JobList.vue";
 import ForgetPasswordCompany from "@/views/company/auth/ForgetPassword.vue"
 import ForgetPassword from "@/views/users/auth/ForgetPassword.vue"
 import JobDetail from "@/views/company/JobDetail.vue"
+import JobDetails from "@/views/users/JobDetails.vue"
+import FavoriteJob from "@/views/users/FavoriteJob.vue"
 
 
 
@@ -117,15 +120,27 @@ const router = createRouter({
       meta: { isAuth: true, roles: ["user"] }, // Only users can access
     },
     {
+      path: "/job-user/:id",
+      name: "job-user-detail",
+      component: JobDetails,
+      meta: { isAuth: true, roles: ["user"] }, // Only users can access
+    },
+    {
       path: "/applied",
       name: "applied",
       component: Applied,
       meta: { isAuth: true, roles: ["user"] }, // Only users can access
     },
     {
+      path: "/applied/:id",
+      name: "applied-detail",
+      component: AppliedDetail,
+      meta: { isAuth: true, roles: ["user"] }, // Only users can access
+    },
+    {
       path: "/favorite-job",
       name: "favorite-job",
-      component: Cv, // Assuming Cv is used here, as in your original code
+      component: FavoriteJob, // Assuming Cv is used here, as in your original code
       meta: { isAuth: true, roles: ["user"] }, // Only users can access
     },
     {

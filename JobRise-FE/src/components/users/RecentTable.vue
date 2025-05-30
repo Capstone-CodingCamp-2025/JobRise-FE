@@ -58,8 +58,8 @@
             </td>
             <td class="py-4 text-xs md:text-sm">
               <router-link
-                to=""
-                class="font-base px-3 py-1 rounded-lg text-white bg-[#0c1f61d3] hover:bg-[#091a52]"
+                :to="{name: 'applied-detail', params: {id: job.id}}"
+                class="font-base px-3 py-2 rounded-lg text-white bg-[#0c1f61d3] hover:bg-[#091a52]"
               >
                 View Details
               </router-link>

@@ -6,7 +6,7 @@ import Statistik from "@/components/users/Statistik.vue";
 </script>
 
 <template>
-  <main class="pt-10 md:pt-14 min-h-screen">
+  <main class="pt-6 md:pt-8 min-h-screen">
     <Statistik />
     <hr class="text-gray-200 mt-7 mb-10" />
     

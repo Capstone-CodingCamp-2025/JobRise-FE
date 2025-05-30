@@ -186,7 +186,7 @@ const handleVerifyOtp = () => {
     class="fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center z-50"
   >
     <div
-      class="rounded-md shadow bg-gray-300 py-6 md:py-10 px-6 md:px-8 w-full sm:w-md"
+      class="rounded-md shadow bg-gray-300 py-6 md:py-10 px-6 md:px-8 w-98 sm:w-md"
     >
       <form @submit.prevent="handleVerifyOtp">
         <div class="flex flex-col gap-y-2">

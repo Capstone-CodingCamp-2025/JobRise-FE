@@ -2,20 +2,20 @@
   <div class="fixed bottom-4 right-5 flex flex-col gap-y-4 z-30">
     <div>
       <div @click="toggleChat" class="cursor-pointer">
-        <img src="../../../public/chatbot.png" alt="" class="h-22" />
+        <img src="../../../public/chatbot.png" alt="" class="h-18 lg:h-22" />
       </div>
     </div>
     <div class="cursor-pointer" @click="toggleDepret">
-      <img src="../../../public/depret.png" alt="" class="h-22" />
+      <img src="../../../public/depret.png" alt="" class="h-18 lg:h-22" />
     </div>
   </div>
 
   <!-- chatbot -->
   <div
-    class="absolute top-0 bg-slate-400/80 min-h-screen w-full z-50 place-content-center"
+    class="absolute top-0 bg-slate-400/80 h-full w-full z-50 place-content-center"
     v-if="showChat"
   >
-    <div class="max-w-xl mx-auto bg-white">
+    <div class="max-w-sm md:max-w-xl mx-auto bg-white">
       <div class="bg-[#D5DEEF] flex justify-between px-4">
         <img src="../../../public/jobrise.png" alt="jobrise" class="w-28" />
         <button
@@ -85,10 +85,10 @@
 
   <!-- depretion -->
   <div
-    class="absolute top-0 bg-slate-400/80 min-h-screen w-full z-50 place-content-center"
+    class="absolute -top-28 bg-slate-400/80 h-full w-full z-50 place-content-center"
     v-if="showDepret"
   >
-    <div class="max-w-xl mx-auto bg-white">
+    <div class="max-w-xl mx-auto bg-white ">
       <div class="bg-[#D5DEEF] flex justify-between px-4">
         <img src="../../../public/jobrise.png" alt="jobrise" class="w-28" />
         <button

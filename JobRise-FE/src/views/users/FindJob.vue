@@ -8,13 +8,13 @@
           width="24"
           height="24"
           style="color: #000"
-          class="absolute inset-y-2 inset-x-3"
+          class="absolute inset-y-3 inset-x-3"
         />
         <input
           type="text"
           v-model="search.title"
           placeholder="Job tittle, keyword"
-          class="bg-[#D5DEEF] w-full py-2 pl-12 rounded-lg md:rounded-l-lg md:rounded-r-none font-medium outline-none"
+          class="bg-[#D5DEEF] w-full py-3 pl-12 rounded-lg md:rounded-l-lg md:rounded-r-none font-medium outline-none"
         />
       </div>
       <div class="relative w-full md:ml-0.5">
@@ -23,13 +23,13 @@
           width="24"
           height="24"
           style="color: #000"
-          class="absolute inset-y-2 inset-x-3"
+          class="absolute inset-y-3 inset-x-3"
         />
         <input
           type="text"
           v-model="search.location"
           placeholder="City, state or zip code"
-          class="bg-[#D5DEEF] w-full py-2 rounded-lg md:rounded-r-lg md:rounded-l-none pl-12 font-medium outline-none"
+          class="bg-[#D5DEEF] w-full py-3 rounded-lg md:rounded-r-lg md:rounded-l-none pl-12 font-medium outline-none"
         />
       </div>
 
@@ -54,8 +54,71 @@
         </button>
       </div>
     </div>
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10 px-10 py-6">
-      <JobList v-for="(job, index) in searchedAndFilteredJobs" :key="index" :job="job" />
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-10 md:px-10 py-6">
+      <JobList
+        v-for="(job, index) in paginatedJobs"
+        :key="index"
+        :job="job"
+      />
+    </div>
+
+    <div class="flex justify-center mt-4" v-if="totalPages > 1">
+      <button
+        :disabled="currentPage === 1"
+        @click="prevPage"
+        class="px-3 py-1 rounded-l-md disabled:opacity-50"
+      >
+        <Icon icon="ri:arrow-left-line" width="24" height="24" style="color: #1526ea" />
+      </button>
+
+      <template v-if="totalPages <= 5">
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          @click="goToPage(page)"
+          :class="['px-3 py-1', {'font-semibold': currentPage === page}]"
+        >
+          {{ page }}
+        </button>
+      </template>
+      <template v-else>
+        <button
+          @click="goToPage(1)"
+          :class="['px-3 py-1', {'font-semibold': currentPage === 1}]"
+        >
+          1
+        </button>
+        <template v-if="currentPage > 3">
+          <span>...</span>
+        </template>
+        <template v-for="page in visiblePages" :key="page">
+          <button
+            v-if="page > 1 && page < totalPages"
+            @click="goToPage(page)"
+            :class="['px-3 py-1', {'font-semibold': currentPage === page}]"
+          >
+            {{ page }}
+          </button>
+        </template>
+        <template v-if="currentPage < totalPages - 2">
+          <span>...</span>
+        </template>
+        <button
+          v-if="totalPages > 1"
+          @click="goToPage(totalPages)"
+          :class="['px-3 py-1', {'font-semibold': currentPage === totalPages}]"
+        >
+          {{ totalPages }}
+        </button>
+      </template>
+
+      <button
+        :disabled="currentPage === totalPages"
+        @click="nextPage"
+        class="px-3 py-1 rounded-r-md disabled:opacity-50"
+      >
+        <Icon icon="ri:arrow-right-line" width="24" height="24" style="color: #1526ea" />
+      </button>
     </div>
   </div>
 
@@ -76,7 +139,13 @@
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           >
             <option value="">Select your position</option>
-            <option v-for="position in availablePositions" :key="position" :value="position">{{ position }}</option>
+            <option
+              v-for="position in availablePositions"
+              :key="position"
+              :value="position"
+            >
+              {{ position }}
+            </option>
           </select>
         </div>
         <div class="mb-4">
@@ -89,7 +158,13 @@
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           >
             <option value="">Select job type</option>
-            <option v-for="type in availableJobTypes" :key="type" :value="type">{{ type }}</option>
+            <option
+              v-for="type in availableJobTypes"
+              :key="type"
+              :value="type"
+            >
+              {{ type }}
+            </option>
           </select>
         </div>
         <div class="mb-4">
@@ -102,7 +177,13 @@
             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           >
             <option value="">Select range salary</option>
-            <option v-for="salaryRange in availableSalaryRanges" :key="salaryRange" :value="salaryRange">{{ salaryRange }}</option>
+            <option
+              v-for="salaryRange in availableSalaryRanges"
+              :key="salaryRange"
+              :value="salaryRange"
+            >
+              {{ salaryRange }}
+            </option>
           </select>
         </div>
 
@@ -129,7 +210,7 @@
 <script setup>
 import { Icon } from "@iconify/vue";
 import JobList from "@/components/JobList.vue";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { onMounted } from "vue";
 import axios from "axios";
 
@@ -145,7 +226,11 @@ const search = ref({
   location: "",
 });
 
-// Dummy data for filter options - replace with actual data fetching if needed
+const currentPage = ref(1);
+const jobsPerPage = 12;
+const visiblePageRange = 3; // Number of visible pages around the current page
+
+// Dummy data for filter options
 const availablePositions = ref(["Frontend Developer", "Backend Developer", "UI/UX Designer", "Project Manager"]);
 const availableJobTypes = ref(["Full-time", "Part-time", "Contract", "Internship"]);
 const availableSalaryRanges = ref(["$40k - $60k", "$60k - $80k", "$80k+", "Any"]);
@@ -160,16 +245,16 @@ const closeFilterPopup = () => {
 
 const applyFilters = () => {
   console.log("Applying filters:", filters.value);
-  // In a real application, you would likely re-fetch data with these filters
+  currentPage.value = 1;
   isFilterPopupOpen.value = false;
 };
 
 const applySearch = () => {
   console.log("Applying search:", search.value);
-  // In a real application, you would likely re-fetch data with this search query
+  currentPage.value = 1;
 };
 
-const searchedAndFilteredJobs = computed(() => {
+const filteredJobs = computed(() => {
   return jobs.value.filter((job) => {
     const titleMatch = !search.value.title || job.company.toLowerCase().includes(search.value.title.toLowerCase());
     const locationMatch = !search.value.location || job.location.toLowerCase().includes(search.value.location.toLowerCase());
@@ -181,6 +266,58 @@ const searchedAndFilteredJobs = computed(() => {
   });
 });
 
+const totalPages = computed(() => {
+  return Math.ceil(filteredJobs.value.length / jobsPerPage);
+});
+
+const paginatedJobs = computed(() => {
+  const startIndex = (currentPage.value - 1) * jobsPerPage;
+  const endIndex = startIndex + jobsPerPage;
+  return filteredJobs.value.slice(startIndex, endIndex);
+});
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
+
+const goToPage = (page) => {
+  currentPage.value = page;
+};
+
+const visiblePages = computed(() => {
+  const pages = [];
+  if (totalPages.value <= 5) {
+    for (let i = 1; i <= totalPages.value; i++) {
+      pages.push(i);
+    }
+  } else {
+    let start = Math.max(2, currentPage.value - visiblePageRange);
+    let end = Math.min(totalPages.value - 1, currentPage.value + visiblePageRange);
+
+    if (currentPage <= visiblePageRange + 1) {
+      end = Math.min(totalPages.value - 1, visiblePageRange * 2);
+    }
+
+    if (currentPage >= totalPages.value - visiblePageRange) {
+      start = Math.max(2, totalPages.value - 1 - visiblePageRange * 2 + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+  }
+  return pages;
+});
+
+// Fetch jobs on component mount
 onMounted(async () => {
   try {
     const response = await axios.get("http://localhost:3000/jobs");
@@ -189,8 +326,19 @@ onMounted(async () => {
     console.error("Error fetching jobs:", error);
   }
 });
+
+// Reset current page when the filtered jobs change
+watch(filteredJobs, () => {
+  currentPage.value = 1;
+});
+
+console.log(jobs);
 </script>
 
 <style scoped>
 /* Add any specific styles for the popup if needed */
+.font-semibold {
+  font-weight: 600;
+}
 </style>
+

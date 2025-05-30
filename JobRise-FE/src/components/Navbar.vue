@@ -54,6 +54,7 @@
         <router-link
           :to="{ name: 'favorite-job' }"
           class="font-bold text-blue-800 text-lg hover:border-b-2 border-b-fuchsia-500 h-max"
+          active-class="active"
         >
           Favorite Job
         </router-link>
