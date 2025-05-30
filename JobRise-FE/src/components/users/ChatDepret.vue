@@ -12,7 +12,7 @@
 
   <!-- chatbot -->
   <div
-    class="absolute top-0 bg-slate-400/80 h-full w-full z-50 place-content-center"
+    class="absolute -top-32 md:-top-44 lg:-top-28 bg-slate-400/80 h-full w-full z-50 place-content-center"
     v-if="showChat"
   >
     <div class="max-w-sm md:max-w-xl mx-auto bg-white">
