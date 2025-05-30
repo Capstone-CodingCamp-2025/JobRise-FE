@@ -6,7 +6,7 @@
         <p class="text-blue-800 text-xs font-bold">
           {{ job.type.toUpperCase() }}
         </p>
-        <p class="text-xs text-gray-700 font-medium">Salary : {{ job.salary }}</p>
+        <p class="text-xs text-gray-500 font-bold">Salary : {{ job.salary }}</p>
       </div>
       <div class="flex gap-x-6">
         <div class=" flex items-center justify-center">

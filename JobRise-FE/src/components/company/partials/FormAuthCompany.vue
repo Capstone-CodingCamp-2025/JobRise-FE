@@ -157,7 +157,7 @@ const handleSubmit = async () => {
 <template>
   <form
     @submit.prevent="handleSubmit"
-    class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24 lg:py-8 xl:py-12"
+    class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24 lg:py-6 xl:py-8"
   >
     <div class="flex flex-col gap-y-1" v-if="!props.isRegisterCompany">
       <label for="companyName" class="font-medium"

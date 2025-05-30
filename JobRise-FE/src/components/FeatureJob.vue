@@ -1,7 +1,7 @@
 <template>
   <div class="py-16 min-h-screen px-3 md:px-10 lg:px-32">
     <div class="flex justify-between">
-      <h1 class="text-xl md:text-3xl font-bold">Feature Job</h1>
+      <h1 class="text-xl md:text-3xl font-black">Featured Job</h1>
 
       <router-link
         :to="{name: 'role-login'}"

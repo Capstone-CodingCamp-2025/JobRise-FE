@@ -87,7 +87,7 @@
       <router-link
         :to="{ name: 'role-login' }"
         class="font-bold text-lg text-blue-950 border rounded-lg px-6  hover:bg-blue-950 hover:text-white pb-1"
-        
+        v-if="$route.name !== 'role-login' && $route.name !== 'login' && $route.name !== 'register' && $route.name !== 'login-company' && $route.name !== 'register-company'"
         >
         Login
       </router-link>

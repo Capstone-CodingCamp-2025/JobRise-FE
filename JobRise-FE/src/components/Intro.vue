@@ -30,7 +30,7 @@
               <input
                 type="text"
                 class="text-blue-950 text-center bg-white  h-10 xl:h-10 w-full placeholder:text-blue-950 outline-none lg:placeholder:pl-2"
-                placeholder="Job title, keyword"
+                placeholder="Job title"
               />
             </div>
             <div class="h-10 w-[1px] bg-blue-950 hidden lg:block xl:h-10"></div>
@@ -59,7 +59,7 @@
       </div>
     </div>
     <div class="m-auto ">
-      <div class="bg-sky-400 w-74 h-74 rounded-full md:mb-98 absolute right-10 top-16"></div>
+      <div class="bg-[#D5DEEF] w-74 h-74 rounded-full md:mb-98 absolute right-10 top-16"></div>
       <img
         src="../../../public/people.png"
         alt="people"

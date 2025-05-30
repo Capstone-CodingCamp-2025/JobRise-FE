@@ -1,7 +1,7 @@
 <template>
   <div class="px-4 py-2 md:px-10 md:py-4">
     <div class="flex flex-col md:flex-row justify-between items-center mb-3">
-      <h1 class="font-bold text-xl md:text-2xl">Curriculum Vitae</h1>
+      <h1 class="font-bold text-xl md:text-2xl md:pl-18 lg:pl-38 xl:pl-48">Curriculum Vitae</h1>
       <h1 v-if="!isMobile" class="font-bold text-xl md:text-2xl mb-3 md:pr-28 lg:pr-44 xl:pr-66">Preview</h1>
     </div>
 
@@ -95,10 +95,18 @@
                 class="bg-slate-100 rounded-sm outline outline-blue-800 h-7 px-2 text-sm md:h-8 md:px-3"
               />
             </div>
-            <div class="flex flex-col col-span-2">
+            <div class="flex flex-col">
               <label class="font-normal text-black text-sm md:text-base">Major</label>
               <input
                 v-model="currentEducation.major"
+                type="text"
+                class="bg-slate-100 rounded-sm outline outline-blue-800 h-7 px-2 text-sm md:h-8 md:px-3"
+              />
+            </div>
+            <div class="flex flex-col ">
+              <label class="font-normal text-black text-sm md:text-base">GPA</label>
+              <input
+                v-model="currentEducation.gpa"
                 type="text"
                 class="bg-slate-100 rounded-sm outline outline-blue-800 h-7 px-2 text-sm md:h-8 md:px-3"
               />
@@ -123,7 +131,7 @@
               <label class="font-normal text-black text-sm md:text-base">Description</label>
               <textarea
                 v-model="currentEducation.description"
-                class="bg-slate-100 rounded-sm outline outline-blue-800 h-16 text-sm md:h-24"
+                class="bg-slate-100 rounded-sm outline outline-blue-800 h-16 text-sm md:h-24 px-2"
               ></textarea>
             </div>
             <div class="col-span-2 flex justify-end">
@@ -172,7 +180,7 @@
               <label class="font-normal text-black text-sm md:text-base">Description</label>
               <textarea
                 v-model="currentProject.description"
-                class="bg-slate-100 rounded-sm outline outline-blue-800 h-16 text-sm md:h-24"
+                class="bg-slate-100 rounded-sm outline outline-blue-800 h-16 text-sm md:h-24 px-2"
               ></textarea>
             </div>
             <div class="col-span-2 flex justify-end">
@@ -221,7 +229,7 @@
               <label class="font-normal text-black text-sm md:text-base">Description</label>
               <textarea
                 v-model="currentExperience.description"
-                class="bg-slate-100 rounded-sm outline outline-blue-800 h-16 text-sm md:h-24"
+                class="bg-slate-100 rounded-sm outline outline-blue-800 px-2 h-16 text-sm md:h-24"
               ></textarea>
             </div>
             <div class="col-span-2 flex justify-end">
@@ -280,7 +288,7 @@
               />
             </div>
             <div class="flex flex-col">
-              <label class="font-normal text-black text-sm md:text-base">Issue By</label>
+              <label class="font-normal text-black text-sm md:text-base">Issued By</label>
               <input
                 v-model="currentCertification.issueBy"
                 type="text"
@@ -299,7 +307,7 @@
               <label class="font-normal text-black text-sm md:text-base">Description</label>
               <textarea
                 v-model="currentCertification.description"
-                class="bg-slate-100 rounded-sm outline outline-blue-800 h-16 text-sm md:h-24"
+                class="bg-slate-100 rounded-sm outline outline-blue-800 px-2 h-16 text-sm md:h-24"
               ></textarea>
             </div>
             <div class="col-span-2 flex justify-end">
@@ -319,6 +327,7 @@
             <p class="font-medium">{{ edu.institution }}</p>
             <p>{{ edu.major }}</p>
             <p>{{ formatDate(edu.startDate) }} - {{ formatDate(edu.endDate) }}</p>
+            <p>{{ edu.gpa }}</p>
             <p class="text-gray-700 text-xs">{{ edu.description }}</p>
             <div class="flex gap-x-2 justify-end mt-1 md:gap-x-4">
               <button class="bg-blue-950/90 text-white px-3 rounded-md text-xs md:px-4">
@@ -576,7 +585,7 @@ const skills = ref([]);
 const certifications = ref([]);
 
 // Current item being edited/added
-const currentEducation = ref({ institution: '', major: '', startDate: '', endDate: '', description: '' });
+const currentEducation = ref({ institution: '', major: '', gpa: '' ,startDate: '', endDate: '', description: '' });
 const currentProject = ref({ title: '', link: '', startDate: '', endDate: '', description: '' });
 const currentExperience = ref({ title: '', company: '', startDate: '', endDate: '', description: '' });
 const currentSkill = ref({ name: '', level: '' });
@@ -596,7 +605,7 @@ const formatDate = (dateString) => {
 const saveEducation = () => {
   educations.value.push({ ...currentEducation.value });
   // Reset the form
-  currentEducation.value = { institution: '', major: '', startDate: '', endDate: '', description: '' };
+  currentEducation.value = { institution: '', major: '', gpa: '', startDate: '', endDate: '', description: '' };
 };
 
 const saveProject = () => {
