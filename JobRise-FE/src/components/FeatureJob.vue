@@ -18,7 +18,7 @@
       </router-link>
     </div>
     <div class="grid md:grid-cols-2 gap-x-4 gap-y-8 lg:gap-x-10 xl:grid-cols-3">
-      <JobList v-for="(job, index) in jobs" :key="index" :job="job" />
+      <JobList v-for="(job, index) in jobs.slice(0, 6)" :key="index" :job="job" />
     </div>
   </div>
 </template>

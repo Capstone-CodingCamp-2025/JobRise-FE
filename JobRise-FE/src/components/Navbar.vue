@@ -15,7 +15,13 @@
       <!-- Logo -->
       <div>
         <router-link
-          :to="isLoggedIn ? (isUser ? { name: 'dashboard' } : { name: 'dashboard-company' }) : { name: 'home-page' }"
+          :to="
+            isLoggedIn
+              ? isUser
+                ? { name: 'dashboard' }
+                : { name: 'dashboard-company' }
+              : { name: 'home-page' }
+          "
         >
           <img src="../../public/jobrise.png" alt="jobrise" class="w-32" />
         </router-link>
@@ -41,14 +47,14 @@
           :to="{ name: 'find-job' }"
           class="font-bold text-blue-800 text-lg hover:border-b-2 border-b-fuchsia-500 h-max"
           active-class="active"
-          >
+        >
           Find Job
         </router-link>
         <router-link
           :to="{ name: 'applied' }"
           class="font-bold text-blue-800 text-lg hover:border-b-2 border-b-fuchsia-500 h-max"
           active-class="active"
-          >
+        >
           Applied
         </router-link>
         <router-link
@@ -87,12 +93,22 @@
     <div class="py-4 flex gap-x-1 md:gap-x-4" v-if="!isLoggedIn">
       <router-link
         :to="{ name: 'role-login' }"
-        class="font-bold text-lg text-blue-950 border rounded-lg px-6  hover:bg-blue-950 hover:text-white pb-1"
-        v-if="$route.name !== 'role-login' && $route.name !== 'login' && $route.name !== 'register' && $route.name !== 'login-company' && $route.name !== 'register-company'"
-        >
+        class="font-bold text-lg text-blue-950 border rounded-lg px-6 hover:bg-blue-950 hover:text-white pb-1"
+        v-if="
+          $route.name !== 'role-login' &&
+          $route.name !== 'login' &&
+          $route.name !== 'register' &&
+          $route.name !== 'login-company' &&
+          $route.name !== 'register-company' &&
+          $route.name !== 'forget-password' &&
+          $route.name !== 'forget-password-company' &&
+          $route.name !== 'reset-password' &&
+          $route.name !== 'reset-password-company' 
+
+        "
+      >
         Login
       </router-link>
-      
     </div>
 
     <!-- User dropdown - shown when logged in -->

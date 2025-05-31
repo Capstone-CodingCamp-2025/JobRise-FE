@@ -23,6 +23,8 @@ import ForgetPassword from "@/views/users/auth/ForgetPassword.vue"
 import JobDetail from "@/views/company/JobDetail.vue"
 import JobDetails from "@/views/users/JobDetails.vue"
 import FavoriteJob from "@/views/users/FavoriteJob.vue"
+import ResetPasswordCompany from "@/views/company/auth/ResetPassword.vue"
+import ResetPassword from "@/views/users/auth/ResetPassword.vue"
 
 
 
@@ -75,6 +77,18 @@ const router = createRouter({
       path: "/forget-password",
       name: "forget-password",
       component: ForgetPassword,
+      meta: { isAuth: false },
+    },
+    {
+      path: "/reset-password-company",
+      name: "reset-password-company",
+      component: ResetPasswordCompany,
+      meta: { isAuth: false },
+    },
+    {
+      path: "/reset-password",
+      name: "reset-password",
+      component: ResetPassword,
       meta: { isAuth: false },
     },
     {
