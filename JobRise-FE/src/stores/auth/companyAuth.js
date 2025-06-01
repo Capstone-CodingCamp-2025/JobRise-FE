@@ -269,6 +269,8 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     router.push({ name: "home-page" });
   };
 
+  
+
   return {
     tokenCompany,
     currentCompany,

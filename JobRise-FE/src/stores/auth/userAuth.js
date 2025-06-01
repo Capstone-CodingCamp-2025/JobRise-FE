@@ -14,7 +14,7 @@ export const AuthUserStorage = defineStore("auth", () => {
   );
 
   const currentUser = ref(
-    localStorage.getItem("user") && localStorage.getItem("user") != "undefined"
+    localStorage.getItem("user") && localStorage.getItem("user") !== "undefined"
       ? JSON.parse(localStorage.getItem("user"))
       : null
   );
@@ -28,7 +28,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         password,
         confirm_password,
       });
-
+  
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -110,6 +110,83 @@ export const AuthUserStorage = defineStore("auth", () => {
         title: "Login Failed",
         showConfirmButton: false,
         timer: 2000,
+      });
+      throw error;
+    }
+  };
+
+  const SendForgotPassword = async (email) => {
+    try {
+      const { data } = await apiClient.post("/forgot-password", { email });
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: data.message,
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      return data;
+    } catch (error) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: error.response?.data?.message || "Failed to send reset link",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
+
+  const VerifyResetToken = async (token) => {
+    try {
+      const response = await apiClient.get(`/verify-token/${token}`);
+      return response.data;
+    } catch (error) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: error.response?.data?.error || "Invalid or expired token",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
+
+  const ResetPassword = async (token, password, confirm_password) => {
+    try {
+      const response = await apiClient.post(`/reset-password/${token}`, {
+        password,
+        confirm_password,
+      });
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: response.data.message,
+        showConfirmButton: false,
+        timer: 3000,
+      });
+
+      // Asumsi response.data.user berisi informasi pengguna, termasuk role
+      if (response.data.user?.role === "company") {
+        router.push("/login-company");
+      } else {
+        router.push("/login");
+      }
+      return response.data;
+    } catch (error) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: error.response?.data?.error || "Failed to reset password",
+        showConfirmButton: false,
+        timer: 3000,
       });
       throw error;
     }
@@ -239,12 +316,15 @@ export const AuthUserStorage = defineStore("auth", () => {
   return {
     RegisterUser,
     LoginUser,
+    SendForgotPassword,
+    VerifyResetToken,
+    ResetPassword,
     tokenUser,
     currentUser,
     getUserByAuth,
     logout,
     createProfile,
     getProfileUser,
-    updateProfileUser, // Tambahkan fungsi updateProfileUser ke dalam return
+    updateProfileUser,
   };
 });

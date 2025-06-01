@@ -1,5 +1,13 @@
 <script setup>
 import FormAuth from "@/components/users/partials/FormAuth.vue";
+import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+
+onMounted(() => {
+  localStorage.setItem('lastLoginRoute', route.path);
+});
 </script>
 
 <template>
