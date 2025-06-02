@@ -18,6 +18,9 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
       : null
   );
 
+  // State untuk menyimpan data profil perusahaan yang diambil
+  const companyProfile = ref(null);
+
   const RegisterCompany = async (inputData) => {
     try {
       const { data } = await apiClient.post("/register-company", inputData);
@@ -53,12 +56,31 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
       });
 
       tokenCompany.value = data.token;
+      // Inisialisasi currentCompany dengan data user dasar dari respons login
       currentCompany.value = data.user;
 
-      localStorage.setItem("tokenCompany", JSON.stringify(data.token));
-      localStorage.setItem("company", JSON.stringify(data.user)); // Ambil data company lengkap setelah login
+      // Ambil data profil perusahaan untuk mendapatkan status email_verified
+      // Panggil fetchProfileCompany di sini untuk memastikan companyProfile terisi
+      const profileData = await fetchProfileCompany();
 
-      const fullCompanyData = await getCompanyByAuth(); // Periksa role setelah mendapatkan data company lengkap
+      // Gabungkan status email_verified dari profil ke currentCompany
+      if (profileData && profileData.email_verified !== undefined) {
+        currentCompany.value = {
+          ...currentCompany.value,
+          email_verified: profileData.email_verified,
+        };
+      }
+      // Log untuk debugging: lihat currentCompany setelah digabungkan
+      console.log("currentCompany after login and profile merge:", currentCompany.value);
+
+      localStorage.setItem("tokenCompany", JSON.stringify(data.token));
+      localStorage.setItem("company", JSON.stringify(currentCompany.value)); // Simpan currentCompany yang sudah diperbarui
+
+      // Panggil getCompanyByAuth untuk memastikan data otentikasi lengkap,
+      // ini juga akan memperbarui currentCompany dengan email_verified
+      // Perhatikan: getCompanyByAuth juga memanggil fetchProfileCompany, jadi ini bisa redundant
+      // Namun, untuk memastikan role check berjalan, kita biarkan dulu.
+      const fullCompanyData = await getCompanyByAuth(); 
 
       if (fullCompanyData?.role === "user") {
         // Hapus token dan company dari localStorage karena login ditolak
@@ -114,11 +136,25 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         },
       });
 
-      // Update data company dengan response dari server
+      // Update data company dengan respons dari server
       currentCompany.value = response.data.data;
-      localStorage.setItem("company", JSON.stringify(response.data.data));
 
-      return response.data.data;
+      // Ambil data profil perusahaan untuk mendapatkan status email_verified
+      const profileData = await fetchProfileCompany();
+
+      // Gabungkan status email_verified dari profil ke currentCompany
+      if (profileData && profileData.email_verified !== undefined) {
+        currentCompany.value = {
+          ...currentCompany.value,
+          email_verified: profileData.email_verified,
+        };
+      }
+      // Log untuk debugging: lihat currentCompany setelah digabungkan
+      console.log("currentCompany after getCompanyByAuth and profile merge:", currentCompany.value);
+
+      localStorage.setItem("company", JSON.stringify(currentCompany.value)); // Simpan currentCompany yang sudah diperbarui
+
+      return currentCompany.value; // Mengembalikan currentCompany yang sudah diperbarui
     } catch (error) {
       console.error("Gagal mengambil data user:", error);
 
@@ -131,103 +167,12 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     }
   };
 
-  const createProfileCompany = async (payload) => {
+  const createProfileCompany = async (formData) => {
     try {
-      const { data } = await apiClient.post("/profile-company", payload, {
+      const { data } = await apiClient.post("/profile-company", formData, {
         headers: {
+          "Content-Type": "multipart/form-data", // Penting untuk mengirim file
           Authorization: `Bearer ${tokenCompany.value}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (data.status === "success" && data.data) {
-        currentCompany.value = data.data;
-        localStorage.setItem("company", JSON.stringify(data.data));
-
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "success",
-          title: "Profile Company Created Successfully",
-          showConfirmButton: false,
-          timer: 3000,
-        });
-      }
-
-      return data;
-    } catch (error) {
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "error",
-        title: "Failed to Create Profile Company",
-        text: error.response?.data?.message || "Something went wrong",
-        showConfirmButton: false,
-        timer: 3000,
-      });
-      throw error;
-    }
-  };
-
-  // Fungsi untuk mendapatkan profil perusahaan berdasarkan otorisasi
-  const getProfileCompany = async () => {
-    try {
-      const { data } = await apiClient.get("/profile-company", {
-        headers: {
-          Authorization: `Bearer ${tokenCompany.value}`,
-        },
-      });
-      if (data.status === "success") {
-        currentCompany.value = data.data;
-        localStorage.setItem("company", JSON.stringify(data.data));
-        return data.data;
-      } else if (data.status === "error" && data.message) {
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "warning",
-          title: "Failed to Get Profile Company",
-          text: data.message,
-          showConfirmButton: false,
-          timer: 3000,
-        });
-        throw new Error(data.message);
-      } else {
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "warning",
-          title: "Failed to Get Profile Company",
-          text: "Failed to retrieve profile company data.",
-          showConfirmButton: false,
-          timer: 3000,
-        });
-        throw new Error("Failed to retrieve profile company data.");
-      }
-    } catch (error) {
-      console.error("Error fetching profile company:", error);
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "error",
-        title: "Error Fetching Profile",
-        text:
-          error.response?.data?.message ||
-          "Something went wrong while fetching profile.",
-        showConfirmButton: false,
-        timer: 3000,
-      });
-      throw error;
-    }
-  };
-
-  // Fungsi untuk memperbarui profil perusahaan
-  const updateProfileCompany = async (payload) => {
-    try {
-      const { data } = await apiClient.put("/profile-company-update", payload, {
-        headers: {
-          Authorization: `Bearer ${tokenCompany.value}`,
-          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -235,23 +180,91 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         toast: true,
         position: "top-end",
         icon: "success",
-        title: "Profile Updated Successfully",
+        title: "Profile Company Created Successfully",
         showConfirmButton: false,
         timer: 3000,
       });
-      console.log("Profile updated:", data);
-      await getProfileCompany(); // Atau getUserByAuth jika Anda ingin memperbarui info user di navbar dll.
-      return data;
+      // Setelah berhasil membuat profil, kita bisa langsung mengambil datanya
+      await fetchProfileCompany();
+      // Perbarui currentCompany dengan status email_verified terbaru dari profil
+      if (companyProfile.value && companyProfile.value.email_verified !== undefined) {
+        currentCompany.value = {
+          ...currentCompany.value,
+          email_verified: companyProfile.value.email_verified,
+        };
+        localStorage.setItem("company", JSON.stringify(currentCompany.value));
+      }
+      return data.data; // Mengembalikan data profil yang dibuat
+    } catch (error) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Failed to Create Profile Company",
+        text: error.response?.data?.message || "Something went wrong.",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
+
+  const updateProfileCompany = async (formData) => {
+    try {
+      const { data } = await apiClient.put("/profile-company-update", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Penting untuk mengirim file
+          Authorization: `Bearer ${tokenCompany.value}`,
+        },
+      });
+
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Profile Company Updated Successfully",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      // Setelah berhasil memperbarui profil, kita bisa langsung mengambil datanya
+      await fetchProfileCompany();
+      // Perbarui currentCompany dengan status email_verified terbaru dari profil
+      if (companyProfile.value && companyProfile.value.email_verified !== undefined) {
+        currentCompany.value = {
+          ...currentCompany.value,
+          email_verified: companyProfile.value.email_verified,
+        };
+        localStorage.setItem("company", JSON.stringify(currentCompany.value));
+      }
+      return data.data; // Mengembalikan data profil yang diperbarui
     } catch (error) {
       Swal.fire({
         toast: true,
         position: "top-end",
         icon: "error",
         title: "Failed to Update Profile Company",
-        text: error.response?.data?.message || "Something went wrong",
+        text: error.response?.data?.message || "Something went wrong.",
         showConfirmButton: false,
         timer: 3000,
       });
+      throw error;
+    }
+  };
+
+  const fetchProfileCompany = async () => {
+    try {
+      const { data } = await apiClient.get("/profile-company", {
+        headers: {
+          Authorization: `Bearer ${tokenCompany.value}`,
+        },
+      });
+      companyProfile.value = data.data;
+      // Log untuk debugging: lihat data.data dari backend
+      console.log("Data profil dari API (/profile-company):", data.data);
+      console.log("email_verified dari API:", data.data?.email_verified);
+      return data.data;
+    } catch (error) {
+      console.error("Gagal mengambil profil perusahaan:", error);
       throw error;
     }
   };
@@ -264,22 +277,96 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     // Reset state
     currentCompany.value = null;
     tokenCompany.value = null;
-
+    companyProfile.value = null; // Reset company profile juga
     // Redirect to login page
     router.push({ name: "home-page" });
   };
 
-  
+
+  const sendVerificationOTP = async () => {
+    try {
+      const { data } = await apiClient.post("/send-verification-otp", {}, {
+        headers: {
+          Authorization: `Bearer ${tokenCompany.value}`,
+        },
+      });
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: data.message,
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      return data;
+    } catch (error) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: error.response?.data?.message || "Failed to send OTP",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
+
+  const verifyEmailOTP = async (otp) => {
+    try {
+      const { data } = await apiClient.post(
+        "/verify-email",
+        { otp }, // Kirim OTP di dalam body request
+        {
+          headers: {
+            Authorization: `Bearer ${tokenCompany.value}`,
+          },
+        }
+      );
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: data.message,
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      // Setelah verifikasi berhasil, update status di currentCompany dan companyProfile
+      // Perhatikan: companyProfile akan diperbarui secara otomatis oleh fetchProfileCompany
+      // yang dipanggil setelah ini di komponen, jadi ini mungkin redundant tapi tidak merusak.
+      if (currentCompany.value) {
+        currentCompany.value.email_verified = "yes";
+        localStorage.setItem("company", JSON.stringify(currentCompany.value));
+      }
+      if (companyProfile.value) {
+        companyProfile.value.email_verified = "yes";
+      }
+      return data;
+    } catch (error) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: error.response?.data?.message || "Failed to verify OTP",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
 
   return {
     tokenCompany,
     currentCompany,
+    companyProfile, // Tambahkan companyProfile ke return
     RegisterCompany,
     LoginCompany,
     getCompanyByAuth,
     createProfileCompany,
-    getProfileCompany,
-    updateProfileCompany, // Tambahkan fungsi updateProfileCompany
+    updateProfileCompany, // Tambahkan
+    fetchProfileCompany, // Tambahkan fetchProfileCompany ke return
     logout,
+    sendVerificationOTP, // Tambahkan fungsi sendVerificationOTP
+    verifyEmailOTP,
   };
 });

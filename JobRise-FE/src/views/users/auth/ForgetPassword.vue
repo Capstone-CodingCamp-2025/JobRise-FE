@@ -27,7 +27,7 @@
         <div>
           <button
             type="submit"
-            :disabled="loading || errors.email"
+            @submit.prevent="handleForgotPassword"
             class="bg-blue-950/80 text-white py-2 rounded-md w-full font-semibold text-xl cursor-pointer"
           >
             <span v-if="loading">Sending...</span>

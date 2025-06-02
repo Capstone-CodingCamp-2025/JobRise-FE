@@ -328,7 +328,7 @@ const handleSubmit = async () => {
       }}</span>
     </div>
 
-    <div class="flex justify-between">
+    <div class="flex justify-between" v-show="props.isRegister">
       <div>
         <input type="checkbox" id="saveHistory" />
         <label for="saveHistory" class="text-sm">Remember me</label>

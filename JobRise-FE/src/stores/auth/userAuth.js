@@ -19,6 +19,9 @@ export const AuthUserStorage = defineStore("auth", () => {
       : null
   );
 
+  // Tambahkan state terpisah untuk data profil pengguna
+  const userProfile = ref(null);
+
   const RegisterUser = async (inputData) => {
     try {
       const { name, email, password, confirm_password } = inputData;
@@ -28,7 +31,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         password,
         confirm_password,
       });
-  
+
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -117,17 +120,19 @@ export const AuthUserStorage = defineStore("auth", () => {
 
   const SendForgotPassword = async (email) => {
     try {
-      const { data } = await apiClient.post("/forgot-password", { email });
+      const response = await apiClient.post("/forgot-password", { email });
+      console.log("Full response from forgot password:", response); // Lihat seluruh objek response
       Swal.fire({
         toast: true,
         position: "top-end",
         icon: "success",
-        title: data.message,
+        title: response.data.message,
         showConfirmButton: false,
         timer: 3000,
       });
-      return data;
+      return response.data;
     } catch (error) {
+      console.error("Error sending forgot password link:", error);
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -163,6 +168,8 @@ export const AuthUserStorage = defineStore("auth", () => {
         password,
         confirm_password,
       });
+      console.log(response.data);
+      console.log("User Role:", response.data.user?.role);
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -223,6 +230,7 @@ export const AuthUserStorage = defineStore("auth", () => {
     // Reset state
     currentUser.value = null;
     tokenUser.value = null;
+    userProfile.value = null; // Pastikan userProfile juga direset saat logout
 
     // Redirect to login page
     router.push({ name: "home-page" });
@@ -233,7 +241,7 @@ export const AuthUserStorage = defineStore("auth", () => {
       const { data } = await apiClient.post("/profile", profileFormData, {
         headers: {
           Authorization: `Bearer ${tokenUser.value}`,
-          "Content-Type": "multipart/form-data", // Tambahkan header ini
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -245,8 +253,8 @@ export const AuthUserStorage = defineStore("auth", () => {
         showConfirmButton: false,
         timer: 3000,
       });
-      console.log("Profile created:", data);
-      await getUserByAuth();
+      console.log("Profile created:", data); // Perbaikan typo console.console.log
+      await fetchUserProfile(); // Setelah membuat profil, fetch data profil terbaru
       return data;
     } catch (error) {
       console.error("Failed to create profile:", error);
@@ -263,17 +271,24 @@ export const AuthUserStorage = defineStore("auth", () => {
     }
   };
 
-  const getProfileUser = async () => {
+  // Fungsi tunggal untuk mengambil data profil berdasarkan otentikasi
+  const fetchUserProfile = async () => {
     try {
       const response = await apiClient.get("/profile", {
         headers: {
           Authorization: `Bearer ${tokenUser.value}`,
         },
       });
+      userProfile.value = response.data.data;
+      // Asumsi response.data.data juga memiliki email_verified
+      currentUser.value = { ...currentUser.value, email_verified: response.data.data?.email_verified };
+      localStorage.setItem("user", JSON.stringify(currentUser.value));
       return response.data.data;
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
-      // Tidak menampilkan Swal disini, biar ditangani di component
+      if (error.response?.status === 404) {
+        userProfile.value = null;
+      }
       throw error;
     }
   };
@@ -283,7 +298,7 @@ export const AuthUserStorage = defineStore("auth", () => {
       const { data } = await apiClient.put("/profile-update", profileFormData, {
         headers: {
           Authorization: `Bearer ${tokenUser.value}`,
-          "Content-Type": "multipart/form-data", // Pastikan ini ada jika Anda mengupload file
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -296,7 +311,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         timer: 3000,
       });
       console.log("Profile updated:", data);
-      await getProfileUser(); // Atau getUserByAuth jika Anda ingin memperbarui info user di navbar dll.
+      await fetchUserProfile(); // Setelah update, fetch data profil terbaru
       return data;
     } catch (error) {
       console.error("Failed to update profile:", error);
@@ -313,6 +328,76 @@ export const AuthUserStorage = defineStore("auth", () => {
     }
   };
 
+  const sendVerificationOTP = async () => {
+    try {
+      const { data } = await apiClient.post(
+        "/send-verification-otp",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${tokenUser.value}`,
+          },
+        }
+      );
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: data.message,
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      return data;
+    } catch (error) {
+      console.error("Failed to send verification OTP:", error);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: error.response?.data?.message || "Failed to send OTP.",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
+
+  const verifyEmailOTP = async (otp) => {
+    try {
+      const response = await apiClient.post(
+        "/verify-email", // Ubah dari GET dengan query parameter menjadi POST
+        { otp },          // Kirim OTP di body request
+        {
+          headers: {
+            Authorization: `Bearer ${tokenUser.value}`,
+          },
+        }
+      );
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: response.data.message,
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      // Setelah verifikasi berhasil, update status verifikasi di currentUser (jika perlu)
+      currentUser.value = { ...currentUser.value, email_verified: 'yes' };
+      localStorage.setItem("user", JSON.stringify(currentUser.value));
+      return response.data;
+    } catch (error) {
+      console.error("Failed to verify email OTP:", error);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: error.response?.data?.message || "Failed to verify OTP.",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
   return {
     RegisterUser,
     LoginUser,
@@ -321,10 +406,13 @@ export const AuthUserStorage = defineStore("auth", () => {
     ResetPassword,
     tokenUser,
     currentUser,
+    userProfile, // Ekspor userProfile agar bisa diakses di komponen
     getUserByAuth,
     logout,
     createProfile,
-    getProfileUser,
+    fetchUserProfile,
     updateProfileUser,
+    sendVerificationOTP,
+    verifyEmailOTP,
   };
 });

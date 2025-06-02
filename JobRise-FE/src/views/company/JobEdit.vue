@@ -1,11 +1,24 @@
 <template>
   <div class="px-4 pb-10 sm:px-8">
-    <h1 class="font-bold text-xl sm:text-2xl py-4">Post a Job</h1>
+    <h1 class="font-bold text-xl sm:text-2xl py-4">Edit Job Posting</h1>
     <div class="bg-[#D5DEEF] w-full px-4 py-4 sm:px-8 sm:py-6 rounded-md shadow-xs">
-      <div>
+      <div v-if="jobsStore.isLoading" class="text-center py-8">
+        <p class="text-blue-800 font-semibold text-lg">Memuat data pekerjaan...</p>
+        <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto mt-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+
+      <div v-else-if="jobsStore.error" class="text-center py-8 text-red-600">
+        <p class="font-semibold text-lg">Terjadi kesalahan:</p>
+        <p class="mt-2">{{ jobsStore.error }}</p>
+      </div>
+
+      <div v-else-if="jobsStore.jobDetail">
         <form @submit.prevent="handleSubmit" class="flex flex-col gap-y-2">
           <div class="flex flex-col gap-y-1">
-            <label for="title" class="font-semibold text-sm sm:text-base">Job Tittle</label>
+            <label for="title" class="font-semibold text-sm sm:text-base">Job Title</label>
             <input
               type="text"
               id="title"
@@ -83,7 +96,6 @@
           </div>
           <div class="pt-4 sm:pt-6">
             <div class="flex gap-x-2 justify-end">
-              
               <button
                 type="submit"
                 :disabled="jobsStore.isLoading"
@@ -94,61 +106,66 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Posting...
+                  Updating...
                 </span>
-                <span v-else>Post a Job</span>
+                <span v-else>Update Job</span>
               </button>
             </div>
           </div>
         </form>
+      </div>
+      <div v-else class="text-center py-8 text-gray-600">
+        <p class="font-semibold text-lg">Pekerjaan tidak ditemukan atau tidak dapat dimuat.</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { JobsCompany } from '@/stores/jobs/companyjob';
-import { ref } from 'vue';
+import { ref, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
+import { JobsCompany } from "@/stores/jobs/companyjob"; // Sesuaikan path ini
 
-// Menggunakan store Pinia
 const jobsStore = JobsCompany();
+const route = useRoute();
+const jobId = ref(parseInt(route.params.id));
 
-// Data form untuk input pekerjaan
+// Form data yang akan di-bind ke input
 const jobForm = ref({
   title: '',
   description: '',
   salary_min: '',
   salary_max: '',
   location: '',
-  job_type: 'Full-Time', // Nilai default
+  job_type: 'Full-Time', // Default value
 });
 
-/**
- * Fungsi yang dipanggil saat form disubmit.
- * Memanggil aksi `createJobPost` dari store Pinia.
- */
-const handleSubmit = async () => {
-  await jobsStore.createJobPost(jobForm.value);
+// Ambil detail pekerjaan saat komponen dimuat
+onMounted(() => {
+  jobsStore.fetchJobDetail(jobId.value);
+});
 
-  // Opsional: Reset form setelah berhasil jika tidak ada error
-  // Store Pinia sudah menangani SweetAlert dan redirect
-  if (!jobsStore.error) {
+// Watch jobsStore.jobDetail untuk mengisi form setelah data diambil
+watch(() => jobsStore.jobDetail, (newDetail) => {
+  if (newDetail) {
     jobForm.value = {
-      title: '',
-      description: '',
-      salary_min: '',
-      salary_max: '',
-      location: '',
-      job_type: 'Full-Time',
+      title: newDetail.title,
+      description: newDetail.description,
+      salary_min: newDetail.salary_min,
+      salary_max: newDetail.salary_max,
+      location: newDetail.location,
+      job_type: newDetail.job_type,
     };
   }
+}, { immediate: true }); // immediate: true agar dijalankan saat pertama kali dimuat jika jobDetail sudah ada
+
+// Fungsi untuk menangani submit form
+const handleSubmit = async () => {
+  await jobsStore.updateJobPost(jobId.value, jobForm.value);
 };
 </script>
 
 <style scoped>
-/*
-  Styling menggunakan Tailwind CSS classes.
-  Pastikan Tailwind CSS sudah terinstal dan dikonfigurasi di project Vue Anda.
-  Tidak ada CSS kustom tambahan yang diperlukan di sini karena semua sudah ditangani oleh Tailwind.
-*/
+/* Pastikan Tailwind CSS sudah terinstal dan dikonfigurasi di project Vue Anda. */
+/* Tidak ada CSS kustom tambahan yang diperlukan di sini karena semua sudah ditangani oleh Tailwind. */
 </style>

@@ -20,6 +20,7 @@ import PostJob from "@/views/company/PostJob.vue";
 import JobList from "@/views/company/JobList.vue";
 import ForgetPassword from "@/views/users/auth/ForgetPassword.vue";
 import JobDetail from "@/views/company/JobDetail.vue";
+import JobEdit from "@/views/company/JobEdit.vue";
 import JobDetails from "@/views/users/JobDetails.vue";
 import FavoriteJob from "@/views/users/FavoriteJob.vue";
 import ResetPassword from "@/views/users/auth/ResetPassword.vue";
@@ -160,6 +161,12 @@ const router = createRouter({
       path: "/job/:id", // Corrected to "application" if it's a typo, but kept as "aplication" based on your input
       name: "job-detail",
       component: JobDetail, // Assuming Cv is used here, as in your original code
+      meta: { isAuth: true, roles: ["company"] }, // Only companies can access
+    },
+    {
+      path: "/job//edit/:id", // Corrected to "application" if it's a typo, but kept as "aplication" based on your input
+      name: "job-edit",
+      component: JobEdit, // Assuming Cv is used here, as in your original code
       meta: { isAuth: true, roles: ["company"] }, // Only companies can access
     },
   ],
