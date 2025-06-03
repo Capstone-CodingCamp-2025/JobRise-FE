@@ -20,6 +20,8 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
 
   // State untuk menyimpan data profil perusahaan yang diambil
   const companyProfile = ref(null);
+  const isFetchingProfile = ref(false); // Tambahkan state loading untuk profil
+  const profileFetchError = ref(null); // Tambahkan state error untuk profil
 
   const RegisterCompany = async (inputData) => {
     try {
@@ -58,13 +60,11 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
       tokenCompany.value = data.token;
       // Asumsi response login company memberikan token dan role
       // Kita bisa menyimpan role di currentCompany jika diperlukan
-      currentCompany.value = { role: data.role };
+      currentCompany.value = data; // Asumsi 'data' dari login menyertakan informasi pengguna lengkap
 
       localStorage.setItem("tokenCompany", JSON.stringify(data.token));
-      localStorage.setItem("company", JSON.stringify(currentCompany.value)); // Simpan role (atau data company jika ada)
+      localStorage.setItem("company", JSON.stringify(currentCompany.value));
 
-      // Tidak perlu memanggil getCompanyByAuth segera setelah login
-      // Kecuali Anda membutuhkan data company yang lebih lengkap
 
       if (data?.role === "user") {
         // Hapus token dan company dari localStorage karena login ditolak
@@ -112,7 +112,6 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     }
   };
 
-
   const SendForgotPasswordCompany = async (email) => {
     try {
       const response = await apiClient.post("/forgot-password", { email }); // Menggunakan endpoint yang sama
@@ -157,9 +156,15 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     }
   };
 
-  const ResetPasswordCompany = async (token, password, confirm_password, router) => {
+  const ResetPasswordCompany = async (
+    token,
+    password,
+    confirm_password,
+    router
+  ) => {
     try {
-      const response = await apiClient.post(`/reset-password/${token}`, { // Menggunakan endpoint yang sama
+      const response = await apiClient.post(`/reset-password/${token}`, {
+        // Menggunakan endpoint yang sama
         password,
         confirm_password,
       });
@@ -196,9 +201,7 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
       });
 
       // Update data company dengan respons dari server
-      currentCompany.value = response.data.data;
-
-      // Tidak perlu memanggil fetchProfileCompany di sini lagi
+      currentCompany.value = response.data;
 
       localStorage.setItem("company", JSON.stringify(currentCompany.value)); // Simpan currentCompany yang sudah diperbarui
 
@@ -232,6 +235,8 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         showConfirmButton: false,
         timer: 3000,
       });
+
+      await getCompanyByAuth();
       // Setelah berhasil membuat profil, kita bisa langsung mengambil datanya
       // await fetchProfileCompany(); // Pindahkan pemanggilan ini ke komponen profil
       return data.data; // Mengembalikan data profil yang dibuat
@@ -251,12 +256,16 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
 
   const updateProfileCompany = async (formData) => {
     try {
-      const { data } = await apiClient.put("/profile-company-update", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data", // Penting untuk mengirim file
-          Authorization: `Bearer ${tokenCompany.value}`,
-        },
-      });
+      const { data } = await apiClient.put(
+        "/profile-company-update",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Penting untuk mengirim file
+            Authorization: `Bearer ${tokenCompany.value}`,
+          },
+        }
+      );
 
       Swal.fire({
         toast: true,
@@ -266,6 +275,8 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         showConfirmButton: false,
         timer: 3000,
       });
+
+      await getCompanyByAuth();
       // Setelah berhasil memperbarui profil, kita bisa langsung mengambil datanya
       // await fetchProfileCompany(); // Pindahkan pemanggilan ini ke komponen profil
       return data.data; // Mengembalikan data profil yang diperbarui
@@ -284,6 +295,8 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
   };
 
   const fetchProfileCompany = async () => {
+    isFetchingProfile.value = true;
+    profileFetchError.value = null;
     try {
       const { data } = await apiClient.get("/profile-company", {
         headers: {
@@ -294,10 +307,17 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
       // Log untuk debugging: lihat data.data dari backend
       console.log("Data profil dari API (/profile-company):", data.data);
       console.log("email_verified dari API:", data.data?.email_verified);
+      await getCompanyByAuth();
       return data.data;
     } catch (error) {
       console.error("Gagal mengambil profil perusahaan:", error);
+      profileFetchError.value =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch company profile.";
       throw error;
+    } finally {
+      isFetchingProfile.value = false;
     }
   };
 
@@ -314,14 +334,17 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     router.push({ name: "home-page" });
   };
 
-
   const sendVerificationOTP = async () => {
     try {
-      const { data } = await apiClient.post("/send-verification-otp", {}, {
-        headers: {
-          Authorization: `Bearer ${tokenCompany.value}`,
-        },
-      });
+      const { data } = await apiClient.post(
+        "/send-verification-otp",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${tokenCompany.value}`,
+          },
+        }
+      );
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -355,6 +378,7 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
           },
         }
       );
+      console.log("Response dari verifyEmailOTP:", data);
       Swal.fire({
         toast: true,
         position: "top-end",
@@ -364,9 +388,13 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         timer: 3000,
       });
       // Setelah verifikasi berhasil, update status di currentCompany
+      // Tambahkan email_verified ke currentCompany jika berhasil
       if (currentCompany.value) {
-        currentCompany.value = { ...currentCompany.value, email_verified: 'yes' };
-        localStorage.setItem("company", JSON.stringify(currentCompany.value));
+        currentCompany.value = {
+          ...currentCompany.value,
+          email_verified: "yes",
+        };
+        localStorage.setItem("company", JSON.stringify(currentCompany.value)); // Simpan ke localStorage
       }
       // companyProfile akan di-fetch ulang di komponen setelah ini jika diperlukan.
       return data;
@@ -387,6 +415,8 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     tokenCompany,
     currentCompany,
     companyProfile,
+    isFetchingProfile,
+    profileFetchError,
     RegisterCompany,
     LoginCompany,
     getCompanyByAuth,

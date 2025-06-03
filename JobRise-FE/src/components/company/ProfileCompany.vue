@@ -48,8 +48,9 @@
                 class="font-medium text-sm md:text-base"
               >
                 Email
+
                 <span
-                  v-if="companyProfile?.email_verified === 'yes'"
+                  v-if="currentCompany.data?.email_verified == 'yes'"
                   class="text-xs md:text-sm font-normal text-green-700"
                   >Verified</span
                 >
@@ -57,9 +58,11 @@
                   >Not Verified</span
                 >
               </label>
+              {{ console.log("curennrrr", currentCompany) }}
+              {{ console.log("curennrrr", companyProfile) }}
               <button
                 @click.prevent="sendOTPVerification"
-                :disabled="companyProfile?.email_verified === 'yes'"
+                :disabled="currentCompany.data?.email_verified === 'yes'"
                 class="bg-blue-950/90 text-white text-xs md:text-sm px-2 md:px-3 rounded-sm cursor-pointer h-6 md:h-auto"
               >
                 Verify
@@ -69,7 +72,7 @@
               type="text"
               id="companyEmail"
               class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 w-full md:w-52 text-sm"
-              :value="companyProfile?.email"
+              :value="currentCompany.data?.email"
               readonly
             />
           </div>
@@ -185,16 +188,6 @@
           class="flex flex-col sm:flex-row justify-center gap-2 mt-4 md:mt-6"
         >
           <button
-            type="button"
-            @click="
-              showOtpPopup = false;
-              otpCode = '';
-            "
-            class="bg-gray-400 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
             type="submit"
             class="bg-blue-950/90 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
           >
@@ -219,6 +212,8 @@ const router = useRouter();
 
 const { companyProfile, currentCompany } = storeToRefs(authCompanyStore);
 
+console.log("companyprofile", companyProfile);
+
 const fileInput = ref(null);
 const showOtpPopup = ref(false);
 const otpCode = ref("");
@@ -232,38 +227,32 @@ const logoPreview = computed(() => {
     const path1 = `${companyProfile.value.logo}`;
     const path2 = `${companyProfile.value.logo}`;
 
-    // Secara sinkronus coba buat URL pertama
     const url1 = new URL(path1, baseURL).href;
-
-    // Secara sinkronus coba buat URL kedua
     const url2 = new URL(path2, baseURL).href;
 
-    // Kita tidak bisa melakukan pengecekan keberadaan file secara sinkronus di sini.
-    // Solusi yang lebih baik adalah mengubah backend.
-    // Sebagai workaround, kita bisa mencoba URL kedua jika URL pertama terlihat seperti default atau tidak valid.
-    // Atau, jika Anda memiliki pola penamaan yang berbeda untuk logo perusahaan, Anda bisa menggunakannya di sini.
-
-    // Contoh sederhana: coba path kedua jika path pertama hanya nama file (tidak mengandung '/').
     if (!companyProfile.value.logo.includes("/")) {
       return url2;
     }
-    return url1; // Default ke path pertama
+    return url1;
   }
   return null;
 });
 const isEditing = ref(false);
 const profileData = ref({
-  /* ... */
+  company_name: "",
+  address: "",
+  website: "",
+  industry: "",
+  description: "",
 });
 
-const fillProfileData = (data) => {
-  if (data) {
-    profileData.value.company_name = data.company_name || "";
-    profileData.value.address = data.address || "";
-    profileData.value.website = data.website || "";
-    profileData.value.industry = data.industry || "";
-    profileData.value.description = data.description || "";
-    // logoPreview akan dihitung oleh computed property
+const fillProfileData = (profileDataInput, companyData) => {
+  if (profileDataInput) {
+    profileData.value.company_name = profileDataInput.company_name || "";
+    profileData.value.address = profileDataInput.address || "";
+    profileData.value.website = profileDataInput.website || "";
+    profileData.value.industry = profileDataInput.industry || "";
+    profileData.value.description = profileDataInput.description || "";
   } else {
     profileData.value = {
       company_name: "",
@@ -272,19 +261,9 @@ const fillProfileData = (data) => {
       industry: "",
       description: "",
     };
-    logoPreview.value = null;
   }
+  // Logo preview tetap dihandle oleh computed property
 };
-
-onMounted(async () => {
-  try {
-    await authCompanyStore.fetchProfileCompany();
-    fillProfileData(companyProfile.value);
-    console.log("companyProfile.value.logo:", companyProfile.value?.logo);
-  } catch (error) {
-    console.error("Gagal memuat profil perusahaan:", error);
-  }
-});
 
 const handleLogoUpload = (event) => {
   const file = event.target.files[0];
@@ -305,8 +284,6 @@ const saveProfile = async () => {
 
   try {
     if (companyProfile.value?.id && isEditing.value) {
-      // Gunakan companyProfile yang sudah di-destructure
-      // Update existing profile
       await authCompanyStore.updateProfileCompany(formData);
       Swal.fire({
         toast: true,
@@ -316,12 +293,9 @@ const saveProfile = async () => {
         timer: 3000,
         showConfirmButton: false,
       });
-      isEditing.value = false; // Keluar dari mode edit setelah berhasil menyimpan
+      isEditing.value = false;
     } else if (!companyProfile.value?.id) {
-      // Gunakan companyProfile yang sudah di-destructure
-      // Create new profile
       if (!logoFile.value && !companyProfile.value?.logo) {
-        // Gunakan companyProfile yang sudah di-destructure
         Swal.fire({
           icon: "warning",
           title: "Peringatan",
@@ -339,7 +313,8 @@ const saveProfile = async () => {
         showConfirmButton: false,
       });
     }
-    await authCompanyStore.fetchProfileCompany(); // Refresh data setelah berhasil
+    await authCompanyStore.fetchProfileCompany();
+    await authCompanyStore.getCompanyByAuth(); // Refresh data company juga
   } catch (error) {
     console.error("Gagal menyimpan/memperbarui profil perusahaan", error);
     Swal.fire({
@@ -360,11 +335,16 @@ const enterEditMode = () => {
 
 const cancelEditMode = () => {
   isEditing.value = false;
-  authCompanyStore
-    .fetchProfileCompany()
-    .then((data) => fillProfileData(data))
-    .catch((error) => console.error("Gagal memuat ulang profil:", error));
+  Promise.all([
+    authCompanyStore.fetchProfileCompany(),
+    authCompanyStore.getCompanyByAuth(),
+  ])
+    .then(([profileDataResult, companyDataResult]) => {
+      fillProfileData(profileDataResult, companyDataResult);
+    })
+    .catch((error) => console.error("Gagal memuat ulang data:", error));
 };
+
 const sendOTPVerification = async () => {
   try {
     await authCompanyStore.sendVerificationOTP();
@@ -379,14 +359,28 @@ const handleVerifyOtpSubmit = async () => {
     await authCompanyStore.verifyEmailOTP(otpCode.value);
     showOtpPopup.value = false;
     otpCode.value = "";
-    // PENTING: Refresh data profil setelah verifikasi berhasil
     await authCompanyStore.fetchProfileCompany();
+    await authCompanyStore.getCompanyByAuth();
     console.log(
-      "Status email setelah verifikasi OTP dan fetch ulang:",
-      companyProfile.value?.email_verified
+      "Data currentCompany setelah verifikasi:",
+      currentCompany.value
     );
   } catch (error) {
-    // Error sudah ditangani di store
+    await authCompanyStore.fetchProfileCompany();
+    await authCompanyStore.getCompanyByAuth();
   }
 };
+
+onMounted(async () => {
+  try {
+    await Promise.all([
+      authCompanyStore.fetchProfileCompany(),
+      authCompanyStore.getCompanyByAuth(),
+    ]);
+    console.log("currentCompany onMounted:", currentCompany.value);
+    fillProfileData(companyProfile.value);
+  } catch (error) {
+    console.error("Gagal memuat data perusahaan:", error);
+  }
+});
 </script>
