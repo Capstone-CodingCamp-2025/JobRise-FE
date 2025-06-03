@@ -13,7 +13,7 @@
     <div v-else-if="jobsStore.error">{{ jobsStore.error }}</div>
     <div v-else-if="jobsStore.jobDetail">
       <div
-        class="flex w-full gap-x-6 md:gap-x-10 mb-6 md:mb-0 justify-between"
+        class="flex w-full gap-x-6 md:gap-x-10 mt-8 md:mt-0 mb-6 md:mb-0 justify-between"
       >
         <div class="flex gap-x-10">
           <div
@@ -32,10 +32,10 @@
             </p>
           </div>
         </div>
-        <div class="flex gap-x-2 md:gap-x-3 pt-2 md:pt-5 items-center">
+        <div class="flex flex-col md:flex-row gap-y-3 gap-x-2 md:gap-x-3 pt-2 md:pt-5 items-center">
           <router-link
             :to="{name: 'job-edit', params: {id: jobsStore.jobDetail.id}}"
-            class="text-blue-700 bg-slate-200 h-max px-10 py-1 rounded-sm text-sm md:text-base"
+            class="text-blue-700 bg-slate-200 h-max px-3.5 md:px-4 lg:px-10 py-1 rounded-sm text-sm md:text-base"
           >Edit Post</router-link>
 
           <div class="relative">
