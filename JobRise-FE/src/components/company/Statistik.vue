@@ -5,7 +5,7 @@
       <div
         class="bg-blue-700/50 w-max  rounded-lg shadow-lg px-10 md:px-22 lg:px-32 place-items-center text-justify py-2 md:py-6"
       >
-        <h2 class="font-bold text-xl">XXX</h2>
+        <h2 class="font-bold text-xl">{{ totalOpenJobs }}</h2>
         <p class="text-md font-semibold text-slate-700">Open jobs</p>
       </div>
       <div
@@ -19,9 +19,14 @@
 </template>
 
 <script setup>
-import { useAuthCompanyStore } from '@/stores/auth/companyAuth';
+import { JobsCompany } from '@/stores/jobs/companyjob';
+import { ref, onMounted } from 'vue';
 
-const company = useAuthCompanyStore().currentCompany
-console.log(company);
+const jobsCompanyStore = JobsCompany();
+const totalOpenJobs = ref(0);
 
+onMounted(async () => {
+  await jobsCompanyStore.fetchCompanyJobs();
+  totalOpenJobs.value = jobsCompanyStore.totalCompanyJobs;
+});
 </script>

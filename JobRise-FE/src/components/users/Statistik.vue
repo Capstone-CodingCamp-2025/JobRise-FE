@@ -38,5 +38,5 @@
 import { AuthUserStorage } from '@/stores/auth/userAuth';
 
 const user = AuthUserStorage().currentUser
-console.log(user);
+console.log('user ayg',user);
 </script>

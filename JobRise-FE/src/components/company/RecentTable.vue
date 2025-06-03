@@ -5,13 +5,13 @@
         <thead class="bg-slate-200 text-center">
           <tr>
             <th
-              class="min-w-[200px] py-2 md:py-3 rounded-l-lg font-normal text-left pl-4 md:pl-20"
+              class="min-w-[200px] py-2 md:py-3 rounded-l-lg font-bold text-gray-600 text-left pl-4 md:pl-20"
             >
               Jobs
             </th>
-            <th class="min-w-[150px] py-2 md:py-3 font-normal">Applications</th>
-            <th class="min-w-[150px] py-2 md:py-3 font-normal">Status</th>
-            <th class="min-w-[180px] py-2 md:py-3 rounded-r-lg font-normal">
+            <th class="min-w-[150px] py-2 md:py-3 font-bold text-gray-600">Applications</th>
+            <th class="min-w-[150px] py-2 md:py-3 font-bold text-gray-600">Status</th>
+            <th class="min-w-[180px] py-2 md:py-3 rounded-r-lg font-bold text-gray-600">
               Action
             </th>
           </tr>
@@ -24,8 +24,7 @@
           >
             <td class="py-4 pl-4 text-left">
               <div class="flex items-center">
-                {{ console.log(job.company_logo)
-                 }}
+                {{ console.log(job.company_logo) }}
                 <img
                   :src="job.company_logo ? `http://localhost:3888/public/${job.company_logo}` : 'https://placehold.co/48x48/cccccc/000000?text=Logo'"
                   :alt="job.company_name"
@@ -36,7 +35,7 @@
                     {{ job.title }}
                   </p>
                   <div
-                    class="flex items-center text-gray-600 text-xs md:text-sm"
+                    class="flex items-center text-gray-600 text-xs md:text-sm font-semibold"
                   >
                     <Icon
                       icon="charm:map-pin"
@@ -47,13 +46,13 @@
                     />
                     {{ job.location }}
                   </div>
-                  <p class="text-gray-700 text-xs md:text-sm mt-1">
+                  <p class="text-gray-700 text-xs md:text-sm font-semibold mt-1">
                     Rp. {{ job.salary_min }} - {{ job.salary_max }}
                   </p>
                 </div>
               </div>
             </td>
-            <td class="py-6 md:py-9 flex justify-center text-xs md:text-base">
+            <td class="py-6 md:py-9 flex justify-center text-xs md:text-sm font-bold text-slate-500">
               <Icon
                 icon="healthicons:people-outline"
                 width="20"
@@ -65,7 +64,7 @@
             </td>
             <td class="py-4 text-xs md:text-sm">
               <div class="flex items-center justify-center">
-                <template v-if="job.is_active === 'active'">
+                <template v-if="job.is_active === 'active'" >
                   <Icon
                     icon="tabler:check"
                     width="16"
@@ -73,7 +72,10 @@
                     style="color: #09ff19"
                     class="mr-1"
                   />
-                  Active
+                  <p class="text-green-400 font-bold text-md">
+
+                    Active
+                  </p>
                 </template>
                 <template v-else-if="job.is_active === 'deactive'">
                   <Icon
@@ -83,7 +85,10 @@
                     style="color: #ff3d00"
                     class="mr-1"
                   />
-                  Inactive
+                  <p class="text-red-400 font-bold text-md">
+
+                    Inactive
+                  </p>
                 </template>
                 <template v-else>
                   {{ job.is_active }}
@@ -109,12 +114,12 @@
               {{ jobsStore.error }}
             </td>
           </tr>
-          <tr v-else-if="displayedJobs.length === 0">
+          <tr v-else-if="jobsStore.isJobsEmpty">
             <td colspan="4" class="py-4 text-center text-gray-500">
-              No jobs available.
+              Jobs Kosong
             </td>
           </tr>
-        </tbody>
+          </tbody>
       </table>
     </div>
     <div

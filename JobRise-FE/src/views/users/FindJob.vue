@@ -36,7 +36,7 @@
       <div class="flex justify-between gap-x-2 mt-2 md:mt-0 md:ml-2">
         <button
           @click="openFilterPopup"
-          class="relative flex rounded-lg bg-gray-300 w-max px-2 py-2 font-semibold"
+          class="relative flex rounded-lg bg-gray-300 w-max px-2 py-3 font-semibold"
         >
           <Icon
             icon="mdi:filter-outline"

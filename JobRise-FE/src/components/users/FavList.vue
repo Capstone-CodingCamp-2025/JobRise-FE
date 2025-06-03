@@ -50,7 +50,7 @@
               height="28"
               
               style="color: #ffff"
-              class="absolute right-0 md:right-2 top-1.5 md:top-2"
+              class="absolute right-0 md:right-3 top-1.5 md:top-1.5"
             />
           </router-link>
         </div>

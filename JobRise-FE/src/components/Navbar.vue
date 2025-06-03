@@ -1,4 +1,5 @@
 <template>
+  {{ console.log("tampil", companyProfile) }}
   <nav class="bg-[#D5DEEF] flex justify-between px-2 md:px-5 z-40 sticky top-0">
     <!-- Logo and main navigation -->
     <div class="flex gap-x-1 md:gap-x-4">
@@ -103,8 +104,7 @@
           $route.name !== 'forget-password' &&
           $route.name !== 'forget-password-company' &&
           $route.name !== 'reset-password' &&
-          $route.name !== 'reset-password-company' 
-
+          $route.name !== 'reset-password-company'
         "
       >
         Login
@@ -113,9 +113,21 @@
 
     <!-- User dropdown - shown when logged in -->
     <div class="relative mt-2" ref="dropdownRef" v-else>
-      <!-- Avatar Button -->
       <div class="flex items-center cursor-pointer" @click="toggleAvatar">
+        <img
+          v-if="isLoggedIn && isUser && userProfile?.profile_picture"
+          :src="`http://localhost:3888/public/${userProfile.profile_picture}`"
+          alt="User Avatar"
+          class="w-10 h-10 rounded-full object-cover"
+        />
+        <img
+          v-else-if="isLoggedIn && isCompany && companyProfile?.logo"
+          :src= "`http://localhost:3888/public/${companyProfile.logo}`"
+          alt="Company Logo"
+          class="w-10 h-10 rounded-full object-cover"
+        />
         <Icon
+          v-else
           icon="iconamoon:profile-fill"
           width="42"
           height="42"
@@ -134,7 +146,6 @@
         />
       </div>
 
-      <!-- Dropdown avatar -->
       <div
         v-show="avatarOpen"
         class="absolute right-0 mt-2 md:mt-4 bg-[#D5DEEF] rounded shadow-lg w-22 z-50 transition-all duration-200"
@@ -249,7 +260,6 @@ const openMenu = () => {
 };
 
 const handleSidebarClick = (event) => {
-  // Jika yang diklik adalah backdrop (area abu-abu di luar sidebar)
   if (event.target === sidebarRef.value) {
     menu.value = false;
   }
@@ -271,6 +281,10 @@ const isUser = computed(() => {
 const isCompany = computed(() => {
   return !!companyStore.currentCompany;
 });
+
+// Ambil data profil dari store
+const userProfile = computed(() => userStore.userProfile);
+const companyProfile = computed(() => companyStore.companyProfile);
 
 // Logout function yang diperbaiki
 const logout = async () => {
@@ -333,15 +347,30 @@ const handleClickOutside = (event) => {
   }
 };
 
-// Event listeners
-onMounted(() => {
+// Fetch profile data on component mount
+onMounted(async () => {
   document.addEventListener("click", handleClickOutside);
+  if (isLoggedIn.value && isUser.value && !userProfile.value) {
+    await userStore.fetchUserProfile();
+  }
+  if (isLoggedIn.value && isCompany.value && !companyProfile.value) {
+    await companyStore.fetchProfileCompany();
+  }
 });
+console.log("profile", userProfile.value);
+console.log("profile", companyProfile.value);
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
 </script>
+
+<style scoped>
+.active {
+  border-bottom: 2px solid rgb(182, 85, 238);
+  padding-bottom: 1px;
+}
+</style>
 
 <style scoped>
 .active {

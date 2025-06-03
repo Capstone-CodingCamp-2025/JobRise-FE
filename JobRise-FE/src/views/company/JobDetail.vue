@@ -35,23 +35,42 @@
         <div class="flex gap-x-2 md:gap-x-3 pt-2 md:pt-5 items-center">
           <router-link
             :to="{name: 'job-edit', params: {id: jobsStore.jobDetail.id}}"
-            class="text-blue-700 bg-slate-200 h-max px-4 py-1 rounded-sm text-sm md:text-base"
-          >Edit</router-link>
+            class="text-blue-700 bg-slate-200 h-max px-10 py-1 rounded-sm text-sm md:text-base"
+          >Edit Post</router-link>
 
-          <select
-            v-model="selectedStatus"
-            @change="updateJobStatus"
-            :disabled="jobsStore.isLoading"
-            class="bg-slate-200 h-max px-4 py-1 rounded-sm text-sm md:text-base cursor-pointer outline-none"
-            :class="{
-              'text-green-500': selectedStatus === 'active',
-              'text-red-500': selectedStatus === 'deactive',
-              'opacity-50 cursor-not-allowed': jobsStore.isLoading
-            }"
-          >
-            <option value="active">Active</option>
-            <option value="deactive">Deactive</option>
-          </select>
+          <div class="relative">
+            <button
+              @click="toggleDropdown"
+              class="bg-slate-200 h-max px-3 py-1 rounded-sm text-sm md:text-base cursor-pointer outline-none"
+              :class="{ 'opacity-50 cursor-not-allowed': jobsStore.isLoading }"
+              :disabled="jobsStore.isLoading"
+            >
+              <div class="flex items-center gap-x-1">
+                <span
+                  :class="{
+                    'text-green-500': selectedStatus === 'active',
+                    'text-red-500': selectedStatus === 'deactive',
+                  }"
+                >{{ selectedStatus === 'active' ? 'Active' : 'Deactive' }}</span>
+                <Icon icon="iconoir:nav-arrow-down-solid" width="20" height="20" />
+              </div>
+            </button>
+            <div
+              v-if="isDropdownOpen"
+              class="absolute top-full right-0 mt-1 bg-white shadow-md rounded-md z-10"
+            >
+              <button
+                @click="selectStatus('active')"
+                class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                :class="{ 'text-green-500': selectedStatus === 'active' }"
+              >Active</button>
+              <button
+                @click="selectStatus('deactive')"
+                class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                :class="{ 'text-red-500': selectedStatus === 'deactive' }"
+              >Deactive</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -102,7 +121,18 @@ const jobsStore = JobsCompany();
 const route = useRoute();
 const jobId = ref(parseInt(route.params.id));
 
-const selectedStatus = ref(''); // State lokal untuk status yang dipilih di dropdown
+const selectedStatus = ref(''); // State lokal untuk status yang dipilih
+const isDropdownOpen = ref(false);
+
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
+
+const selectStatus = async (status) => {
+  selectedStatus.value = status;
+  isDropdownOpen.value = false;
+  await updateJobStatus();
+};
 
 // Ketika jobDetail dimuat atau berubah, inisialisasi selectedStatus
 watch(() => jobsStore.jobDetail, (newDetail) => {
@@ -126,4 +156,3 @@ onMounted(() => {
   jobsStore.fetchJobDetail(jobId.value);
 });
 </script>
-```

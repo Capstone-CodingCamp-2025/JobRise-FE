@@ -55,13 +55,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from "vue";
-import { useRouter } from "vue-router";
+import { ref, reactive, onMounted, defineProps } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import Swal from "sweetalert2";
 import { AuthUserStorage } from "@/stores/auth/userAuth";
+import { useAuthCompanyStore } from "@/stores/auth/companyAuth";
 
-const authStore = AuthUserStorage();
+const props = defineProps({
+  isCompany: Boolean, // Prop untuk menentukan apakah ini untuk company (masih digunakan)
+});
+
+const authUserStore = AuthUserStorage();
+const authCompanyStore = useAuthCompanyStore();
 const router = useRouter();
+const route = useRoute();
 
 const password = ref("");
 const confirmPassword = ref("");
@@ -71,9 +78,10 @@ const errors = reactive({
   confirm_password: "",
 });
 
-const props = defineProps({
-  token: String,
-});
+const token = ref(route.query.token);
+
+// Tambahkan ref untuk menyimpan informasi jenis pengguna (jika bisa dideteksi dari URL sebelumnya)
+const isLikelyCompany = ref(route.fullPath.includes('company')); // Contoh deteksi berdasarkan URL
 
 const validatePassword = () => {
   if (!password.value.trim()) {
@@ -119,22 +127,36 @@ const handleResetPassword = async () => {
 
   loading.value = true;
   try {
-    if (props.token) {
-      await authStore.ResetPassword(
-        props.token,
+    let resetSuccess = false;
+    if (props.isCompany || isLikelyCompany.value) {
+      await authCompanyStore.ResetPasswordCompany(
+        token.value,
         password.value,
-        confirmPassword.value
+        confirmPassword.value,
+        router
       );
+      resetSuccess = true;
+      router.push("/login-company");
     } else {
+      await authUserStore.ResetPassword(
+        token.value,
+        password.value,
+        confirmPassword.value,
+        router
+      );
+      resetSuccess = true;
+      router.push("/login");
+    }
+
+    if (!resetSuccess) {
       Swal.fire({
         toast: true,
         position: "top-end",
         icon: "error",
-        title: "Token tidak ditemukan, coba lagi!",
+        title: "Gagal mengatur ulang kata sandi.",
         showConfirmButton: false,
         timer: 3000,
       });
-      router.push("/forget-password");
     }
   } catch (error) {
     console.error("Gagal reset password:", error);
@@ -144,12 +166,13 @@ const handleResetPassword = async () => {
 };
 
 onMounted(async () => {
-  console.log("Token dari query:", props.token);
-
-  if (props.token) {
+  if (token.value) {
     try {
-      const response = await authStore.VerifyResetToken(props.token);
-      console.log("Verifikasi token berhasil:", response);
+      const verificationFunction = props.isCompany || isLikelyCompany.value
+        ? authCompanyStore.VerifyResetTokenCompany
+        : authUserStore.VerifyResetToken;
+      await verificationFunction(token.value);
+      console.log("Token valid.");
     } catch (error) {
       console.error("Token tidak valid:", error);
       Swal.fire({
@@ -160,7 +183,10 @@ onMounted(async () => {
         showConfirmButton: false,
         timer: 3000,
       });
-      router.push("/forget-password");
+      const redirectToForget = props.isCompany || isLikelyCompany.value
+        ? "/forget-password-company"
+        : "/forget-password";
+      router.push(redirectToForget);
     }
   } else {
     Swal.fire({
@@ -171,7 +197,10 @@ onMounted(async () => {
       showConfirmButton: false,
       timer: 3000,
     });
-    router.push("/forget-password");
+    const redirectToForget = props.isCompany || isLikelyCompany.value
+      ? "/forget-password-company"
+      : "/forget-password";
+    router.push(redirectToForget);
   }
 });
 </script>

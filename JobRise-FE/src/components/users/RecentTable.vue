@@ -2,14 +2,14 @@
   <div class="relative my-5">
     <div class="overflow-auto">
       <table class="table-auto text-center w-full ">
-        <thead class="bg-slate-200 text-center">
+        <thead class="bg-slate-200 text-center ">
           <tr>
-            <th class="min-w-[200px] py-2 md:py-3 rounded-l-lg font-normal text-left pl-4 md:pl-20">
+            <th class="min-w-[200px] py-2 md:py-3 rounded-l-lg font-bold text-gray-600 text-left pl-4 md:pl-20">
               Jobs
             </th>
-            <th class="min-w-[150px] py-2 md:py-3 font-normal">Date Applied</th>
-            <th class="min-w-[150px] py-2 md:py-3 font-normal">Status Apply</th>
-            <th class="min-w-[180px] py-2 md:py-3 rounded-r-lg font-normal">
+            <th class="min-w-[150px] py-2 md:py-3 font-bold text-gray-600">Date Applied</th>
+            <th class="min-w-[150px] py-2 md:py-3 font-bold text-gray-600">Status Apply</th>
+            <th class="min-w-[180px] py-2 md:py-3 rounded-r-lg font-bold text-gray-600">
               Action
             </th>
           </tr>
@@ -45,7 +45,7 @@
             </td>
             <td class="py-4 text-xs md:text-sm">March 20, 2025, 10:10</td>
             <td class="py-4 text-xs md:text-sm">
-              <div class="flex items-center justify-center">
+              <div class="flex items-center justify-center font-bold text-md text-green-400">
                 <Icon
                   icon="tabler:check"
                   width="16"

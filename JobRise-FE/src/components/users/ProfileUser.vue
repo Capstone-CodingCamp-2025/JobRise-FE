@@ -292,24 +292,24 @@ const fetchProfile = async () => {
     if (tokenUser.value) {
       await authUserStore.fetchUserProfile();
     } else {
-      console.warn("No token found, skipping profile fetch.");
+      console.warn("Token tidak ditemukan, lewati pengambilan profil.");
       userProfile.value = null;
     }
   } catch (error) {
-    console.error("Failed to fetch profile:", error);
+    console.error("Gagal mengambil profil:", error);
     if (error.response?.status === 404) {
       Swal.fire({
         icon: 'info',
-        title: 'No Profile Found',
-        text: 'Please fill in your profile details to create one.',
+        title: 'Profil Tidak Ditemukan',
+        text: 'Silakan isi detail profil Anda untuk membuatnya.',
         timer: 3000,
         showConfirmButton: false
       });
     } else {
       Swal.fire({
         icon: 'error',
-        title: 'Error Fetching Profile',
-        text: error.message || 'Something went wrong while fetching your profile.',
+        title: 'Error Mengambil Profil',
+        text: error.message || 'Terjadi kesalahan saat mengambil profil Anda.',
       });
     }
   } finally {
@@ -317,7 +317,10 @@ const fetchProfile = async () => {
   }
 };
 
-onMounted(fetchProfile);
+onMounted(() => {
+  // Ambil profil saat komponen dipasang
+  fetchProfile();
+});
 
 const handleFileChange = (event) => {
   const file = event.target.files[0];
@@ -352,7 +355,7 @@ const handleSubmit = async () => {
         toast: true,
         position: 'top-end',
         icon: 'success',
-        title: 'Profile updated successfully!',
+        title: 'Profil berhasil diperbarui!',
         timer: 3000,
         showConfirmButton: false,
       });
@@ -363,7 +366,7 @@ const handleSubmit = async () => {
         toast: true,
         position: 'top-end',
         icon: 'success',
-        title: 'Profile created successfully!',
+        title: 'Profil berhasil dibuat!',
         timer: 3000,
         showConfirmButton: false,
       });
@@ -371,11 +374,11 @@ const handleSubmit = async () => {
     await fetchProfile();
     isEditing.value = false;
   } catch (error) {
-    console.error("Failed to create/update profile:", error);
+    console.error("Gagal membuat/memperbarui profil:", error);
     Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: error.message || 'Failed to save profile.',
+      text: error.message || 'Gagal menyimpan profil.',
     });
   }
 };
@@ -385,7 +388,7 @@ const handleVerifyOtpRequest = async () => {
     await authUserStore.sendVerificationOTP();
     showOtpPopup.value = true;
   } catch (error) {
-    console.error("Failed to send OTP request:", error);
+    console.error("Gagal mengirim permintaan OTP:", error);
   }
 };
 
@@ -398,18 +401,18 @@ const handleVerifyOtp = async () => {
       toast: true,
       position: 'top-end',
       icon: 'success',
-      title: response.message || 'Email verified successfully!',
+      title: response.message || 'Email berhasil diverifikasi!',
       timer: 3000,
       showConfirmButton: false,
     });
     await fetchProfile();
   } catch (error) {
-    console.error("Failed to verify OTP:", error);
+    console.error("Gagal memverifikasi OTP:", error);
     Swal.fire({
       toast: true,
       position: 'top-end',
       icon: 'error',
-      title: error.response?.data?.message || "Failed to verify OTP.",
+      title: error.response?.data?.message || "Gagal memverifikasi OTP.",
       timer: 3000,
       showConfirmButton: false,
     });

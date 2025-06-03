@@ -23,6 +23,7 @@ const errors = reactive({
   email: "",
   password: "",
   confirm_password: "",
+  general: "", // Tambahkan untuk pesan error umum
 });
 
 const isLoading = ref(false);
@@ -97,56 +98,37 @@ const handleSubmit = async () => {
   if (!validateForm()) return;
 
   isLoading.value = true;
+  errors.general = ""; // Reset pesan error umum
   Object.keys(errors).forEach((key) => (errors[key] = ""));
 
   try {
-    if (props.isRegisterCompany) { // Jika ini adalah form LOGIN (berdasarkan default prop)
-      // Cukup panggil fungsi LoginCompany dari store.
-      // Navigasi ke dashboard-company sudah ditangani di dalam store action.
-      // Store akan mengembalikan true jika login berhasil dan role cocok,
-      // atau false jika login ditolak karena role tidak cocok (misalnya user mencoba login company).
-      // Atau akan throw error jika login gagal.
+    if (props.isRegisterCompany) { // Jika ini adalah form LOGIN
       await auth.LoginCompany({
         email: company.email,
         password: company.password,
       });
-      // TIDAK PERLU router.push() DI SINI LAGI!
-      // Karena store sudah melakukan router.replace("/dashboard-company")
-      // jika login berhasil dan role adalah 'company'.
-      // Jika login ditolak karena role 'user', store sudah melakukan router.replace("/login-company").
-
+      // Navigasi sudah ditangani di dalam store
     } else { // Jika ini adalah form REGISTER
       await auth.RegisterCompany(company);
-      router.push({ name: "login-company" });
+      // Navigasi sudah ditangani di dalam store
     }
   } catch (error) {
     console.error("Authentication error:", error);
-
-    // Penanganan error yang lebih spesifik
-    if (props.isRegisterCompany) { // Untuk Login
-      if (error.response) {
-        if (error.response.data?.message?.toLowerCase().includes("password")) {
-          errors.password = "Incorrect password. Please try again.";
-        } else if (
-          error.response.data?.message?.toLowerCase().includes("email")
-        ) {
-          errors.email = "Email not found. Please check or register.";
-        } else {
-          errors.password = "Invalid email or password combination";
+    if (error.response) {
+      errors.general = error.response.data?.message || "Authentication failed. Please try again.";
+      if (props.isRegisterCompany) { // Error Login
+        if (error.response.status === 401) {
+          errors.password = "Invalid email or password.";
         }
-      } else {
-        errors.password = "Login failed. Please try again.";
-      }
-    } else { // Untuk Register
-      if (error.response && error.response.status === 400) {
-        if (error.response.data?.errors?.email) {
-          errors.email = error.response.data.errors.email[0];
-        } else {
-          errors.email = "Registration failed. Please check your data.";
+      } else { // Error Register
+        if (error.response.status === 400) {
+          if (error.response.data?.errors?.email) {
+            errors.email = error.response.data.errors.email[0];
+          }
         }
-      } else {
-        errors.email = "Registration failed. Please try again.";
       }
+    } else {
+      errors.general = "Network error. Please try again.";
     }
   } finally {
     isLoading.value = false;
@@ -159,6 +141,10 @@ const handleSubmit = async () => {
     @submit.prevent="handleSubmit"
     class="flex flex-col gap-y-3 px-8 py-6 md:px-16 lg:px-24 lg:py-6 xl:py-8"
   >
+    <div v-if="errors.general" class="text-red-500 text-sm p-2 bg-red-50 rounded">
+      {{ errors.general }}
+    </div>
+
     <div class="flex flex-col gap-y-1" v-if="!props.isRegisterCompany">
       <label for="companyName" class="font-medium"
         >Company Name <span class="text-red-600">*</span></label
@@ -172,6 +158,7 @@ const handleSubmit = async () => {
         required
         v-model="company.name"
       />
+      <span v-if="errors.name" class="text-red-500 text-xs">{{ errors.name }}</span>
     </div>
 
     <div class="flex flex-col gap-y-1">
@@ -189,9 +176,7 @@ const handleSubmit = async () => {
         @input="validateForm"
         @blur="validateForm"
       />
-      <span v-if="errors.email" class="text-red-500 text-xs">{{
-        errors.email
-      }}</span>
+      <span v-if="errors.email" class="text-red-500 text-xs">{{ errors.email }}</span>
     </div>
 
     <div class="flex flex-col gap-y-1">
@@ -232,7 +217,7 @@ const handleSubmit = async () => {
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.4477 0-8.268-2.943-9.542-7z"
               v-if="!showPassword"
             />
             <path
@@ -311,8 +296,8 @@ const handleSubmit = async () => {
         <input type="checkbox" id="saveHistory" />
         <label for="saveHistory" class="text-sm">Remember me</label>
       </div>
-      <router-link :to="{name: 'forget-password'}" class="text-blue-800 text-xs font-medium">
-      Forget Password?</router-link
+      <router-link :to="{ name: 'forget-password' }" class="text-blue-800 text-xs font-medium">
+        Forget Password?</router-link
       >
     </div>
 

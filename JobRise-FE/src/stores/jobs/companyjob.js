@@ -19,6 +19,9 @@ export const JobsCompany = defineStore("jobs", () => {
   // State untuk menyimpan detail pekerjaan berdasarkan ID
   const jobDetail = ref(null);
 
+  // State untuk menandakan jika daftar pekerjaan kosong
+  const isJobsEmpty = ref(false);
+
   // Dapatkan instance dari store otentikasi
   const authStore = useAuthCompanyStore();
 
@@ -100,6 +103,7 @@ export const JobsCompany = defineStore("jobs", () => {
     isLoading.value = true;
     error.value = null;
     companyJobs.value = []; // Bersihkan data sebelumnya
+    isJobsEmpty.value = false; // Reset status kekosongan
 
     try {
       const token = authStore.tokenCompany;
@@ -127,16 +131,7 @@ export const JobsCompany = defineStore("jobs", () => {
         totalCompanyJobs.value = data.totalJobs;
         totalCompanyPages.value = data.totalPages;
         currentCompanyPage.value = data.currentPage;
-
-        // Opsional: Notifikasi sukses jika diperlukan
-        // Swal.fire({
-        //   toast: true,
-        //   position: "top-end",
-        //   icon: "success",
-        //   title: "Daftar pekerjaan berhasil dimuat!",
-        //   showConfirmButton: false,
-        //   timer: 1500
-        // });
+        isJobsEmpty.value = data.totalJobs === 0;
       } else {
         throw new Error(response.data.message || "Gagal mengambil daftar pekerjaan.");
       }
@@ -144,28 +139,26 @@ export const JobsCompany = defineStore("jobs", () => {
       error.value = err.response?.data?.message || err.message || "Terjadi kesalahan saat mengambil pekerjaan.";
       console.error("Error fetching company jobs:", err);
 
-      Swal.fire({
-        icon: "error",
-        title: "Gagal Memuat Pekerjaan!",
-        text: error.value,
-      });
-
       if (err.response && err.response.status === 401) {
         authStore.logout();
         router.push('/login-company');
       }
-      // Khusus untuk 404 (No jobs found), mungkin tidak perlu logout, hanya tampilkan pesan
+      // Khusus untuk 404 (No jobs found), set state isJobsEmpty menjadi true dan array menjadi kosong
       if (err.response && err.response.status === 404) {
-        companyJobs.value = []; // Pastikan array kosong jika tidak ada pekerjaan
+        companyJobs.value = [];
         totalCompanyJobs.value = 0;
         totalCompanyPages.value = 1;
         currentCompanyPage.value = 1;
+        isJobsEmpty.value = true;
+        error.value = null; // Reset error karena ini adalah kondisi yang diharapkan
       }
 
     } finally {
       isLoading.value = false;
     }
   }
+
+
 
   /**
    * Fungsi untuk mengambil detail pekerjaan berdasarkan ID.
@@ -340,6 +333,75 @@ export const JobsCompany = defineStore("jobs", () => {
       isLoading.value = false;
     }
   }
+  async function updateJobPost(id, jobData) {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const token = authStore.tokenCompany;
+      if (!token) {
+        throw new Error("Token otentikasi tidak ditemukan. Harap login kembali.");
+      }
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+
+      const response = await apiClient.put(`/jobs/${id}`, jobData, config);
+
+      if (response.status === 201 && response.data.status === "success") {
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil!",
+          text: "Posting pekerjaan berhasil diperbarui.",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        // Perbarui jobDetail di store jika pekerjaan yang diupdate adalah yang sedang dilihat
+        if (jobDetail.value && jobDetail.value.id === id) {
+          jobDetail.value = response.data.data;
+        }
+        // Opsional: Perbarui juga di companyJobs jika pekerjaan ada di daftar
+        const index = companyJobs.value.findIndex(job => job.id === id);
+        if (index !== -1) {
+          companyJobs.value[index] = { ...companyJobs.value[index], ...response.data.data };
+        }
+        router.push({ name: 'job-detail', params: { id: id } }); // Redirect ke detail pekerjaan yang diperbarui
+      } else if (response.status === 404) {
+        error.value = response.data.message;
+        Swal.fire({
+          icon: "error",
+          title: "Gagal!",
+          text: error.value,
+        });
+      } else if (response.status === 400) { // Menangani error "Harus di update oleh company yang sama"
+        error.value = response.data.message;
+        Swal.fire({
+          icon: "error",
+          title: "Gagal!",
+          text: error.value,
+        });
+      } else {
+        throw new Error(response.data.message || "Gagal memperbarui posting pekerjaan.");
+      }
+    } catch (err) {
+      error.value = err.response?.data?.message || err.message || "Terjadi kesalahan saat memperbarui posting pekerjaan.";
+      console.error(`Error updating job post with ID ${id}:`, err);
+      Swal.fire({
+        icon: "error",
+        title: "Gagal!",
+        text: error.value,
+      });
+      if (err.response && err.response.status === 401) {
+        authStore.logout();
+        router.push('/login-company');
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   return {
     isLoading,
@@ -349,10 +411,12 @@ export const JobsCompany = defineStore("jobs", () => {
     totalCompanyPages,
     currentCompanyPage,
     jobDetail,
+    isJobsEmpty, // Tambahkan isJobsEmpty ke return
     createJobPost,
     fetchCompanyJobs,
     fetchJobDetail,
     deactivateJob, // Tambahkan fungsi deactivateJob
     activateJob, // Tambahkan fungsi activateJob
+    updateJobPost,
   };
 });

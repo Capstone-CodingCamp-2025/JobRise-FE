@@ -10,7 +10,7 @@
               type="text"
               id="title"
               v-model="jobForm.title"
-              required
+              
               class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
               placeholder="Misal: FullStack Developer"
             />
@@ -22,7 +22,7 @@
               <select
                 id="job_type"
                 v-model="jobForm.job_type"
-                required
+                
                 class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base"
               >
                 <option value="Full-Time">Full-Time</option>
@@ -37,7 +37,7 @@
                 type="text"
                 id="location"
                 v-model="jobForm.location"
-                required
+                
                 class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
                 placeholder="Misal: Jakarta Timur"
               />
@@ -53,7 +53,7 @@
                   type="text"
                   id="salary_min"
                   v-model="jobForm.salary_min"
-                  required
+                  
                   class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
                   placeholder="Misal: 4 juta"
                 />
@@ -64,7 +64,7 @@
                   type="text"
                   id="salary_max"
                   v-model="jobForm.salary_max"
-                  required
+                  
                   class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
                   placeholder="Misal: 6 juta"
                 />
@@ -76,14 +76,13 @@
             <textarea
               id="description"
               v-model="jobForm.description"
-              required
+              
               class="bg-white h-24 sm:h-38 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
               placeholder="Jelaskan tanggung jawab, kualifikasi, dll."
             ></textarea>
           </div>
           <div class="pt-4 sm:pt-6">
             <div class="flex gap-x-2 justify-end">
-              
               <button
                 type="submit"
                 :disabled="jobsStore.isLoading"
@@ -109,6 +108,8 @@
 <script setup>
 import { JobsCompany } from '@/stores/jobs/companyjob';
 import { ref } from 'vue';
+// Import SweetAlert
+import Swal from 'sweetalert2';
 
 // Menggunakan store Pinia
 const jobsStore = JobsCompany();
@@ -128,19 +129,41 @@ const jobForm = ref({
  * Memanggil aksi `createJobPost` dari store Pinia.
  */
 const handleSubmit = async () => {
-  await jobsStore.createJobPost(jobForm.value);
+  const isTitleFilled = jobForm.value.title !== '';
+  const isDescriptionFilled = jobForm.value.description !== '';
+  const isSalaryMinFilled = jobForm.value.salary_min !== '';
+  const isSalaryMaxFilled = jobForm.value.salary_max !== '';
+  const isLocationFilled = jobForm.value.location !== '';
+  const isJobTypeFilled = jobForm.value.job_type !== '';
 
-  // Opsional: Reset form setelah berhasil jika tidak ada error
-  // Store Pinia sudah menangani SweetAlert dan redirect
-  if (!jobsStore.error) {
-    jobForm.value = {
-      title: '',
-      description: '',
-      salary_min: '',
-      salary_max: '',
-      location: '',
-      job_type: 'Full-Time',
-    };
+  if (
+    isTitleFilled &&
+    isDescriptionFilled &&
+    isSalaryMinFilled &&
+    isSalaryMaxFilled &&
+    isLocationFilled &&
+    isJobTypeFilled
+  ) {
+    await jobsStore.createJobPost(jobForm.value);
+
+    // Opsional: Reset form setelah berhasil jika tidak ada error
+    // Store Pinia sudah menangani SweetAlert dan redirect
+    if (!jobsStore.error) {
+      jobForm.value = {
+        title: '',
+        description: '',
+        salary_min: '',
+        salary_max: '',
+        location: '',
+        job_type: 'Full-Time',
+      };
+    }
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Harap isi semua kolom yang wajib diisi!',
+    });
   }
 };
 </script>

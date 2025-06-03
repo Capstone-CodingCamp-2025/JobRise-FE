@@ -45,7 +45,6 @@ const validateName = (name) => {
   const re = /^[a-zA-Z\s]*$/;
   return re.test(name);
 };
-
 // Validasi email
 const validateEmail = (email) => {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -64,7 +63,7 @@ const validateForm = () => {
   // Reset errors
   Object.keys(errors).forEach((key) => (errors[key] = ""));
 
-  if (!props.isRegister) {
+  if (!props.isRegister) { // Jika ini adalah form Register
     if (!user.name.trim()) {
       errors.name = "Full name is required";
       isValid = false;
@@ -94,7 +93,7 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (!props.isRegister) {
+  if (!props.isRegister) { // Jika ini adalah form Register
     if (!user.confirm_password) {
       errors.confirm_password = "Please confirm your password";
       isValid = false;
@@ -108,58 +107,54 @@ const validateForm = () => {
 };
 
 const handleSubmit = async () => {
-  if (!validateForm()) return;
+  console.log('handleSubmit called');
+  if (!validateForm()) {
+    console.log('Form validation failed');
+    return;
+  }
 
   isLoading.value = true;
   errors.general = "";
+  console.log('isLoading set to true, calling authentication action');
 
   try {
-    if (props.isRegister) {
-      // Login - logika redirect dan penolakan role company ada di store
+    if (props.isRegister) { // Jika prop isRegister true, maka ini adalah form Login
       const loginSuccess = await auth.LoginUser({
         email: user.email,
         password: user.password,
       });
+      console.log('LoginUser completed:', loginSuccess);
 
-      // Hanya redirect ke dashboard jika login berhasil dan bukan role company
       if (loginSuccess === true) {
         router.push({ name: "dashboard" });
       }
-      // Jika login ditolak (kembali false dari store), tidak ada redirect ke dashboard
-      // karena redirect ke login sudah ditangani di store.
-    } else {
-      // Register
-      await auth.RegisterUser(user);
-      router.push({ name: "login" });
+    } else { // Jika prop isRegister false, maka ini adalah form Register
+      await auth.RegisterUser({
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        confirm_password: user.confirm_password,
+      });
+      router.push({ name: "login" }); // Setelah berhasil register, arahkan ke halaman login
     }
   } catch (error) {
     console.error("Authentication error:", error);
-
-    // Handle error spesifik untuk login
-    if (props.isRegister) {
-      if (error.response && error.response.status === 400) {
-        const errorMessage = error.response.data?.message?.toLowerCase() || "";
-        if (errorMessage.includes("email") || errorMessage.includes("user")) {
-          errors.general = "Unregistered or invalid email";
-        } else if (errorMessage.includes("password")) {
-          errors.general = "Password is wrong!";
-        } else {
-          errors.general = "Invalid e-mail or password";
+    if (error.response) {
+      errors.general = error.response.data?.message || "Authentication failed. Please try again.";
+      if (error.response.status === 400 && !props.isRegister) {
+        // Handle specific 400 errors for registration, if the backend provides details
+        if (error.response.data?.errors?.email) {
+          errors.email = error.response.data.errors.email[0];
         }
-      } else {
-        errors.general = error.message || "Login failed. Please try again.";
+      } else if (error.response.status === 401 && props.isRegister) {
+        errors.general = "Invalid email or password.";
       }
     } else {
-      // Handle error untuk registrasi
-      if (error.response && error.response.status === 400) {
-        errors.general = "Email already registered or invalid data";
-      } else {
-        errors.general =
-          error.message || "Registration failed. Please try again.";
-      }
+      errors.general = "Network error. Please try again later.";
     }
   } finally {
     isLoading.value = false;
+    console.log('isLoading set to false');
   }
 };
 </script>
@@ -333,8 +328,11 @@ const handleSubmit = async () => {
         <input type="checkbox" id="saveHistory" />
         <label for="saveHistory" class="text-sm">Remember me</label>
       </div>
-      <router-link :to="{name: 'forget-password'}" class="text-blue-800 text-xs font-medium">
-      Forget Password?</router-link
+      <router-link
+        :to="{ name: 'forget-password' }"
+        class="text-blue-800 text-xs font-medium"
+      >
+        Forget Password?</router-link
       >
     </div>
 

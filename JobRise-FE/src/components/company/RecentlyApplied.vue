@@ -1,7 +1,7 @@
 <template>
   <div class="px-2 md:px-8 lg:px-14">
     <div class="flex justify-between">
-      <h1 class="font-bold text-xl md:text-2xl">Recently Applied</h1>
+      <h1 class="font-bold text-xl md:text-2xl">Latest Applications</h1>
       <div class="flex gap-x-1">
         <router-link
           :to="{name: 'job-list'}"

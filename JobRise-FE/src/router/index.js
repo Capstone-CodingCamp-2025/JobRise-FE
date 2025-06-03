@@ -18,12 +18,12 @@ import Applied from "@/views/users/Applied.vue";
 import AppliedDetail from "@/views/users/AppliedDetail.vue";
 import PostJob from "@/views/company/PostJob.vue";
 import JobList from "@/views/company/JobList.vue";
-import ForgetPassword from "@/views/users/auth/ForgetPassword.vue";
+import ForgetPassword from "@/views/forgetpassword/ForgetPassword.vue";
 import JobDetail from "@/views/company/JobDetail.vue";
 import JobEdit from "@/views/company/JobEdit.vue";
 import JobDetails from "@/views/users/JobDetails.vue";
 import FavoriteJob from "@/views/users/FavoriteJob.vue";
-import ResetPassword from "@/views/users/auth/ResetPassword.vue";
+import ResetPassword from "@/views/forgetpassword/ResetPassword.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,7 +76,13 @@ const router = createRouter({
       component: ForgetPassword,
       meta: { isAuth: false },
     },
-
+    {
+      path: '/forget-password-company',
+      name: 'forget-password-company',
+      component: ForgetPassword,
+      meta: { isAuth: false },
+      props: { isCompany: true },
+    },
     {
       path: "/reset-password",
       name: "reset-password",
@@ -84,7 +90,13 @@ const router = createRouter({
       meta: { isAuth: false },
       props: (route) => ({ token: route.query.token }), // Props untuk menerima query parameter
     },
-
+    {
+      path: '/reset-password-company',
+      name: 'reset-password-company',
+      component: ResetPassword,
+      meta: { isAuth: false },
+      props: (route) => ({ token: route.query.token, isCompany: true }),
+    },
     {
       path: "/dashboard",
       name: "dashboard",

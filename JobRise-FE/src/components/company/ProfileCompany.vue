@@ -53,9 +53,7 @@
                   class="text-xs md:text-sm font-normal text-green-700"
                   >Verified</span
                 >
-                <span
-                  v-else
-                  class="text-xs md:text-sm font-normal text-red-700"
+                <span v-else class="text-xs md:text-sm font-normal text-red-700"
                   >Not Verified</span
                 >
               </label>
@@ -71,7 +69,7 @@
               type="text"
               id="companyEmail"
               class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 w-full md:w-52 text-sm"
-              :value="currentCompany?.email"
+              :value="companyProfile?.email"
               readonly
             />
           </div>
@@ -81,7 +79,9 @@
           class="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-9 gap-y-3 w-full"
         >
           <div class="flex flex-col gap-y-2">
-            <label for="companyName" class="font-medium text-sm md:text-base">Company Name</label>
+            <label for="companyName" class="font-medium text-sm md:text-base"
+              >Company Name</label
+            >
             <input
               type="text"
               id="companyName"
@@ -90,7 +90,9 @@
             />
           </div>
           <div class="flex flex-col gap-y-2">
-            <label for="website" class="font-medium text-sm md:text-base">Website</label>
+            <label for="website" class="font-medium text-sm md:text-base"
+              >Website</label
+            >
             <input
               type="text"
               id="website"
@@ -99,7 +101,9 @@
             />
           </div>
           <div class="flex flex-col gap-y-2">
-            <label for="industry" class="font-medium text-sm md:text-base">Industry</label>
+            <label for="industry" class="font-medium text-sm md:text-base"
+              >Industry</label
+            >
             <input
               type="text"
               id="industry"
@@ -108,7 +112,9 @@
             />
           </div>
           <div class="flex flex-col gap-y-2">
-            <label for="address" class="font-medium text-sm md:text-base">Address</label>
+            <label for="address" class="font-medium text-sm md:text-base"
+              >Address</label
+            >
             <input
               type="text"
               id="address"
@@ -117,7 +123,9 @@
             />
           </div>
           <div class="flex flex-col gap-y-2 col-span-1 md:col-span-2">
-            <label for="description" class="font-medium text-sm md:text-base">Description</label>
+            <label for="description" class="font-medium text-sm md:text-base"
+              >Description</label
+            >
             <textarea
               id="description"
               v-model="profileData.description"
@@ -145,7 +153,7 @@
               type="submit"
               class="bg-blue-950/90 text-white px-3 md:px-5 rounded-md py-1 text-sm cursor-pointer"
             >
-              {{ isEditing ? 'Save Changes' : 'Save' }}
+              {{ isEditing ? "Save Changes" : "Save" }}
             </button>
           </div>
         </div>
@@ -176,9 +184,12 @@
         <div
           class="flex flex-col sm:flex-row justify-center gap-2 mt-4 md:mt-6"
         >
-        <button
+          <button
             type="button"
-            @click="showOtpPopup = false; otpCode = ''"
+            @click="
+              showOtpPopup = false;
+              otpCode = '';
+            "
             class="bg-gray-400 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
           >
             Cancel
@@ -196,37 +207,55 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { Icon } from "@iconify/vue";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
 import { useAuthCompanyStore } from "@/stores/auth/companyAuth";
-import { storeToRefs } from "pinia"; // Import storeToRefs
+import { storeToRefs } from "pinia";
 
 const authCompanyStore = useAuthCompanyStore();
 const router = useRouter();
 
-// Destructure reactive properties from the store using storeToRefs
 const { companyProfile, currentCompany } = storeToRefs(authCompanyStore);
 
-// Local State
 const fileInput = ref(null);
 const showOtpPopup = ref(false);
 const otpCode = ref("");
 const logoFile = ref(null);
-const logoPreview = ref(null);
-const isEditing = ref(false);
+const logoPreview = computed(() => {
+  if (logoFile.value) {
+    return URL.createObjectURL(logoFile.value);
+  }
+  if (companyProfile.value?.logo) {
+    const baseURL = "http://localhost:3888/public/";
+    const path1 = `${companyProfile.value.logo}`;
+    const path2 = `${companyProfile.value.logo}`;
 
-// Form data
+    // Secara sinkronus coba buat URL pertama
+    const url1 = new URL(path1, baseURL).href;
+
+    // Secara sinkronus coba buat URL kedua
+    const url2 = new URL(path2, baseURL).href;
+
+    // Kita tidak bisa melakukan pengecekan keberadaan file secara sinkronus di sini.
+    // Solusi yang lebih baik adalah mengubah backend.
+    // Sebagai workaround, kita bisa mencoba URL kedua jika URL pertama terlihat seperti default atau tidak valid.
+    // Atau, jika Anda memiliki pola penamaan yang berbeda untuk logo perusahaan, Anda bisa menggunakannya di sini.
+
+    // Contoh sederhana: coba path kedua jika path pertama hanya nama file (tidak mengandung '/').
+    if (!companyProfile.value.logo.includes("/")) {
+      return url2;
+    }
+    return url1; // Default ke path pertama
+  }
+  return null;
+});
+const isEditing = ref(false);
 const profileData = ref({
-  company_name: "",
-  address: "",
-  website: "",
-  industry: "",
-  description: "",
+  /* ... */
 });
 
-// Fungsi untuk mengisi form dengan data profil yang sudah ada
 const fillProfileData = (data) => {
   if (data) {
     profileData.value.company_name = data.company_name || "";
@@ -234,13 +263,8 @@ const fillProfileData = (data) => {
     profileData.value.website = data.website || "";
     profileData.value.industry = data.industry || "";
     profileData.value.description = data.description || "";
-    if (data.logo) {
-      logoPreview.value = `http://localhost:3888/public/${data.logo}`; // Sesuaikan path jika berbeda
-    } else {
-      logoPreview.value = null;
-    }
+    // logoPreview akan dihitung oleh computed property
   } else {
-    // Reset form jika tidak ada data
     profileData.value = {
       company_name: "",
       address: "",
@@ -255,33 +279,16 @@ const fillProfileData = (data) => {
 onMounted(async () => {
   try {
     await authCompanyStore.fetchProfileCompany();
-    // Setelah data profil berhasil diambil, isi form
-    fillProfileData(companyProfile.value); // Gunakan companyProfile yang sudah di-destructure
-    console.log("Status email saat onMounted:", companyProfile.value?.email_verified);
+    fillProfileData(companyProfile.value);
+    console.log("companyProfile.value.logo:", companyProfile.value?.logo);
   } catch (error) {
     console.error("Gagal memuat profil perusahaan:", error);
-    // Handle error jika gagal mengambil profil, misalnya menampilkan pesan ke pengguna
   }
 });
 
 const handleLogoUpload = (event) => {
   const file = event.target.files[0];
   logoFile.value = file;
-  if (file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      logoPreview.value = reader.result;
-    };
-    reader.readAsDataURL(file);
-  } else {
-    // Jika batal memilih file saat edit, pertahankan preview saat ini
-    if (!isEditing) {
-      logoPreview.value = companyProfile.value?.logo
-        ? `http://localhost:3888/public/${companyProfile.value.logo}`
-        : null;
-    }
-    logoFile.value = null;
-  }
 };
 
 const saveProfile = async () => {
@@ -297,34 +304,37 @@ const saveProfile = async () => {
   }
 
   try {
-    if (companyProfile.value?.id && isEditing.value) { // Gunakan companyProfile yang sudah di-destructure
+    if (companyProfile.value?.id && isEditing.value) {
+      // Gunakan companyProfile yang sudah di-destructure
       // Update existing profile
       await authCompanyStore.updateProfileCompany(formData);
       Swal.fire({
         toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: 'Profil perusahaan berhasil diperbarui!',
+        position: "top-end",
+        icon: "success",
+        title: "Profil perusahaan berhasil diperbarui!",
         timer: 3000,
         showConfirmButton: false,
       });
       isEditing.value = false; // Keluar dari mode edit setelah berhasil menyimpan
-    } else if (!companyProfile.value?.id) { // Gunakan companyProfile yang sudah di-destructure
+    } else if (!companyProfile.value?.id) {
+      // Gunakan companyProfile yang sudah di-destructure
       // Create new profile
-      if (!logoFile.value && !companyProfile.value?.logo) { // Gunakan companyProfile yang sudah di-destructure
+      if (!logoFile.value && !companyProfile.value?.logo) {
+        // Gunakan companyProfile yang sudah di-destructure
         Swal.fire({
-          icon: 'warning',
-          title: 'Peringatan',
-          text: 'Harap masukkan logo perusahaan.',
+          icon: "warning",
+          title: "Peringatan",
+          text: "Harap masukkan logo perusahaan.",
         });
         return;
       }
       await authCompanyStore.createProfileCompany(formData);
       Swal.fire({
         toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: 'Profil perusahaan berhasil disimpan!',
+        position: "top-end",
+        icon: "success",
+        title: "Profil perusahaan berhasil disimpan!",
         timer: 3000,
         showConfirmButton: false,
       });
@@ -334,10 +344,10 @@ const saveProfile = async () => {
     console.error("Gagal menyimpan/memperbarui profil perusahaan", error);
     Swal.fire({
       toast: true,
-      position: 'top-end',
-      icon: 'error',
-      title: 'Gagal menyimpan/memperbarui profil perusahaan!',
-      text: error.message || 'Terjadi kesalahan.',
+      position: "top-end",
+      icon: "error",
+      title: "Gagal menyimpan/memperbarui profil perusahaan!",
+      text: error.message || "Terjadi kesalahan.",
       timer: 3000,
       showConfirmButton: false,
     });
@@ -350,14 +360,11 @@ const enterEditMode = () => {
 
 const cancelEditMode = () => {
   isEditing.value = false;
-  // Re-fetch profile data to revert changes
-  authCompanyStore.fetchProfileCompany().then(data => {
-    fillProfileData(data);
-  }).catch(error => {
-    console.error("Gagal memuat ulang profil:", error);
-  });
+  authCompanyStore
+    .fetchProfileCompany()
+    .then((data) => fillProfileData(data))
+    .catch((error) => console.error("Gagal memuat ulang profil:", error));
 };
-
 const sendOTPVerification = async () => {
   try {
     await authCompanyStore.sendVerificationOTP();
@@ -374,7 +381,10 @@ const handleVerifyOtpSubmit = async () => {
     otpCode.value = "";
     // PENTING: Refresh data profil setelah verifikasi berhasil
     await authCompanyStore.fetchProfileCompany();
-    console.log("Status email setelah verifikasi OTP dan fetch ulang:", companyProfile.value?.email_verified);
+    console.log(
+      "Status email setelah verifikasi OTP dan fetch ulang:",
+      companyProfile.value?.email_verified
+    );
   } catch (error) {
     // Error sudah ditangani di store
   }

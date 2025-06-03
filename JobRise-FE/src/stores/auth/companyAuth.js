@@ -56,33 +56,17 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
       });
 
       tokenCompany.value = data.token;
-      // Inisialisasi currentCompany dengan data user dasar dari respons login
-      currentCompany.value = data.user;
-
-      // Ambil data profil perusahaan untuk mendapatkan status email_verified
-      // Panggil fetchProfileCompany di sini untuk memastikan companyProfile terisi
-      const profileData = await fetchProfileCompany();
-
-      // Gabungkan status email_verified dari profil ke currentCompany
-      if (profileData && profileData.email_verified !== undefined) {
-        currentCompany.value = {
-          ...currentCompany.value,
-          email_verified: profileData.email_verified,
-        };
-      }
-      // Log untuk debugging: lihat currentCompany setelah digabungkan
-      console.log("currentCompany after login and profile merge:", currentCompany.value);
+      // Asumsi response login company memberikan token dan role
+      // Kita bisa menyimpan role di currentCompany jika diperlukan
+      currentCompany.value = { role: data.role };
 
       localStorage.setItem("tokenCompany", JSON.stringify(data.token));
-      localStorage.setItem("company", JSON.stringify(currentCompany.value)); // Simpan currentCompany yang sudah diperbarui
+      localStorage.setItem("company", JSON.stringify(currentCompany.value)); // Simpan role (atau data company jika ada)
 
-      // Panggil getCompanyByAuth untuk memastikan data otentikasi lengkap,
-      // ini juga akan memperbarui currentCompany dengan email_verified
-      // Perhatikan: getCompanyByAuth juga memanggil fetchProfileCompany, jadi ini bisa redundant
-      // Namun, untuk memastikan role check berjalan, kita biarkan dulu.
-      const fullCompanyData = await getCompanyByAuth(); 
+      // Tidak perlu memanggil getCompanyByAuth segera setelah login
+      // Kecuali Anda membutuhkan data company yang lebih lengkap
 
-      if (fullCompanyData?.role === "user") {
+      if (data?.role === "user") {
         // Hapus token dan company dari localStorage karena login ditolak
         localStorage.removeItem("tokenCompany");
         localStorage.removeItem("company"); // Reset state
@@ -94,7 +78,7 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
           title: "Akses Ditolak",
           text: "Anda login sebagai user dan tidak dapat mengakses halaman login company.",
         });
-        router.replace("/login-company");
+        router.replace("/dashboard-company");
         return false; // Menghentikan proses login company
       }
 
@@ -128,6 +112,81 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
     }
   };
 
+
+  const SendForgotPasswordCompany = async (email) => {
+    try {
+      const response = await apiClient.post("/forgot-password", { email }); // Menggunakan endpoint yang sama
+      console.log("Full response from forgot password (company):", response);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: response.data.message,
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error sending forgot password link (company):", error);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: error.response?.data?.message || "Failed to send reset link",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
+
+  const VerifyResetTokenCompany = async (token) => {
+    try {
+      const response = await apiClient.get(`/verify-token/${token}`); // Menggunakan endpoint yang sama
+      return response.data;
+    } catch (error) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: error.response?.data?.error || "Invalid or expired token",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
+
+  const ResetPasswordCompany = async (token, password, confirm_password, router) => {
+    try {
+      const response = await apiClient.post(`/reset-password/${token}`, { // Menggunakan endpoint yang sama
+        password,
+        confirm_password,
+      });
+      console.log(response.data);
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Password updated successfully",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      router.push("/login-company"); // Redirect ke login company
+      return response.data;
+    } catch (error) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: error.response?.data?.error || "Failed to reset password",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      throw error;
+    }
+  };
+
   const getCompanyByAuth = async () => {
     try {
       const response = await apiClient.get("/user-auth", {
@@ -139,18 +198,7 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
       // Update data company dengan respons dari server
       currentCompany.value = response.data.data;
 
-      // Ambil data profil perusahaan untuk mendapatkan status email_verified
-      const profileData = await fetchProfileCompany();
-
-      // Gabungkan status email_verified dari profil ke currentCompany
-      if (profileData && profileData.email_verified !== undefined) {
-        currentCompany.value = {
-          ...currentCompany.value,
-          email_verified: profileData.email_verified,
-        };
-      }
-      // Log untuk debugging: lihat currentCompany setelah digabungkan
-      console.log("currentCompany after getCompanyByAuth and profile merge:", currentCompany.value);
+      // Tidak perlu memanggil fetchProfileCompany di sini lagi
 
       localStorage.setItem("company", JSON.stringify(currentCompany.value)); // Simpan currentCompany yang sudah diperbarui
 
@@ -185,15 +233,7 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         timer: 3000,
       });
       // Setelah berhasil membuat profil, kita bisa langsung mengambil datanya
-      await fetchProfileCompany();
-      // Perbarui currentCompany dengan status email_verified terbaru dari profil
-      if (companyProfile.value && companyProfile.value.email_verified !== undefined) {
-        currentCompany.value = {
-          ...currentCompany.value,
-          email_verified: companyProfile.value.email_verified,
-        };
-        localStorage.setItem("company", JSON.stringify(currentCompany.value));
-      }
+      // await fetchProfileCompany(); // Pindahkan pemanggilan ini ke komponen profil
       return data.data; // Mengembalikan data profil yang dibuat
     } catch (error) {
       Swal.fire({
@@ -227,15 +267,7 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         timer: 3000,
       });
       // Setelah berhasil memperbarui profil, kita bisa langsung mengambil datanya
-      await fetchProfileCompany();
-      // Perbarui currentCompany dengan status email_verified terbaru dari profil
-      if (companyProfile.value && companyProfile.value.email_verified !== undefined) {
-        currentCompany.value = {
-          ...currentCompany.value,
-          email_verified: companyProfile.value.email_verified,
-        };
-        localStorage.setItem("company", JSON.stringify(currentCompany.value));
-      }
+      // await fetchProfileCompany(); // Pindahkan pemanggilan ini ke komponen profil
       return data.data; // Mengembalikan data profil yang diperbarui
     } catch (error) {
       Swal.fire({
@@ -331,16 +363,12 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
         showConfirmButton: false,
         timer: 3000,
       });
-      // Setelah verifikasi berhasil, update status di currentCompany dan companyProfile
-      // Perhatikan: companyProfile akan diperbarui secara otomatis oleh fetchProfileCompany
-      // yang dipanggil setelah ini di komponen, jadi ini mungkin redundant tapi tidak merusak.
+      // Setelah verifikasi berhasil, update status di currentCompany
       if (currentCompany.value) {
-        currentCompany.value.email_verified = "yes";
+        currentCompany.value = { ...currentCompany.value, email_verified: 'yes' };
         localStorage.setItem("company", JSON.stringify(currentCompany.value));
       }
-      if (companyProfile.value) {
-        companyProfile.value.email_verified = "yes";
-      }
+      // companyProfile akan di-fetch ulang di komponen setelah ini jika diperlukan.
       return data;
     } catch (error) {
       Swal.fire({
@@ -358,15 +386,18 @@ export const useAuthCompanyStore = defineStore("authCompany", () => {
   return {
     tokenCompany,
     currentCompany,
-    companyProfile, // Tambahkan companyProfile ke return
+    companyProfile,
     RegisterCompany,
     LoginCompany,
     getCompanyByAuth,
     createProfileCompany,
-    updateProfileCompany, // Tambahkan
-    fetchProfileCompany, // Tambahkan fetchProfileCompany ke return
+    updateProfileCompany,
+    fetchProfileCompany,
     logout,
-    sendVerificationOTP, // Tambahkan fungsi sendVerificationOTP
+    SendForgotPasswordCompany,
+    VerifyResetTokenCompany,
+    ResetPasswordCompany,
+    sendVerificationOTP,
     verifyEmailOTP,
   };
 });
