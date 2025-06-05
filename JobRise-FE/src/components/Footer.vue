@@ -12,9 +12,9 @@
           JobRise is here to help you rise to the occasion.
         </p>
       </div>
-      <div class=" justify-between gap-x-8 ">
+      <div class=" justify-between gap-x-8 mt-10 md:mt-6 ">
         <p class="font-semibold text-xl text-center text-white">CC25-CF097</p>
-        <div class="flex gap-x-4">
+        <div class="flex justify-center gap-x-3 md:gap-x-4">
           <p class="text-white text-xl">Reach Us</p>
           <a href="https://github.com/Capstone-CodingCamp-2025" class="bg-white text-blue-900 px-7 py-1 rounded-md">
             Github

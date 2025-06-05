@@ -115,8 +115,8 @@
     <div class="relative mt-2" ref="dropdownRef" v-else>
       <div class="flex items-center cursor-pointer" @click="toggleAvatar">
         <img
-          v-if="isLoggedIn && isUser && userProfile?.profile_picture"
-          :src="`http://localhost:3888/public/${userProfile.profile_picture}`"
+          v-if="isLoggedIn && isUser && userProfile?.image"
+          :src="`http://localhost:3888/public/${userProfile.image}`"
           alt="User Avatar"
           class="w-10 h-10 rounded-full object-cover"
         />

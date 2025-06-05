@@ -1,5 +1,40 @@
 <template>
-  <div class="relative my-5">
+  <div v-if="isLoadingInitialData" class="text-center py-8">
+    <svg
+      class="animate-spin h-8 w-8 text-blue-600 mx-auto"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+      ></circle>
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      ></path>
+    </svg>
+    <p class="mt-2 text-gray-600">Loading jobs...</p>
+  </div>
+  <div v-else-if="jobsStore.error" class="text-center py-8 bg-red-50 rounded-md shadow-sm">
+    <p class="text-red-600 font-semibold text-lg">
+      Gagal memuat data pekerjaan:
+    </p>
+    <p class="text-red-500 mt-2">{{ jobsStore.error }}</p>
+  </div>
+  <div v-else-if="!displayedJobs.length" class="text-center py-8 bg-yellow-50 rounded-md shadow-sm">
+    <p class="text-yellow-700 font-semibold text-lg">
+      Belum ada pekerjaan untuk ditampilkan.
+    </p>
+  </div>
+
+  <div v-else class="relative my-5">
     <div class="overflow-auto">
       <table class="table-auto text-center w-full">
         <thead class="bg-slate-200 text-center">
@@ -24,10 +59,9 @@
           >
             <td class="py-4 pl-4 text-left">
               <div class="flex items-center">
-                {{ console.log(job.company_logo) }}
                 <img
                   :src="job.company_logo ? `http://localhost:3888/public/${job.company_logo}` : 'https://placehold.co/48x48/cccccc/000000?text=Logo'"
-                  :alt="job.company_name"
+                  :alt="job.company_name || 'Company Logo'"
                   class="object-cover w-10 h-10 rounded mr-2 md:w-12 md:h-12 md:mr-4"
                 />
                 <div>
@@ -73,7 +107,6 @@
                     class="mr-1"
                   />
                   <p class="text-green-400 font-bold text-md">
-
                     Active
                   </p>
                 </template>
@@ -86,37 +119,19 @@
                     class="mr-1"
                   />
                   <p class="text-red-400 font-bold text-md">
-
                     Inactive
                   </p>
                 </template>
-                <template v-else>
-                  {{ job.is_active }}
+                <template v-else> {{ job.is_active }}
                 </template>
               </div>
             </td>
             <td class="py-4 text-xs md:text-sm">
               <router-link
-                :to="{ name: 'job-detail', params: { id: job.id } }"
-                class="font-base px-3 py-1 rounded-lg text-white bg-[#0c1f61d3] hover:bg-[#091a52]"
+                :to="{ name: 'job-detail', params: { id: job.id } }" class="font-base px-3 py-1 rounded-lg text-white bg-[#0c1f61d3] hover:bg-[#091a52]"
               >
                 View Details
               </router-link>
-            </td>
-          </tr>
-          <tr v-if="jobsStore.isLoading">
-            <td colspan="4" class="py-4 text-center text-gray-500">
-              Loading jobs...
-            </td>
-          </tr>
-          <tr v-else-if="jobsStore.error">
-            <td colspan="4" class="py-4 text-center text-red-500">
-              {{ jobsStore.error }}
-            </td>
-          </tr>
-          <tr v-else-if="jobsStore.isJobsEmpty">
-            <td colspan="4" class="py-4 text-center text-gray-500">
-              Jobs Kosong
             </td>
           </tr>
           </tbody>
@@ -134,22 +149,37 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
-import { JobsCompany } from "@/stores/jobs/companyjob";
+import { JobsCompany } from "@/stores/jobs/companyjob"; // Sesuaikan path jika perlu
 
-// Menggunakan store Pinia
 const jobsStore = JobsCompany();
+const isLoadingInitialData = ref(true); // State untuk loading data awal komponen ini
 
-// Computed property untuk mengambil 4 data pekerjaan teratas
+// Computed property untuk mengambil 4 data pekerjaan teratas dari store
 const displayedJobs = computed(() => {
-  return jobsStore.companyJobs.slice(0, 4);
+  if (!jobsStore.allCompanyJobs) {
+    return []; // Kembalikan array kosong jika data belum ada
+  }
+  return jobsStore.allCompanyJobs.slice(0, 4); // Ambil 4 item pertama
 });
 
-// Panggil fungsi untuk mengambil daftar pekerjaan (dengan limit 4) saat komponen dimuat
-onMounted(() => {
-  jobsStore.fetchCompanyJobs(1, 4); // Ambil halaman pertama dengan 4 item per halaman
+// Panggil fungsi untuk mengambil SEMUA daftar pekerjaan saat komponen dimuat
+// hanya jika data di store masih kosong.
+onMounted(async () => {
+  isLoadingInitialData.value = true;
+  try {
+    // Cek apakah data sudah ada di store untuk menghindari fetch berulang jika tidak perlu
+    if (jobsStore.allCompanyJobs.length === 0) {
+      await jobsStore.fetchAllCompanyJobsOnce();
+    }
+  } catch (e) {
+    // Error sudah ditangani di store, tapi bisa ditangani lagi di sini jika perlu
+    console.error("Failed to fetch initial jobs for dashboard:", e);
+  } finally {
+    isLoadingInitialData.value = false;
+  }
 });
 </script>
 
 <style scoped>
-/* No additional scoped styles needed for this functionality */
+/* Gaya spesifik untuk komponen ini jika ada */
 </style>

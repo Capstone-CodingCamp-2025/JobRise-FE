@@ -25,8 +25,8 @@
                 
                 class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base"
               >
-                <option value="Full-Time">Full-Time</option>
-                <option value="Part-Time">Part-Time</option>
+                <option value="Full Time">Full Time</option>
+                <option value="Part Time">Part Time</option>
                 <option value="Contract">Kontrak</option>
                 <option value="Internship">Magang</option>
               </select>
@@ -86,7 +86,7 @@
               <button
                 type="submit"
                 :disabled="jobsStore.isLoading"
-                class="bg-blue-950/90 text-white rounded-md px-4 py-1 text-sm sm:text-base flex items-center justify-center"
+                class="bg-blue-950/90 text-white cursor-pointer rounded-md px-4 py-1 text-sm sm:text-base flex items-center justify-center"
               >
                 <span v-if="jobsStore.isLoading" class="flex items-center">
                   <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -121,7 +121,7 @@ const jobForm = ref({
   salary_min: '',
   salary_max: '',
   location: '',
-  job_type: 'Full-Time', // Nilai default
+  job_type: 'Full Time', // Nilai default
 });
 
 /**
@@ -155,7 +155,7 @@ const handleSubmit = async () => {
         salary_min: '',
         salary_max: '',
         location: '',
-        job_type: 'Full-Time',
+        job_type: 'Full Time',
       };
     }
   } else {

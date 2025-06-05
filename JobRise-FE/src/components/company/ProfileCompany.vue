@@ -54,8 +54,8 @@
                   class="text-xs md:text-sm font-normal text-green-700"
                   >Verified</span
                 >
-                <span v-else class="text-xs md:text-sm font-normal text-red-700"
-                  >Not Verified</span
+                <span v-else class="text-xs md:text-sm font-normal text-blue-900"
+                  >Unverified</span
                 >
               </label>
               {{ console.log("curennrrr", currentCompany) }}

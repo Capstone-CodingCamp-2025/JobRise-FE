@@ -1,6 +1,6 @@
 <template>
   <div v-if="loadingProfile" class="flex justify-center items-center h-64">
-    <p class="text-xl font-semibold text-gray-600">Loading profile...</p>
+    <p class="text-xl font-semibold text-gray-600">Memuat profil...</p>
   </div>
   <form
     v-else
@@ -11,7 +11,7 @@
     <div class="flex flex-col items-center gap-6 col-span-1">
       <div
         class="w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden relative cursor-pointer"
-        @click="$refs.fileInput.click()"
+        @click="isEditing && $refs.fileInput.click()"
       >
         <input
           ref="fileInput"
@@ -19,8 +19,12 @@
           class="absolute w-40 h-40 opacity-0 cursor-pointer z-10"
           @change="handleFileChange"
           accept="image/*"
+          :disabled="!isEditing"
         />
-        <span v-if="!imagePreview" class="text-3xl font-semibold text-gray-500 z-0">
+        <span
+          v-if="!imagePreview"
+          class="text-3xl font-semibold text-gray-500 z-0"
+        >
           <Icon
             icon="material-symbols-light:add-box-outline-sharp"
             width="32"
@@ -30,9 +34,9 @@
         </span>
         <img
           v-if="imagePreview"
-          :src="imagePreview"
+          :src="fullImageUrl"
           class="absolute w-full h-full object-cover"
-          alt="Profile Image Preview"
+          :alt="fullImageUrl"
         />
       </div>
 
@@ -41,31 +45,31 @@
           <label for="email" class="font-medium text-sm md:text-base">
             Email
             <span
-              v-if="currentUser?.email_verified === 'yes'"
+              v-if="authUserStore.currentUser?.email_verified === 'yes'"
               class="text-xs md:text-sm font-normal text-green-600 ml-1"
             >
-              (Verified)
+              Verified
             </span>
             <span
               v-else
-              class="text-xs md:text-sm font-normal text-red-600 ml-1"
+              class="text-xs md:text-sm font-normal text-blue-900 ml-1"
             >
-              (Not Verified)
+              Unverified
             </span>
           </label>
           <button
-            v-if="currentUser?.email_verified !== 'yes'"
+            v-if="authUserStore.currentUser?.email_verified !== 'yes'"
             @click.prevent="handleVerifyOtpRequest"
             class="bg-blue-950/90 text-white text-xs md:text-sm px-2 md:px-3 rounded-sm cursor-pointer h-6 md:h-auto"
           >
-            Verify
+            Verifikasi
           </button>
         </div>
         <input
           id="email"
           type="text"
-          class="bg-gray-300 w-full rounded-lg py-2 px-3 outline outline-blue-900 text-center"
-          :value="currentUser?.email"
+          class="bg-gray-100 w-full rounded-lg py-2 px-3 outline outline-blue-900 text-center"
+          :value="authUserStore.currentUser?.email"
           disabled
         />
       </div>
@@ -82,7 +86,9 @@
       </div>
 
       <div class="w-full">
-        <label for="portofolio_url" class="font-semibold text-lg">Portofolio</label>
+        <label for="portofolio_url" class="font-semibold text-lg"
+          >Portofolio</label
+        >
         <input
           id="portofolio_url"
           v-model="profileForm.portofolio_url"
@@ -100,13 +106,24 @@
           id="username"
           v-model="profileForm.username"
           type="text"
-          class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
-          :disabled="userProfile !== null || !isEditing"
+          class="rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
+          :class="{
+            'bg-gray-100':
+              authUserStore.userProfile && authUserStore.userProfile.username,
+            'bg-gray-300': !(
+              authUserStore.userProfile && authUserStore.userProfile.username
+            ),
+          }"
+          :disabled="
+            authUserStore.userProfile && authUserStore.userProfile.username
+          "
         />
       </div>
 
       <div>
-        <label for="full_name" class="font-semibold text-lg">Fullname</label>
+        <label for="full_name" class="font-semibold text-lg"
+          >Nama Lengkap</label
+        >
         <input
           id="full_name"
           v-model="profileForm.full_name"
@@ -117,7 +134,7 @@
       </div>
 
       <div>
-        <label for="phone" class="font-semibold text-lg">Phone</label>
+        <label for="phone" class="font-semibold text-lg">Telepon</label>
         <input
           id="phone"
           v-model="profileForm.phone"
@@ -128,7 +145,7 @@
       </div>
 
       <div>
-        <label for="age" class="font-semibold text-lg">Age</label>
+        <label for="age" class="font-semibold text-lg">Usia</label>
         <input
           id="age"
           v-model="profileForm.age"
@@ -139,7 +156,7 @@
       </div>
 
       <div>
-        <label for="address" class="font-semibold text-lg">Address</label>
+        <label for="address" class="font-semibold text-lg">Alamat</label>
         <input
           id="address"
           v-model="profileForm.address"
@@ -150,7 +167,7 @@
       </div>
 
       <div>
-        <label for="city" class="font-semibold text-lg">City</label>
+        <label for="city" class="font-semibold text-lg">Kota</label>
         <input
           id="city"
           v-model="profileForm.city"
@@ -173,27 +190,30 @@
 
       <div class="w-full flex gap-x-3 justify-end md:col-span-2 pt-2">
         <button
-          v-if="!isEditing"
-          type="button"
-          class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md"
-          @click="isEditing = true"
-        >
-          Edit
-        </button>
-        <button
-          v-if="isEditing"
-          type="button"
-          class="text-gray-700 bg-gray-300 font-semibold text-lg px-6 py-2 rounded-lg shadow-md"
-          @click="cancelEdit"
-        >
-          Cancel
-        </button>
-        <button
+          v-if="!userProfile"
           type="submit"
-          class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md"
+          class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md cursor-pointer"
         >
-          {{ isEditing ? 'Save Changes' : 'Save' }}
+          Simpan Profil
         </button>
+
+        <template v-else>
+          <button
+            v-if="!isEditing"
+            type="button"
+            class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md cursor-pointer"
+            @click="isEditing = true"
+          >
+            Edit Profil
+          </button>
+          <button
+            v-else
+            type="submit"
+            class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md cursor-pointer"
+          >
+            Simpan Perubahan
+          </button>
+        </template>
       </div>
     </div>
   </form>
@@ -207,7 +227,7 @@
       <form @submit.prevent="handleVerifyOtp">
         <div class="flex flex-col gap-y-2">
           <label for="otp" class="font-medium text-sm md:text-base">
-            Enter the OTP code <span class="text-red-600">*</span>
+            Masukkan kode OTP <span class="text-red-600">*</span>
           </label>
           <input
             type="text"
@@ -224,13 +244,13 @@
             class="bg-gray-400 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
             @click="showOtpPopup = false"
           >
-            Cancel
+            Batal
           </button>
           <button
             type="submit"
             class="bg-blue-950/90 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
           >
-            Verify OTP Code
+            Verifikasi Kode OTP
           </button>
         </div>
       </form>
@@ -240,146 +260,262 @@
 
 <script setup>
 import { AuthUserStorage } from "@/stores/auth/userAuth";
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { Icon } from "@iconify/vue";
 import Swal from "sweetalert2";
 import { storeToRefs } from "pinia";
 
 const authUserStore = AuthUserStorage();
-const { userProfile, currentUser, tokenUser } = storeToRefs(authUserStore);
-const showOtpPopup = ref(false);
-const otpCode = ref("");
-const fileInput = ref(null);
+const { userProfile } = storeToRefs(authUserStore);
+
+const loadingProfile = ref(false);
 const imagePreview = ref(null);
 const profileForm = ref({
   username: "",
   full_name: "",
+  phone: "",
   age: "",
   address: "",
   city: "",
-  phone: "",
   bio: "",
   linkedin: "",
   portofolio_url: "",
+  profile_picture: null,
   image: null,
 });
-const loadingProfile = ref(true);
 const isEditing = ref(false);
+const showOtpPopup = ref(false);
+const otpCode = ref("");
 
-watch(userProfile, (newProfile) => {
-  if (newProfile) {
-    for (const key in profileForm.value) {
-      if (newProfile.hasOwnProperty(key)) {
-        profileForm.value[key] = newProfile[key];
-      }
+// --- Variabel URL untuk Gambar ---
+const BASE_IMAGE_URL = "http://localhost:3888/public/";
+
+// Computed property untuk URL gambar lengkap
+const fullImageUrl = computed(() => {
+  if (imagePreview.value) {
+    // Cek apakah imagePreview sudah berupa URL objek (dari file yang baru dipilih)
+    if (imagePreview.value.startsWith("blob:")) {
+      return imagePreview.value;
     }
-    imagePreview.value = newProfile.image ? `http://localhost:3888/public/${newProfile.image}` : null;
-  } else {
-    Object.keys(profileForm.value).forEach(key => {
-      if (key !== 'image') {
-        profileForm.value[key] = '';
-      }
-    });
-    profileForm.value.image = null;
-    imagePreview.value = null;
+    // Jika tidak, tambahkan base URL dari backend
+    return `${BASE_IMAGE_URL}${imagePreview.value}`;
   }
-  isEditing.value = false;
-}, { immediate: true });
+  return ""; // Return string kosong jika tidak ada gambar
+});
 
-const fetchProfile = async () => {
+onMounted(async () => {
   loadingProfile.value = true;
   try {
-    if (tokenUser.value) {
-      await authUserStore.fetchUserProfile();
+    await authUserStore.fetchUserProfile();
+    isEditing.value = !userProfile.value;
+    if (userProfile.value) {
+      profileForm.value = { ...userProfile.value };
+      if (userProfile.value.image) {
+        imagePreview.value = userProfile.value.image;
+      } else {
+        imagePreview.value = null;
+      }
     } else {
-      console.warn("Token tidak ditemukan, lewati pengambilan profil.");
-      userProfile.value = null;
+      imagePreview.value = null;
     }
   } catch (error) {
     console.error("Gagal mengambil profil:", error);
-    if (error.response?.status === 404) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Profil Tidak Ditemukan',
-        text: 'Silakan isi detail profil Anda untuk membuatnya.',
-        timer: 3000,
-        showConfirmButton: false
-      });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error Mengambil Profil',
-        text: error.message || 'Terjadi kesalahan saat mengambil profil Anda.',
-      });
-    }
+    isEditing.value = true;
+    profileForm.value = {
+      username: "",
+      full_name: "",
+      phone: "",
+      age: "",
+      address: "",
+      city: "",
+      bio: "",
+      linkedin: "",
+      portofolio_url: "",
+      profile_picture: null,
+    };
+    imagePreview.value = null;
   } finally {
     loadingProfile.value = false;
   }
-};
+});
 
-onMounted(() => {
-  // Ambil profil saat komponen dipasang
-  fetchProfile();
+watch(userProfile, (newProfile) => {
+  if (newProfile) {
+    profileForm.value = { ...newProfile };
+    if (newProfile.image) {
+      imagePreview.value = newProfile.image;
+    } else {
+      imagePreview.value = null;
+    }
+    isEditing.value = false;
+  } else {
+    profileForm.value = {
+      username: "",
+      full_name: "",
+      phone: "",
+      age: "",
+      address: "",
+      city: "",
+      bio: "",
+      linkedin: "",
+      portofolio_url: "",
+      profile_picture: null,
+    };
+    imagePreview.value = null;
+    isEditing.value = true;
+  }
 });
 
 const handleFileChange = (event) => {
   const file = event.target.files[0];
   if (file) {
-    profileForm.value.image = file;
     imagePreview.value = URL.createObjectURL(file);
+    profileForm.value.image = file;
   } else {
     profileForm.value.image = null;
-    imagePreview.value = userProfile.value?.image ? `http://localhost:3888/public/${userProfile.value.image}` : null;
+    if (userProfile.value && userProfile.value.image) {
+      imagePreview.value = userProfile.value.image;
+    } else {
+      imagePreview.value = null;
+    }
   }
 };
 
 const handleSubmit = async () => {
-  try {
-    const formData = new FormData();
-    for (const key in profileForm.value) {
-      if (key !== 'image' && key !== 'username' && key !== 'email') {
+  const isCreatingProfile = !userProfile.value;
+  const isImageSelected = profileForm.value.image !== null;
+  const hasExistingImage =
+    imagePreview.value !== null &&
+    typeof imagePreview.value === "string" &&
+    !imagePreview.value.startsWith("blob:");
+
+  if (
+    (isCreatingProfile && !isImageSelected) ||
+    (!isCreatingProfile &&
+      isEditing.value &&
+      !isImageSelected &&
+      !hasExistingImage)
+  ) {
+    Swal.fire({
+      icon: "warning",
+      title: "Gambar Profil Dibutuhkan",
+      text: "Mohon masukkan gambar profil Anda.",
+      confirmButtonText: "Oke",
+    });
+    return;
+  }
+
+  const formData = new FormData();
+  for (const key in profileForm.value) {
+    if (key === "image") {
+      if (profileForm.value.image instanceof File) {
         formData.append(key, profileForm.value[key]);
       }
+    } else if (key === "email") {
+      if (!authUserStore.userProfile) {
+        if (
+          profileForm.value[key] !== null &&
+          profileForm.value[key] !== undefined
+        ) {
+          formData.append(key, profileForm.value[key]);
+        }
+      }
+    } else if (key === "username") {
+      if (!authUserStore.userProfile) {
+        if (
+          profileForm.value[key] !== null &&
+          profileForm.value[key] !== undefined
+        ) {
+          formData.append(key, profileForm.value[key]);
+        }
+      }
+    } else if (
+      profileForm.value[key] !== null &&
+      profileForm.value[key] !== undefined
+    ) {
+      formData.append(key, profileForm.value[key]);
     }
+  }
 
-    if (profileForm.value.image instanceof File) {
-      formData.append('image', profileForm.value.image, profileForm.value.image.name);
-    } else if (!userProfile.value && !profileForm.value.image) {
-      const emptyFile = new File([''], 'no_image.jpg', { type: 'image/jpeg' });
-      formData.append('image', emptyFile, emptyFile.name);
-    }
-
-    if (userProfile.value && userProfile.value.id) {
+  try {
+    if (userProfile.value) {
       await authUserStore.updateProfileUser(formData);
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: 'Profil berhasil diperbarui!',
-        timer: 3000,
-        showConfirmButton: false,
-      });
     } else {
-      formData.append('username', profileForm.value.username);
       await authUserStore.createProfile(formData);
+    }
+    isEditing.value = false;
+    Swal.fire({
+      // Add success alert here
+      icon: "success",
+      title: "Profil Berhasil Disimpan!",
+      text: "Data profil Anda telah berhasil diperbarui.",
+      confirmButtonText: "Oke",
+    });
+  } catch (error) {
+    console.error("Gagal menyimpan profil:", error);
+
+    // --- START: MODIFIKASI BAGIAN INI SESUAI RESPON BACKEND ANDA ---
+    if (error.response) {
+      // Contoh 1: Backend mengirim status 400 dan pesan spesifik di data.message
+      if (
+        error.response.status === 400 &&
+        error.response.data &&
+        error.response.data.message === "Username is already taken"
+      ) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal Menyimpan",
+          text: "Username sudah digunakan. Mohon pilih username lain.",
+          confirmButtonText: "Oke",
+        });
+      }
+      // Contoh 2: Backend mengirim status 409 dan pesan spesifik di data.error
+      else if (
+        error.response.status === 409 &&
+        error.response.data &&
+        error.response.data.error === "Duplicate username"
+      ) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal Menyimpan",
+          text: "Username sudah digunakan. Mohon pilih username lain.",
+          confirmButtonText: "Oke",
+        });
+      }
+      // Contoh 3: Backend mengirim pesan spesifik di data.message, tanpa peduli status
+      else if (
+        error.response.data &&
+        error.response.data.message &&
+        error.response.data.message.includes("username already exists")
+      ) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal Menyimpan",
+          text: "Username sudah digunakan. Mohon pilih username lain.",
+          confirmButtonText: "Oke",
+        });
+      }
+      // Tambahkan kondisi lain jika ada skenario error spesifik lainnya dari backend Anda
+      else {
+        // Fallback untuk error lain yang tidak spesifik atau general error
+        Swal.fire({
+          icon: "error",
+          title: "Gagal Menyimpan",
+          text:
+            error.response.data.message ||
+            "Terjadi kesalahan saat menyimpan profil. Harap periksa kembali data Anda.",
+          confirmButtonText: "Oke",
+        });
+      }
+    } else {
+      // Jika tidak ada error.response (misal: masalah jaringan)
       Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: 'Profil berhasil dibuat!',
-        timer: 3000,
-        showConfirmButton: false,
+        icon: "error",
+        title: "Gagal Menyimpan",
+        text: "Terjadi kesalahan jaringan atau server tidak merespons. Silakan coba lagi.",
+        confirmButtonText: "Oke",
       });
     }
-    await fetchProfile();
-    isEditing.value = false;
-  } catch (error) {
-    console.error("Gagal membuat/memperbarui profil:", error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: error.message || 'Gagal menyimpan profil.',
-    });
   }
 };
 
@@ -388,54 +524,17 @@ const handleVerifyOtpRequest = async () => {
     await authUserStore.sendVerificationOTP();
     showOtpPopup.value = true;
   } catch (error) {
-    console.error("Gagal mengirim permintaan OTP:", error);
+    console.error("Gagal mengirim OTP:", error);
   }
 };
 
 const handleVerifyOtp = async () => {
   try {
-    const response = await authUserStore.verifyEmailOTP(otpCode.value);
+    await authUserStore.verifyEmailOTP(otpCode.value);
     showOtpPopup.value = false;
     otpCode.value = "";
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'success',
-      title: response.message || 'Email berhasil diverifikasi!',
-      timer: 3000,
-      showConfirmButton: false,
-    });
-    await fetchProfile();
   } catch (error) {
     console.error("Gagal memverifikasi OTP:", error);
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'error',
-      title: error.response?.data?.message || "Gagal memverifikasi OTP.",
-      timer: 3000,
-      showConfirmButton: false,
-    });
-  }
-};
-
-const cancelEdit = () => {
-  isEditing.value = false;
-  if (userProfile.value) {
-    for (const key in profileForm.value) {
-      if (userProfile.value.hasOwnProperty(key)) {
-        profileForm.value[key] = userProfile.value[key];
-      }
-    }
-    imagePreview.value = userProfile.value.image ? `http://localhost:3888/public/${userProfile.value.image}` : null;
-  } else {
-    Object.keys(profileForm.value).forEach(key => {
-      if (key !== 'image') {
-        profileForm.value[key] = '';
-      }
-    });
-    profileForm.value.image = null;
-    imagePreview.value = null;
   }
 };
 </script>

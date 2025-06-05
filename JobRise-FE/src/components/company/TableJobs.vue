@@ -2,7 +2,6 @@
   <div class="px-4 pb-10 sm:px-8">
     <div class="flex justify-between items-center mb-4">
       <h1 class="font-bold text-2xl">Job List</h1>
-
       <form @submit.prevent class="relative">
         <input
           type="text"
@@ -21,12 +20,9 @@
     </div>
 
     <div
-      v-if="jobsStore.isLoading"
-      class="text-center py-8 bg-blue-50 rounded-md shadow-sm"
+      v-if="jobsStore.isLoading && !jobsStore.allCompanyJobs.length"
+      class="text-center py-8 rounded-md shadow-sm"
     >
-      <p class="text-blue-800 font-semibold text-lg">
-        Memuat daftar pekerjaan...
-      </p>
       <svg
         class="animate-spin h-8 w-8 text-blue-600 mx-auto mt-4"
         xmlns="http://www.w3.org/2000/svg"
@@ -47,6 +43,9 @@
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
         ></path>
       </svg>
+      <p class="text-blue-800 font-semibold text-lg mt-2">
+        Memuat daftar pekerjaan...
+      </p>
     </div>
 
     <div
@@ -60,18 +59,23 @@
     </div>
 
     <div
-      v-else-if="displayedJobs.length === 0"
+      v-else-if="!jobsStore.allCompanyJobs || jobsStore.allCompanyJobs.length === 0"
       class="text-center py-8 bg-yellow-50 rounded-md shadow-sm"
     >
       <p class="text-yellow-700 font-semibold text-lg">
-        {{
-          searchQuery
-            ? "Tidak ada pekerjaan yang cocok dengan pencarian Anda."
-            : "Belum ada pekerjaan yang diposting."
-        }}
+        Belum ada pekerjaan yang diposting.
       </p>
       <p v-if="!searchQuery" class="text-yellow-600 mt-2">
         Mulai posting pekerjaan pertama Anda!
+      </p>
+    </div>
+
+    <div
+      v-else-if="searchQuery && displayedJobs.length === 0"
+      class="text-center py-8 bg-yellow-50 rounded-md shadow-sm"
+    >
+      <p class="text-yellow-700 font-semibold text-lg">
+        Tidak ada pekerjaan yang cocok dengan pencarian Anda.
       </p>
     </div>
 
@@ -106,15 +110,13 @@
             >
               <td class="py-4 pl-4 text-left">
                 <div class="flex items-center">
-                  {{ console.log(job)
-                   }}
                   <img
                     :src="
                       job.company_logo
-                        ? `http://localhost:3888/public/${job.company_logo}`
+                        ? `http://localhost:3888/public/${job.company_logo}` 
                         : 'https://images.unsplash.com/photo-1728577740843-5f29c7586afe?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D'
                     "
-                    :alt="job.company_name"
+                    :alt="job.company_name || 'Company Logo'"
                     class="object-cover w-10 h-10 rounded mr-2 md:w-12 md:h-12 md:mr-4"
                   />
                   <div>
@@ -205,19 +207,13 @@
     </div>
 
     <div
-      class="flex justify-center mt-4"
-      v-if="jobsStore.totalCompanyPages > 1"
+      class="flex justify-center items-center mt-4"
+      v-if="totalPagesForPagination > 1 && !jobsStore.isLoading"
     >
       <button
-        :disabled="jobsStore.currentCompanyPage === 1 || jobsStore.isLoading"
-        @click="
-          jobsStore.fetchCompanyJobs(
-            jobsStore.currentCompanyPage - 1,
-            10,
-            searchQuery
-          )
-        "
-        class="px-3 py-1 rounded-l-md disabled:opacity-50"
+        :disabled="currentPageForPagination === 1"
+        @click="changePage(currentPageForPagination - 1)"
+        class="px-3 py-1 rounded-l-md disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Icon
           icon="ri:arrow-left-line"
@@ -227,16 +223,16 @@
         />
       </button>
 
-      <template v-if="jobsStore.totalCompanyPages <= 5">
+      <template v-if="totalPagesForPagination <= 5">
         <button
-          v-for="page in jobsStore.totalCompanyPages"
-          :key="page"
-          @click="jobsStore.fetchCompanyJobs(page, 10, searchQuery)"
+          v-for="page in totalPagesForPagination"
+          :key="`page-${page}`"
+          @click="changePage(page)"
           :class="[
             'px-3 py-1',
             {
               'font-semibold bg-blue-200 rounded-md':
-                jobsStore.currentCompanyPage === page,
+                currentPageForPagination === page,
             },
           ]"
         >
@@ -245,72 +241,54 @@
       </template>
       <template v-else>
         <button
-          @click="jobsStore.fetchCompanyJobs(1, 10, searchQuery)"
+          @click="changePage(1)"
           :class="[
             'px-3 py-1',
             {
-              'font-semibold bg-blue-200 rounded-md':
-                jobsStore.currentCompanyPage === 1,
+              'font-semibold bg-blue-200 rounded-md': currentPageForPagination === 1,
             },
           ]"
         >
           1
         </button>
-        <span v-if="jobsStore.currentCompanyPage > 3" class="px-1 py-1"
-          >...</span
-        >
+
+        <span v-if="currentPageForPagination > 3" class="px-1 py-1 self-center">...</span>
+
         <button
           v-for="page in visiblePageNumbers"
-          :key="page"
-          @click="jobsStore.fetchCompanyJobs(page, 10, searchQuery)"
+          :key="`visible-${page}`"
+          @click="changePage(page)"
           :class="[
             'px-3 py-1',
             {
               'font-semibold bg-blue-200 rounded-md':
-                jobsStore.currentCompanyPage === page,
+                currentPageForPagination === page,
             },
           ]"
         >
           {{ page }}
         </button>
-        <span
-          v-if="jobsStore.currentCompanyPage < jobsStore.totalCompanyPages - 2"
-          class="px-1 py-1"
-          >...</span
-        >
+
+        <span v-if="currentPageForPagination < totalPagesForPagination - 2" class="px-1 py-1 self-center">...</span>
+
         <button
-          @click="
-            jobsStore.fetchCompanyJobs(
-              jobsStore.totalCompanyPages,
-              10,
-              searchQuery
-            )
-          "
+          v-if="totalPagesForPagination > 1" 
+          @click="changePage(totalPagesForPagination)"
           :class="[
             'px-3 py-1',
             {
-              'font-semibold bg-blue-200 rounded-md':
-                jobsStore.currentCompanyPage === jobsStore.totalCompanyPages,
+              'font-semibold bg-blue-200 rounded-md': currentPageForPagination === totalPagesForPagination,
             },
           ]"
         >
-          {{ jobsStore.totalCompanyPages }}
+          {{ totalPagesForPagination }}
         </button>
       </template>
 
       <button
-        :disabled="
-          jobsStore.currentCompanyPage === jobsStore.totalCompanyPages ||
-          jobsStore.isLoading
-        "
-        @click="
-          jobsStore.fetchCompanyJobs(
-            jobsStore.currentCompanyPage + 1,
-            10,
-            searchQuery
-          )
-        "
-        class="px-3 py-1 rounded-r-md disabled:opacity-50"
+        :disabled="currentPageForPagination === totalPagesForPagination"
+        @click="changePage(currentPageForPagination + 1)"
+        class="px-3 py-1 rounded-r-md disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Icon
           icon="ri:arrow-right-line"
@@ -328,76 +306,118 @@ import { ref, computed, onMounted, watch } from "vue";
 import { Icon } from "@iconify/vue";
 import { JobsCompany } from "@/stores/jobs/companyjob"; // Sesuaikan path ini
 
-// Menggunakan store Pinia
 const jobsStore = JobsCompany();
-
-// State lokal untuk pencarian
 const searchQuery = ref("");
 
-// Computed property untuk memfilter pekerjaan yang ditampilkan.
-const displayedJobs = computed(() => {
+// State untuk paginasi client-side
+const currentPageForPagination = ref(1);
+const itemsPerPageForPagination = ref(10); // Atur jumlah item per halaman
+
+// 1. Data yang sudah difilter berdasarkan searchQuery dari semua data di store
+const filteredJobs = computed(() => {
+  if (!jobsStore.allCompanyJobs) return [];
   if (!searchQuery.value) {
-    return jobsStore.companyJobs;
+    return jobsStore.allCompanyJobs;
   }
   const query = searchQuery.value.toLowerCase();
-  return jobsStore.companyJobs.filter(
+  return jobsStore.allCompanyJobs.filter(
     (job) =>
-      job.title.toLowerCase().includes(query) ||
-      job.location.toLowerCase().includes(query)
-    // Anda bisa menambahkan pencarian berdasarkan kriteria lain di sini
+      (job.title && job.title.toLowerCase().includes(query)) ||
+      (job.location && job.location.toLowerCase().includes(query))
   );
 });
 
-// Computed property untuk menentukan halaman yang terlihat di pagination
-const visiblePageNumbers = computed(() => {
-  const totalPages = jobsStore.totalCompanyPages;
-  const currentPageNum = jobsStore.currentCompanyPage;
-  const visibleRange = 1; // Jumlah halaman yang akan ditampilkan di setiap sisi halaman saat ini
+// 2. Total halaman berdasarkan data yang sudah difilter
+const totalPagesForPagination = computed(() => {
+  if (!filteredJobs.value) return 0;
+  return Math.ceil(filteredJobs.value.length / itemsPerPageForPagination.value);
+});
 
+// 3. Data yang akan ditampilkan di halaman saat ini (hasil paginasi client-side)
+const displayedJobs = computed(() => {
+  if (!filteredJobs.value) return [];
+  const start = (currentPageForPagination.value - 1) * itemsPerPageForPagination.value;
+  const end = start + itemsPerPageForPagination.value;
+  return filteredJobs.value.slice(start, end);
+});
+
+// 4. Logika untuk nomor halaman yang terlihat di paginasi (dengan elipsis)
+const visiblePageNumbers = computed(() => {
+  const total = totalPagesForPagination.value;
+  const current = currentPageForPagination.value;
+  const pageRange = 1; // Jumlah halaman di setiap sisi halaman saat ini (misal: C-1, C, C+1)
   let pages = [];
 
-  if (totalPages <= 5) {
-    // Tampilkan semua halaman jika totalnya 5 atau kurang
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-  } else {
-    // Logika untuk menampilkan halaman dengan elipsis
-    if (currentPageNum <= visibleRange + 1) {
-      // Dekat awal: 1 2 3 ... Last
-      for (let i = 1; i <= 3; i++) {
-        pages.push(i);
-      }
-    } else if (currentPageNum >= totalPages - visibleRange) {
-      // Dekat akhir: 1 ... Last-2 Last-1 Last
-      for (let i = totalPages - 2; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      // Di tengah: 1 ... Current-1 Current Current+1 ... Last
-      for (
-        let i = currentPageNum - visibleRange;
-        i <= currentPageNum + visibleRange;
-        i++
-      ) {
-        pages.push(i);
-      }
+  if (total <= 1) return []; // Jika hanya 1 halaman atau tidak ada, tidak ada nomor halaman 'tengah'
+
+  // Jika total halaman sedikit, tombol paginasi sudah ditangani oleh template v-if="totalPagesForPagination <= 5"
+  // Jadi, visiblePageNumbers akan berisi halaman antara 1 dan total jika tidak ada elipsis.
+  // Untuk kasus elipsis (total > 5):
+  let start = current - pageRange;
+  let end = current + pageRange;
+
+  // Pastikan start dan end tidak melewati batas halaman 1 dan total
+  // dan tidak tumpang tindih dengan tombol halaman 1 atau terakhir yang sudah eksplisit
+  if (start <= 1) start = 2;
+  if (end >= total) end = total - 1;
+  
+  // Jika karena penyesuaian start jadi lebih besar dari end (misal saat current = 1 atau current = total)
+  // atau tidak ada halaman di antara 1 dan total, kosongkan pages.
+  if (start > end) return [];
+
+  for (let i = start; i <= end; i++) {
+    // Hanya tambahkan jika halaman tersebut bukan halaman pertama atau terakhir KARENA
+    // halaman 1 dan totalPagesForPagination sudah ditampilkan secara eksplisit di template elipsis
+    if (i > 1 && i < total) {
+       pages.push(i);
     }
   }
-  // Filter out 1 and totalPages if they are already handled by explicit buttons
-  return pages.filter((page) => page > 1 && page < totalPages);
+  
+  // Penyesuaian khusus agar lebih banyak nomor ditampilkan jika dekat tepi dan ada elipsis
+  // Misal, jika current page = 2 dan total > 5, kita ingin [2, 3] (jika pageRange=1)
+  // Jika current page = 3 dan total > 5, kita ingin [2, 3, 4]
+  if (total > 5) {
+    pages = []; // Reset untuk logika elipsis
+    if (current <= 3) { // Dekat awal: tampilkan 2, 3, mungkin 4
+        for(let i = 2; i <= Math.min(4, total - 1); i++) pages.push(i);
+    } else if (current >= total - 2) { // Dekat akhir: tampilkan total-3, total-2, total-1
+        for(let i = Math.max(2, total - 3); i <= total - 1; i++) pages.push(i);
+    } else { // Di tengah: tampilkan current-1, current, current+1
+        for(let i = current - pageRange; i <= current + pageRange; i++) {
+            if (i > 1 && i < total) pages.push(i);
+        }
+    }
+  }
+  return pages;
 });
 
-// Panggil fungsi untuk mengambil daftar pekerjaan saat komponen dimuat
+// Fungsi untuk mengubah halaman
+function changePage(page) {
+  if (page >= 1 && page <= totalPagesForPagination.value) {
+    currentPageForPagination.value = page;
+    window.scrollTo(0, 0); // Opsional: scroll ke atas halaman
+  }
+}
+
+// Panggil fungsi untuk mengambil SEMUA daftar pekerjaan saat komponen dimuat
 onMounted(() => {
-  jobsStore.fetchCompanyJobs(); // Tidak perlu parameter pencarian awal di sini
+  jobsStore.fetchAllCompanyJobsOnce();
 });
 
-// Watcher untuk melakukan pencarian setiap kali searchQuery berubah
-watch(searchQuery, (newQuery) => {
-  // Jika Anda ingin melakukan pencarian di backend setiap kali ada perubahan,
-  // Anda bisa memanggil jobsStore.fetchCompanyJobs di sini.
-  // Namun, karena permintaan adalah untuk pencarian dengan data yang ada,
-  // kita tidak perlu memanggil fetch lagi.
+// Watcher untuk searchQuery: reset ke halaman 1 jika query pencarian berubah
+watch(searchQuery, () => {
+  currentPageForPagination.value = 1;
 });
+
+// Watcher untuk total data (allCompanyJobs): reset ke halaman 1 jika data master berubah
+watch(() => jobsStore.allCompanyJobs.length, () => {
+  if (currentPageForPagination.value > totalPagesForPagination.value && totalPagesForPagination.value > 0) {
+    currentPageForPagination.value = totalPagesForPagination.value;
+  } else if (totalPagesForPagination.value === 0) {
+    currentPageForPagination.value = 1;
+  } else if (totalPagesForPagination.value === 1 && currentPageForPagination.value !== 1) {
+     currentPageForPagination.value = 1;
+  }
+}, { immediate: false });
+
 </script>

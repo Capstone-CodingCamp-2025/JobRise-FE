@@ -99,7 +99,7 @@
               <button
                 type="submit"
                 :disabled="jobsStore.isLoading"
-                class="bg-blue-950/90 text-white rounded-md px-4 py-1 text-sm sm:text-base flex items-center justify-center"
+                class="bg-blue-950/90 text-white rounded-md px-4 py-1 text-sm sm:text-base flex items-center justify-center cursor-pointer"
               >
                 <span v-if="jobsStore.isLoading" class="flex items-center">
                   <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
