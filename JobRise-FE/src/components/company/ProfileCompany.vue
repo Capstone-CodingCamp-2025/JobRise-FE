@@ -1,4 +1,13 @@
 <template>
+  <div
+    v-if="isLoading"
+    class="fixed top-0 left-0 w-full h-full bg-white/80 flex items-center justify-center z-50"
+  >
+    <div
+      class="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-blue-900"
+    ></div>
+  </div>
+
   <div class="p-4 md:p-10">
     <h1 class="text-xl md:text-3xl mb-4 text-center font-bold">
       Company Information
@@ -10,8 +19,12 @@
       >
         <div class="flex flex-col gap-y-4">
           <div
-            class="w-32 h-32 md:w-40 md:h-40 rounded-md outline outline-blue-900 bg-blue-400/10 flex items-center justify-center m-auto md:m-0 overflow-hidden relative cursor-pointer"
-            @click="fileInput.click()"
+            class="w-32 h-32 md:w-40 md:h-40 rounded-md outline outline-blue-900 bg-blue-400/10 flex items-center justify-center m-auto md:m-0 overflow-hidden relative"
+            :class="{
+              'cursor-pointer': isEditing,
+              'cursor-not-allowed bg-gray-200/50': !isEditing,
+            }"
+            @click="isEditing ? fileInput.click() : null"
           >
             <input
               ref="fileInput"
@@ -19,6 +32,7 @@
               class="absolute w-full h-full opacity-0 cursor-pointer z-10"
               accept="image/jpeg, image/png, image/jpg"
               @change="handleLogoUpload"
+              :disabled="!isEditing"
             />
             <span
               v-if="!logoPreview"
@@ -48,22 +62,21 @@
                 class="font-medium text-sm md:text-base"
               >
                 Email
-
                 <span
                   v-if="currentCompany.data?.email_verified == 'yes'"
                   class="text-xs md:text-sm font-normal text-green-700"
                   >Verified</span
                 >
-                <span v-else class="text-xs md:text-sm font-normal text-blue-900"
+                <span
+                  v-else
+                  class="text-xs md:text-sm font-normal text-blue-900"
                   >Unverified</span
                 >
               </label>
-              {{ console.log("curennrrr", currentCompany) }}
-              {{ console.log("curennrrr", companyProfile) }}
               <button
                 @click.prevent="sendOTPVerification"
                 :disabled="currentCompany.data?.email_verified === 'yes'"
-                class="bg-blue-950/90 text-white text-xs md:text-sm px-2 md:px-3 rounded-sm cursor-pointer h-6 md:h-auto"
+                class="bg-blue-950/90 text-white text-xs md:text-sm px-2 md:px-3 rounded-sm cursor-pointer h-6 md:h-auto disabled:bg-gray-400"
               >
                 Verify
               </button>
@@ -71,7 +84,7 @@
             <input
               type="text"
               id="companyEmail"
-              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 w-full md:w-52 text-sm"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 w-full md:w-52 text-sm disabled:bg-gray-200/50"
               :value="currentCompany.data?.email"
               readonly
             />
@@ -89,7 +102,8 @@
               type="text"
               id="companyName"
               v-model="profileData.company_name"
-              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full disabled:bg-gray-200/50 disabled:cursor-not-allowed"
+              :disabled="!isEditing"
             />
           </div>
           <div class="flex flex-col gap-y-2">
@@ -100,7 +114,8 @@
               type="text"
               id="website"
               v-model="profileData.website"
-              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full disabled:bg-gray-200/50 disabled:cursor-not-allowed"
+              :disabled="!isEditing"
             />
           </div>
           <div class="flex flex-col gap-y-2">
@@ -111,7 +126,8 @@
               type="text"
               id="industry"
               v-model="profileData.industry"
-              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full disabled:bg-gray-200/50 disabled:cursor-not-allowed"
+              :disabled="!isEditing"
             />
           </div>
           <div class="flex flex-col gap-y-2">
@@ -122,7 +138,8 @@
               type="text"
               id="address"
               v-model="profileData.address"
-              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-7 md:h-8 text-sm w-full disabled:bg-gray-200/50 disabled:cursor-not-allowed"
+              :disabled="!isEditing"
             />
           </div>
           <div class="flex flex-col gap-y-2 col-span-1 md:col-span-2">
@@ -132,12 +149,13 @@
             <textarea
               id="description"
               v-model="profileData.description"
-              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-24 md:h-32 w-full text-sm"
+              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-24 md:h-32 w-full text-sm disabled:bg-gray-200/50 disabled:cursor-not-allowed"
+              :disabled="!isEditing"
             ></textarea>
           </div>
           <div class="flex gap-x-2 justify-end col-span-1 md:col-span-2">
             <button
-              v-if="!isEditing"
+              v-if="!isEditing && companyProfile?.id"
               type="button"
               @click="enterEditMode"
               class="bg-blue-950/90 text-white px-3 md:px-5 rounded-md py-1 text-sm cursor-pointer"
@@ -145,7 +163,7 @@
               Edit
             </button>
             <button
-              v-if="isEditing"
+              v-if="isEditing && companyProfile?.id"
               type="button"
               @click="cancelEditMode"
               class="bg-gray-500 text-white px-3 md:px-5 rounded-md py-1 text-sm cursor-pointer"
@@ -154,9 +172,12 @@
             </button>
             <button
               type="submit"
-              class="bg-blue-950/90 text-white px-3 md:px-5 rounded-md py-1 text-sm cursor-pointer"
+              class="bg-blue-950/90 text-white px-3 md:px-5 rounded-md py-1 text-sm cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+              :disabled="!isEditing"
             >
-              {{ isEditing ? "Save Changes" : "Save" }}
+              {{
+                isEditing && companyProfile?.id ? "Save Changes" : "Save"
+              }}
             </button>
           </div>
         </div>
@@ -168,35 +189,7 @@
     v-if="showOtpPopup"
     class="fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center z-50"
   >
-    <div
-      class="rounded-md shadow bg-gray-300 py-6 md:py-10 px-6 md:px-8 w-98 md:w-md"
-    >
-      <form @submit.prevent="handleVerifyOtpSubmit">
-        <div class="flex flex-col gap-y-2">
-          <label for="otp" class="font-medium text-sm md:text-base">
-            Enter the OTP code <span class="text-red-600">*</span>
-          </label>
-          <input
-            type="text"
-            id="otp"
-            v-model="otpCode"
-            class="bg-blue-400/30 outline outline-blue-900 rounded-sm h-7 md:h-8 text-center text-sm"
-          />
-        </div>
-
-        <div
-          class="flex flex-col sm:flex-row justify-center gap-2 mt-4 md:mt-6"
-        >
-          <button
-            type="submit"
-            class="bg-blue-950/90 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
-          >
-            Verify OTP Code
-          </button>
-        </div>
-      </form>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -212,32 +205,25 @@ const router = useRouter();
 
 const { companyProfile, currentCompany } = storeToRefs(authCompanyStore);
 
-console.log("companyprofile", companyProfile);
-
+const isLoading = ref(true);
+const isEditing = ref(false); // Default to false
 const fileInput = ref(null);
 const showOtpPopup = ref(false);
 const otpCode = ref("");
 const logoFile = ref(null);
+
 const logoPreview = computed(() => {
   if (logoFile.value) {
     return URL.createObjectURL(logoFile.value);
   }
   if (companyProfile.value?.logo) {
     const baseURL = "http://localhost:3888/public/";
-    const path1 = `${companyProfile.value.logo}`;
-    const path2 = `${companyProfile.value.logo}`;
-
-    const url1 = new URL(path1, baseURL).href;
-    const url2 = new URL(path2, baseURL).href;
-
-    if (!companyProfile.value.logo.includes("/")) {
-      return url2;
-    }
-    return url1;
+    // This logic can be simplified, assuming the path is consistent
+    return new URL(companyProfile.value.logo, baseURL).href;
   }
   return null;
 });
-const isEditing = ref(false);
+
 const profileData = ref({
   company_name: "",
   address: "",
@@ -246,13 +232,13 @@ const profileData = ref({
   description: "",
 });
 
-const fillProfileData = (profileDataInput, companyData) => {
-  if (profileDataInput) {
-    profileData.value.company_name = profileDataInput.company_name || "";
-    profileData.value.address = profileDataInput.address || "";
-    profileData.value.website = profileDataInput.website || "";
-    profileData.value.industry = profileDataInput.industry || "";
-    profileData.value.description = profileDataInput.description || "";
+const fillProfileData = (profile) => {
+  if (profile) {
+    profileData.value.company_name = profile.company_name || "";
+    profileData.value.address = profile.address || "";
+    profileData.value.website = profile.website || "";
+    profileData.value.industry = profile.industry || "";
+    profileData.value.description = profile.description || "";
   } else {
     profileData.value = {
       company_name: "",
@@ -262,12 +248,13 @@ const fillProfileData = (profileDataInput, companyData) => {
       description: "",
     };
   }
-  // Logo preview tetap dihandle oleh computed property
 };
 
 const handleLogoUpload = (event) => {
   const file = event.target.files[0];
-  logoFile.value = file;
+  if (file) {
+    logoFile.value = file;
+  }
 };
 
 const saveProfile = async () => {
@@ -283,23 +270,26 @@ const saveProfile = async () => {
   }
 
   try {
+    // Update existing profile
     if (companyProfile.value?.id && isEditing.value) {
       await authCompanyStore.updateProfileCompany(formData);
       Swal.fire({
         toast: true,
         position: "top-end",
         icon: "success",
-        title: "Profil perusahaan berhasil diperbarui!",
+        title: "Profile updated successfully!",
         timer: 3000,
         showConfirmButton: false,
       });
-      isEditing.value = false;
-    } else if (!companyProfile.value?.id) {
+      isEditing.value = false; // Back to read-only mode
+    }
+    // Create new profile
+    else if (!companyProfile.value?.id) {
       if (!logoFile.value && !companyProfile.value?.logo) {
         Swal.fire({
           icon: "warning",
-          title: "Peringatan",
-          text: "Harap masukkan logo perusahaan.",
+          title: "Warning",
+          text: "Please upload a company logo.",
         });
         return;
       }
@@ -308,21 +298,24 @@ const saveProfile = async () => {
         toast: true,
         position: "top-end",
         icon: "success",
-        title: "Profil perusahaan berhasil disimpan!",
+        title: "Profile saved successfully!",
         timer: 3000,
         showConfirmButton: false,
       });
+      isEditing.value = false; // Switch to read-only after creation
     }
+    // Refresh data from server
     await authCompanyStore.fetchProfileCompany();
-    await authCompanyStore.getCompanyByAuth(); // Refresh data company juga
+    await authCompanyStore.getCompanyByAuth();
+    fillProfileData(companyProfile.value); // Re-fill form with new data
   } catch (error) {
-    console.error("Gagal menyimpan/memperbarui profil perusahaan", error);
+    console.error("Failed to save/update profile", error);
     Swal.fire({
       toast: true,
       position: "top-end",
       icon: "error",
-      title: "Gagal menyimpan/memperbarui profil perusahaan!",
-      text: error.message || "Terjadi kesalahan.",
+      title: "Failed to save/update profile!",
+      text: error.message || "An error occurred.",
       timer: 3000,
       showConfirmButton: false,
     });
@@ -335,14 +328,11 @@ const enterEditMode = () => {
 
 const cancelEditMode = () => {
   isEditing.value = false;
-  Promise.all([
-    authCompanyStore.fetchProfileCompany(),
-    authCompanyStore.getCompanyByAuth(),
-  ])
-    .then(([profileDataResult, companyDataResult]) => {
-      fillProfileData(profileDataResult, companyDataResult);
-    })
-    .catch((error) => console.error("Gagal memuat ulang data:", error));
+  // Reset form data to its original state from the store
+  fillProfileData(companyProfile.value);
+  // Reset logo file input if user selected a new one but cancelled
+  logoFile.value = null;
+  fileInput.value.value = ""; // Clear file input
 };
 
 const sendOTPVerification = async () => {
@@ -350,7 +340,7 @@ const sendOTPVerification = async () => {
     await authCompanyStore.sendVerificationOTP();
     showOtpPopup.value = true;
   } catch (error) {
-    // Error sudah ditangani di store
+    // Error is handled in the store
   }
 };
 
@@ -359,15 +349,10 @@ const handleVerifyOtpSubmit = async () => {
     await authCompanyStore.verifyEmailOTP(otpCode.value);
     showOtpPopup.value = false;
     otpCode.value = "";
-    await authCompanyStore.fetchProfileCompany();
-    await authCompanyStore.getCompanyByAuth();
-    console.log(
-      "Data currentCompany setelah verifikasi:",
-      currentCompany.value
-    );
+    await authCompanyStore.getCompanyByAuth(); // Refresh company data
   } catch (error) {
-    await authCompanyStore.fetchProfileCompany();
-    await authCompanyStore.getCompanyByAuth();
+    // Error is handled in the store, just ensure popup closes
+    showOtpPopup.value = false;
   }
 };
 
@@ -377,10 +362,20 @@ onMounted(async () => {
       authCompanyStore.fetchProfileCompany(),
       authCompanyStore.getCompanyByAuth(),
     ]);
-    console.log("currentCompany onMounted:", currentCompany.value);
+
     fillProfileData(companyProfile.value);
+
+    // If there is NO profile, enter edit mode immediately.
+    // Otherwise, stay in read-only mode.
+    if (!companyProfile.value?.id) {
+      isEditing.value = true;
+    }
   } catch (error) {
-    console.error("Gagal memuat data perusahaan:", error);
+    console.error("Failed to load company data:", error);
+    // Even on error, allow user to create a profile
+    isEditing.value = true;
+  } finally {
+    isLoading.value = false;
   }
 });
 </script>

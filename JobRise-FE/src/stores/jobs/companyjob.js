@@ -23,13 +23,11 @@ export const JobsCompany = defineStore("jobs", () => {
 
   /**
    * Fungsi untuk mengambil SEMUA posting pekerjaan perusahaan SEKALI.
-   * Mengasumsikan backend dapat mengirim semua data, atau Anda perlu
-   * menyesuaikan logika pengambilan data jika backend memberlakukan paginasi.
    */
   async function fetchAllCompanyJobsOnce() {
     isLoading.value = true;
     error.value = null;
-    let allFetchedJobs = []; // Temporary array to accumulate jobs
+    let allFetchedJobs = []; // Array sementara untuk mengakumulasi pekerjaan
     let currentPage = 1;
     let hasMorePages = true;
     const BATCH_SIZE = 10; // Sesuai dengan limit server Anda
@@ -52,27 +50,28 @@ export const JobsCompany = defineStore("jobs", () => {
         console.log(`Fetching page ${currentPage}...`); // Untuk debugging
         const response = await apiClient.get('/jobs', config);
   
+        let fetchedData; // Deklarasikan di sini untuk menampung data dari halaman saat ini
+  
         if (response.status === 200 && response.data.status === "success") {
-          let fetchedData;
           // Sesuaikan cara Anda mengakses array pekerjaan dan info paginasi
           if (Array.isArray(response.data.data)) { // Jika data langsung array
-              fetchedData = response.data.data;
-              // Anda perlu cara untuk tahu apakah ini halaman terakhir dari backend
-              // Misalnya, jika fetchedData.length < BATCH_SIZE, atau ada field totalPages
-              if (!response.data.meta || !response.data.meta.totalPages) {
-                   console.warn("Backend response doesn't include totalPages. Assuming last page if less than batch size.");
-                   if (fetchedData.length < BATCH_SIZE) {
-                      hasMorePages = false;
-                   }
-              } else {
-                  if (currentPage >= response.data.meta.totalPages) {
-                      hasMorePages = false;
-                  }
+            fetchedData = response.data.data;
+            // Anda perlu cara untuk tahu apakah ini halaman terakhir dari backend
+            // Misalnya, jika fetchedData.length < BATCH_SIZE, atau ada field totalPages
+            if (!response.data.meta || !response.data.meta.totalPages) {
+              console.warn("Backend response doesn't include totalPages. Assuming last page if less than batch size.");
+              if (fetchedData.length < BATCH_SIZE) {
+                hasMorePages = false;
               }
-  
+            } else {
+              if (currentPage >= response.data.meta.totalPages) {
+                hasMorePages = false;
+              }
+            }
           } else if (response.data.data && Array.isArray(response.data.data.jobs)) { // Jika data dalam struktur { data: { jobs: [], ... }}
             fetchedData = response.data.data.jobs;
-            allFetchedJobs = allFetchedJobs.concat(fetchedData);
+            // BARIS BERIKUT DIHAPUS KARENA PENAMBAHAN AKAN DILAKUKAN OLEH BLOK DI BAWAH:
+            // allFetchedJobs = allFetchedJobs.concat(fetchedData); 
   
             // Cek info paginasi dari backend
             const paginationInfo = response.data.data; // atau response.data.pagination, dll.
@@ -96,10 +95,10 @@ export const JobsCompany = defineStore("jobs", () => {
             throw new Error("Format data pekerjaan dari server tidak sesuai saat mengambil halaman " + currentPage);
           }
           
+          // Tambahkan data yang diambil dari halaman ini ke allFetchedJobs SEKALI SAJA
           if (fetchedData && fetchedData.length > 0) {
-              allFetchedJobs.push(...fetchedData); // Gabungkan hasil
+            allFetchedJobs.push(...fetchedData); 
           }
-  
   
           if (hasMorePages) {
             currentPage++;
@@ -111,7 +110,7 @@ export const JobsCompany = defineStore("jobs", () => {
   
       allCompanyJobs.value = allFetchedJobs; // Set state utama setelah semua data terkumpul
       if (allFetchedJobs.length === 0) {
-          console.warn("Tidak ada pekerjaan yang berhasil diambil setelah mencoba semua halaman.");
+        console.warn("Tidak ada pekerjaan yang berhasil diambil setelah mencoba semua halaman.");
       }
   
     } catch (err) {
@@ -142,14 +141,20 @@ export const JobsCompany = defineStore("jobs", () => {
       const response = await apiClient.post('/jobs', jobData, config);
 
       if (response.status === 201 && response.data.status === "success") {
-        Swal.fire("Berhasil!", "Posting pekerjaan berhasil dibuat.", "success");
-        // Optimal: tambahkan pekerjaan baru ke allCompanyJobs jika API mengembalikannya
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: "Berhasil Membuat job",
+          showConfirmButton: false,
+          timer: 3000,
+        });
         if (response.data.data && response.data.data.id) {
-            allCompanyJobs.value.unshift(response.data.data); // Tambah di awal array
+          allCompanyJobs.value.unshift(response.data.data); // Tambah di awal array
         } else {
-            await fetchAllCompanyJobsOnce(); // Fallback: ambil semua data lagi
+          await fetchAllCompanyJobsOnce(); // Fallback: ambil semua data lagi
         }
-        router.push('/job-list');
+        router.push('/job-list'); // Pastikan nama rute ini sesuai
       } else {
         throw new Error(response.data.message || "Gagal membuat posting pekerjaan.");
       }
@@ -217,20 +222,20 @@ export const JobsCompany = defineStore("jobs", () => {
         Swal.fire("Berhasil!", "Posting pekerjaan berhasil diperbarui.", "success");
         // Optimal: update pekerjaan di allCompanyJobs jika API mengembalikannya
         if (response.data.data && response.data.data.id) {
-            const index = allCompanyJobs.value.findIndex(job => job.id === response.data.data.id);
-            if (index !== -1) {
-                allCompanyJobs.value[index] = { ...allCompanyJobs.value[index], ...response.data.data };
-            } else {
-                await fetchAllCompanyJobsOnce(); // Fallback jika tidak ketemu (seharusnya tidak terjadi)
-            }
-            // Update jobDetail juga jika sedang dilihat
-            if (jobDetail.value && jobDetail.value.id === response.data.data.id) {
-                jobDetail.value = response.data.data;
-            }
+          const index = allCompanyJobs.value.findIndex(job => job.id === response.data.data.id);
+          if (index !== -1) {
+            allCompanyJobs.value[index] = { ...allCompanyJobs.value[index], ...response.data.data };
+          } else {
+            await fetchAllCompanyJobsOnce(); // Fallback jika tidak ketemu (seharusnya tidak terjadi)
+          }
+          // Update jobDetail juga jika sedang dilihat
+          if (jobDetail.value && jobDetail.value.id === response.data.data.id) {
+            jobDetail.value = response.data.data;
+          }
         } else {
-            await fetchAllCompanyJobsOnce(); // Fallback
+          await fetchAllCompanyJobsOnce(); // Fallback
         }
-        router.push({ name: 'job-detail', params: { id: id } });
+        router.push({ name: 'job-list', params: { id: id } }); // Pastikan rute 'job-detail' ada
       } else {
         throw new Error(response.data.message || "Gagal memperbarui posting pekerjaan.");
       }
@@ -261,23 +266,44 @@ export const JobsCompany = defineStore("jobs", () => {
       const token = authStore.tokenCompany;
       if (!token) throw new Error("Token otentikasi tidak ditemukan.");
       const config = { headers: { Authorization: `Bearer ${token}` } };
+      
+      // Mengirim request ke API untuk mengubah status
       const response = await apiClient.put(`/jobs/${id}/${statusEndpoint}`, {}, config);
-
+  
+      // Memeriksa jika request berhasil
       if (response.status === 200 && response.data.status === "success") {
-        Swal.fire("Berhasil!", response.data.message || `Pekerjaan berhasil di${actionText}.`, "success");
+        
+        // ==========================================================
+        // ALERT BARU DITERAPKAN DI SINI
+        // ==========================================================
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "success",
+          title: `Pekerjaan Berhasil Di${actionText}`, // Menggunakan actionText untuk judul dinamis
+          showConfirmButton: false,
+          timer: 3000,
+        });
+        // ==========================================================
+  
+        // Memperbarui state lokal agar UI langsung berubah
         const index = allCompanyJobs.value.findIndex((job) => job.id === id);
         if (index !== -1) {
-          allCompanyJobs.value[index].is_active = newStatus;
+          allCompanyJobs.value[index].is_active = (newStatus === 'active');
         }
         if (jobDetail.value && jobDetail.value.id === id) {
-          jobDetail.value.is_active = newStatus;
+          jobDetail.value.is_active = (newStatus === 'active');
         }
       } else {
+        // Menangani jika respons dari API tidak sukses
         throw new Error(response.data.message || `Gagal ${actionText} pekerjaan.`);
       }
     } catch (err) {
+      // Menangani error pada request
       error.value = err.response?.data?.message || err.message || `Kesalahan saat ${actionText} pekerjaan.`;
-      Swal.fire("Gagal!", error.value, "error");
+      Swal.fire("Gagal!", error.value, "error"); // Tetap menampilkan alert error standar
+      
+      // Logout jika token tidak valid (401 Unauthorized)
       if (err.response && err.response.status === 401) {
         authStore.logout();
         router.push('/login-company');
@@ -288,10 +314,12 @@ export const JobsCompany = defineStore("jobs", () => {
   }
 
   async function deactivateJob(id) {
-    await changeJobStatus(id, 'status-deactive', 'deactive', 'nonaktifkan');
+    // Sesuaikan 'deactive' dengan nilai yang diharapkan backend untuk status tidak aktif
+    await changeJobStatus(id, 'status-deactive', 'deactive', 'nonaktifkan'); 
   }
 
   async function activateJob(id) {
+    // Sesuaikan 'active' dengan nilai yang diharapkan backend untuk status aktif
     await changeJobStatus(id, 'status-active', 'active', 'aktifkan');
   }
 
@@ -300,31 +328,33 @@ export const JobsCompany = defineStore("jobs", () => {
     isLoading.value = true;
     error.value = null;
     try {
-        const token = authStore.tokenCompany;
-        if (!token) throw new Error("Token otentikasi tidak ditemukan.");
-        const config = { headers: { Authorization: `Bearer ${token}` } };
-        const response = await apiClient.delete(`/jobs/${id}`, config); // Asumsi endpoint DELETE /jobs/:id
+      const token = authStore.tokenCompany;
+      if (!token) throw new Error("Token otentikasi tidak ditemukan.");
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const response = await apiClient.delete(`/jobs/${id}`, config); // Asumsi endpoint DELETE /jobs/:id
 
-        if (response.status === 200 && response.data.status === "success") { // Atau 204 No Content
-            Swal.fire("Berhasil!", "Pekerjaan berhasil dihapus.", "success");
-            allCompanyJobs.value = allCompanyJobs.value.filter(job => job.id !== id);
-            // Jika sedang di halaman detail pekerjaan yang dihapus, redirect atau bersihkan
-            if (jobDetail.value && jobDetail.value.id === id) {
-                jobDetail.value = null;
-                router.push('/job-list'); // Atau halaman lain yang sesuai
-            }
-        } else {
-            throw new Error(response.data.message || "Gagal menghapus pekerjaan.");
+      if (response.status === 200 && response.data.status === "success") { 
+        // Atau 204 No Content
+        
+        Swal.fire("Berhasil!", "Pekerjaan berhasil dihapus.", "success");
+        allCompanyJobs.value = allCompanyJobs.value.filter(job => job.id !== id);
+        // Jika sedang di halaman detail pekerjaan yang dihapus, redirect atau bersihkan
+        if (jobDetail.value && jobDetail.value.id === id) {
+          jobDetail.value = null;
+          router.push('/job-list'); // Atau halaman lain yang sesuai
         }
+      } else {
+        throw new Error(response.data.message || "Gagal menghapus pekerjaan.");
+      }
     } catch (err) {
-        error.value = err.response?.data?.message || err.message || "Kesalahan menghapus pekerjaan.";
-        Swal.fire("Gagal!", error.value, "error");
-        if (err.response && err.response.status === 401) {
-            authStore.logout();
-            router.push('/login-company');
-        }
+      error.value = err.response?.data?.message || err.message || "Kesalahan menghapus pekerjaan.";
+      Swal.fire("Gagal!", error.value, "error");
+      if (err.response && err.response.status === 401) {
+        authStore.logout();
+        router.push('/login-company');
+      }
     } finally {
-        isLoading.value = false;
+      isLoading.value = false;
     }
   }
 

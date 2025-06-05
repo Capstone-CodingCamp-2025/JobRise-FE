@@ -1,6 +1,11 @@
 <template>
   <div v-if="loadingProfile" class="flex justify-center items-center h-64">
-    <p class="text-xl font-semibold text-gray-600">Memuat profil...</p>
+    <Icon
+        icon="eos-icons:loading"
+        width="50"
+        height="50"
+        class="text-blue-600"
+      />
   </div>
   <form
     v-else
@@ -36,7 +41,7 @@
           v-if="imagePreview"
           :src="fullImageUrl"
           class="absolute w-full h-full object-cover"
-          :alt="fullImageUrl"
+          :alt="profileForm.full_name || 'Profile Picture'"
         />
       </div>
 
@@ -61,6 +66,7 @@
             v-if="authUserStore.currentUser?.email_verified !== 'yes'"
             @click.prevent="handleVerifyOtpRequest"
             class="bg-blue-950/90 text-white text-xs md:text-sm px-2 md:px-3 rounded-sm cursor-pointer h-6 md:h-auto"
+            type="button"
           >
             Verifikasi
           </button>
@@ -183,6 +189,7 @@
           id="bio"
           v-model="profileForm.bio"
           rows="5"
+          placeholder="isilah bio yang bagus untuk bagian cv anda juga"
           class="bg-gray-300 w-full rounded-lg py-2 px-3 outline outline-blue-900 resize-none text-left"
           :disabled="!isEditing"
         ></textarea>
@@ -234,6 +241,7 @@
             id="otp"
             v-model="otpCode"
             class="bg-blue-400/30 outline outline-blue-900 rounded-sm h-7 md:h-8 text-center text-sm"
+            required
           />
         </div>
 
@@ -241,6 +249,7 @@
           class="flex flex-col sm:flex-row justify-center gap-2 mt-4 md:mt-6"
         >
           <button
+            type="button"
             class="bg-gray-400 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
             @click="showOtpPopup = false"
           >
@@ -259,15 +268,15 @@
 </template>
 
 <script setup>
-import { AuthUserStorage } from "@/stores/auth/userAuth";
+import { AuthUserStorage } from "@/stores/auth/userAuth"; // Pastikan path ini benar
 import { ref, onMounted, watch, computed } from "vue";
 import { Icon } from "@iconify/vue";
-import Swal from "sweetalert2";
+import Swal from "sweetalert2"; // Masih dibutuhkan untuk validasi & error di komponen
 import { storeToRefs } from "pinia";
 
 const authUserStore = AuthUserStorage();
-const { userProfile } = storeToRefs(authUserStore);
-
+const { userProfile, currentUser } = storeToRefs(authUserStore);
+const isSubmitting = ref(false);
 const loadingProfile = ref(false);
 const imagePreview = ref(null);
 const profileForm = ref({
@@ -280,90 +289,73 @@ const profileForm = ref({
   bio: "",
   linkedin: "",
   portofolio_url: "",
-  profile_picture: null,
   image: null,
 });
 const isEditing = ref(false);
 const showOtpPopup = ref(false);
 const otpCode = ref("");
 
-// --- Variabel URL untuk Gambar ---
 const BASE_IMAGE_URL = "http://localhost:3888/public/";
 
-// Computed property untuk URL gambar lengkap
 const fullImageUrl = computed(() => {
   if (imagePreview.value) {
-    // Cek apakah imagePreview sudah berupa URL objek (dari file yang baru dipilih)
     if (imagePreview.value.startsWith("blob:")) {
       return imagePreview.value;
     }
-    // Jika tidak, tambahkan base URL dari backend
     return `${BASE_IMAGE_URL}${imagePreview.value}`;
   }
-  return ""; // Return string kosong jika tidak ada gambar
+  return "";
 });
+
+const initializeProfileForm = (profileData) => {
+  if (profileData) {
+    profileForm.value = {
+      username: profileData.username || (currentUser.value?.name || ""),
+      full_name: profileData.full_name || "",
+      phone: profileData.phone || "",
+      age: profileData.age || "",
+      address: profileData.address || "",
+      city: profileData.city || "",
+      bio: profileData.bio || "",
+      linkedin: profileData.linkedin || "",
+      portofolio_url: profileData.portofolio_url || "",
+      image: profileData.image || null,
+    };
+    imagePreview.value = profileData.image || null;
+    isEditing.value = false;
+  } else {
+    profileForm.value = {
+      username: currentUser.value?.name || "",
+      full_name: "",
+      phone: "",
+      age: "",
+      address: "",
+      city: "",
+      bio: "",
+      linkedin: "",
+      portofolio_url: "",
+      image: null,
+    };
+    imagePreview.value = null;
+    isEditing.value = true;
+  }
+};
 
 onMounted(async () => {
   loadingProfile.value = true;
   try {
     await authUserStore.fetchUserProfile();
-    isEditing.value = !userProfile.value;
-    if (userProfile.value) {
-      profileForm.value = { ...userProfile.value };
-      if (userProfile.value.image) {
-        imagePreview.value = userProfile.value.image;
-      } else {
-        imagePreview.value = null;
-      }
-    } else {
-      imagePreview.value = null;
-    }
+    initializeProfileForm(userProfile.value);
   } catch (error) {
-    console.error("Gagal mengambil profil:", error);
-    isEditing.value = true;
-    profileForm.value = {
-      username: "",
-      full_name: "",
-      phone: "",
-      age: "",
-      address: "",
-      city: "",
-      bio: "",
-      linkedin: "",
-      portofolio_url: "",
-      profile_picture: null,
-    };
-    imagePreview.value = null;
+    console.error("Gagal mengambil profil di onMounted:", error);
+    initializeProfileForm(null);
   } finally {
     loadingProfile.value = false;
   }
 });
 
-watch(userProfile, (newProfile) => {
-  if (newProfile) {
-    profileForm.value = { ...newProfile };
-    if (newProfile.image) {
-      imagePreview.value = newProfile.image;
-    } else {
-      imagePreview.value = null;
-    }
-    isEditing.value = false;
-  } else {
-    profileForm.value = {
-      username: "",
-      full_name: "",
-      phone: "",
-      age: "",
-      address: "",
-      city: "",
-      bio: "",
-      linkedin: "",
-      portofolio_url: "",
-      profile_picture: null,
-    };
-    imagePreview.value = null;
-    isEditing.value = true;
-  }
+watch(userProfile, (newProfileData) => {
+  initializeProfileForm(newProfileData);
 });
 
 const handleFileChange = (event) => {
@@ -372,150 +364,109 @@ const handleFileChange = (event) => {
     imagePreview.value = URL.createObjectURL(file);
     profileForm.value.image = file;
   } else {
-    profileForm.value.image = null;
     if (userProfile.value && userProfile.value.image) {
       imagePreview.value = userProfile.value.image;
+      profileForm.value.image = userProfile.value.image;
     } else {
       imagePreview.value = null;
+      profileForm.value.image = null;
     }
   }
 };
 
 const handleSubmit = async () => {
   const isCreatingProfile = !userProfile.value;
-  const isImageSelected = profileForm.value.image !== null;
-  const hasExistingImage =
-    imagePreview.value !== null &&
-    typeof imagePreview.value === "string" &&
-    !imagePreview.value.startsWith("blob:");
+  const isNewImageSelected = profileForm.value.image instanceof File;
+  const hasPreviouslySavedImage = userProfile.value && userProfile.value.image && typeof userProfile.value.image === 'string';
 
-  if (
-    (isCreatingProfile && !isImageSelected) ||
-    (!isCreatingProfile &&
-      isEditing.value &&
-      !isImageSelected &&
-      !hasExistingImage)
-  ) {
+  if (isCreatingProfile && !isNewImageSelected) {
     Swal.fire({
       icon: "warning",
       title: "Gambar Profil Dibutuhkan",
-      text: "Mohon masukkan gambar profil Anda.",
+      text: "Mohon unggah gambar profil Anda untuk membuat profil.",
       confirmButtonText: "Oke",
     });
     return;
   }
 
+  if (!isCreatingProfile && isEditing.value && !isNewImageSelected && !hasPreviouslySavedImage) {
+    Swal.fire({
+      icon: "warning",
+      title: "Gambar Profil Dibutuhkan",
+      text: "Mohon unggah gambar profil Anda.",
+      confirmButtonText: "Oke",
+    });
+    return;
+  }
+  isSubmitting.value = true;
   const formData = new FormData();
   for (const key in profileForm.value) {
-    if (key === "image") {
-      if (profileForm.value.image instanceof File) {
+    if (profileForm.value.hasOwnProperty(key)) {
+      if (key === "image") {
+        if (profileForm.value.image instanceof File) {
+          formData.append("image", profileForm.value.image);
+        }
+      } else if (key === "username") {
+        if (!userProfile.value || !authUserStore.userProfile?.username) {
+          if (profileForm.value.username) {
+            formData.append(key, profileForm.value[key]);
+          }
+        }
+      } else if (profileForm.value[key] !== null && profileForm.value[key] !== undefined) {
         formData.append(key, profileForm.value[key]);
       }
-    } else if (key === "email") {
-      if (!authUserStore.userProfile) {
-        if (
-          profileForm.value[key] !== null &&
-          profileForm.value[key] !== undefined
-        ) {
-          formData.append(key, profileForm.value[key]);
-        }
-      }
-    } else if (key === "username") {
-      if (!authUserStore.userProfile) {
-        if (
-          profileForm.value[key] !== null &&
-          profileForm.value[key] !== undefined
-        ) {
-          formData.append(key, profileForm.value[key]);
-        }
-      }
-    } else if (
-      profileForm.value[key] !== null &&
-      profileForm.value[key] !== undefined
-    ) {
-      formData.append(key, profileForm.value[key]);
     }
   }
 
   try {
+    // Panggil action store. Store akan menampilkan notifikasi sukses (toast).
     if (userProfile.value) {
       await authUserStore.updateProfileUser(formData);
     } else {
       await authUserStore.createProfile(formData);
     }
+
+    // Setelah sukses (store sudah menampilkan alert-nya), lakukan fetch ulang dan ubah state editing.
+    await authUserStore.fetchUserProfile();
     isEditing.value = false;
+
+    // ----- Swal.fire UNTUK SUKSES DIHAPUS DARI SINI -----
+    // Notifikasi sukses sekarang sepenuhnya ditangani oleh store.
+    // Swal.fire({
+    //   icon: "success",
+    //   title: successMessage, // successMessage juga sudah tidak relevan di sini
+    //   text: "Data profil Anda telah berhasil disimpan.",
+    //   confirmButtonText: "Oke",
+    // });
+
+  } catch (error) {
+    // Penanganan error di komponen tetap ada, untuk menampilkan alert yang lebih menonjol jika diperlukan
+    // atau untuk menangani error yang mungkin tidak dilempar ulang oleh store dengan cara tertentu.
+    console.error("Gagal menyimpan profil (dari komponen):", error);
+    let errorMessage = "Terjadi kesalahan saat menyimpan profil.";
+    if (error.response && error.response.data) {
+        if (typeof error.response.data.message === 'string') {
+            errorMessage = error.response.data.message;
+        } else if (typeof error.response.data.error === 'string') {
+            errorMessage = error.response.data.error;
+        }
+        const lowerCaseError = errorMessage.toLowerCase();
+        if (lowerCaseError.includes("username") && (lowerCaseError.includes("taken") || lowerCaseError.includes("exists") || lowerCaseError.includes("sudah ada") || lowerCaseError.includes("digunakan"))) {
+            errorMessage = "Username sudah digunakan. Mohon pilih username lain.";
+        }
+    } else if (error.message && !error.response) { // Error dari store yang mungkin tidak punya error.response
+      errorMessage = error.message;
+    }
+
+
     Swal.fire({
-      // Add success alert here
-      icon: "success",
-      title: "Profil Berhasil Disimpan!",
-      text: "Data profil Anda telah berhasil diperbarui.",
+      icon: "error",
+      title: "Gagal Menyimpan",
+      text: errorMessage,
       confirmButtonText: "Oke",
     });
-  } catch (error) {
-    console.error("Gagal menyimpan profil:", error);
-
-    // --- START: MODIFIKASI BAGIAN INI SESUAI RESPON BACKEND ANDA ---
-    if (error.response) {
-      // Contoh 1: Backend mengirim status 400 dan pesan spesifik di data.message
-      if (
-        error.response.status === 400 &&
-        error.response.data &&
-        error.response.data.message === "Username is already taken"
-      ) {
-        Swal.fire({
-          icon: "error",
-          title: "Gagal Menyimpan",
-          text: "Username sudah digunakan. Mohon pilih username lain.",
-          confirmButtonText: "Oke",
-        });
-      }
-      // Contoh 2: Backend mengirim status 409 dan pesan spesifik di data.error
-      else if (
-        error.response.status === 409 &&
-        error.response.data &&
-        error.response.data.error === "Duplicate username"
-      ) {
-        Swal.fire({
-          icon: "error",
-          title: "Gagal Menyimpan",
-          text: "Username sudah digunakan. Mohon pilih username lain.",
-          confirmButtonText: "Oke",
-        });
-      }
-      // Contoh 3: Backend mengirim pesan spesifik di data.message, tanpa peduli status
-      else if (
-        error.response.data &&
-        error.response.data.message &&
-        error.response.data.message.includes("username already exists")
-      ) {
-        Swal.fire({
-          icon: "error",
-          title: "Gagal Menyimpan",
-          text: "Username sudah digunakan. Mohon pilih username lain.",
-          confirmButtonText: "Oke",
-        });
-      }
-      // Tambahkan kondisi lain jika ada skenario error spesifik lainnya dari backend Anda
-      else {
-        // Fallback untuk error lain yang tidak spesifik atau general error
-        Swal.fire({
-          icon: "error",
-          title: "Gagal Menyimpan",
-          text:
-            error.response.data.message ||
-            "Terjadi kesalahan saat menyimpan profil. Harap periksa kembali data Anda.",
-          confirmButtonText: "Oke",
-        });
-      }
-    } else {
-      // Jika tidak ada error.response (misal: masalah jaringan)
-      Swal.fire({
-        icon: "error",
-        title: "Gagal Menyimpan",
-        text: "Terjadi kesalahan jaringan atau server tidak merespons. Silakan coba lagi.",
-        confirmButtonText: "Oke",
-      });
-    }
+  }finally {
+    isSubmitting.value = false
   }
 };
 
@@ -525,16 +476,28 @@ const handleVerifyOtpRequest = async () => {
     showOtpPopup.value = true;
   } catch (error) {
     console.error("Gagal mengirim OTP:", error);
+    // Asumsi store sudah menangani alert errornya
   }
 };
 
 const handleVerifyOtp = async () => {
+  if (!otpCode.value) {
+    Swal.fire({
+      icon: "warning",
+      title: "OTP Diperlukan",
+      text: "Mohon masukkan kode OTP.",
+      confirmButtonText: "Oke",
+    });
+    return;
+  }
   try {
     await authUserStore.verifyEmailOTP(otpCode.value);
     showOtpPopup.value = false;
     otpCode.value = "";
+     // Asumsi store sudah menangani alert suksesnya dan update currentUser
   } catch (error) {
     console.error("Gagal memverifikasi OTP:", error);
+    // Asumsi store sudah menangani alert errornya
   }
 };
 </script>

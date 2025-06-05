@@ -130,7 +130,7 @@
                       : `${baseImageUrl}${job.company_logo}`
                   "
                   :alt="job.company_name"
-                  class="object-contain max-w-full max-h-full"
+                  class="object-cover w-full h-full"
                   @error="($event) => ($event.target.style.display = 'none')"
                 />
                 <span v-else class="text-xs text-gray-500">No Logo</span>

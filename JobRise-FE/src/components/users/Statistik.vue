@@ -52,9 +52,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { AuthUserStorage } from '@/stores/auth/userAuth'; // Sesuaikan path jika perlu
-import { useActiveJobRecommendationsStore } from '@/stores/jobs/userjob'; // Sesuaikan path jika perlu
-import { Icon } from "@iconify/vue"; // Import Iconify
+import { AuthUserStorage } from '@/stores/auth/userAuth';
+import { useActiveJobRecommendationsStore } from '@/stores/jobs/userjob';
+import { Icon } from "@iconify/vue";
 
 // Initialize Stores
 const authStore = AuthUserStorage();
@@ -68,58 +68,58 @@ const isLoadingStats = ref(true);
 
 // Computed properties for counts
 const appliedJobsCount = computed(() => {
-  // Asumsi jobStore.userAppliedJobs adalah array dari pekerjaan yang dilamar
   return jobStore.userAppliedJobs?.length || 0;
 });
 
 const favoriteJobsCount = computed(() => {
-  // Asumsi jobStore.userFavoriteJobIds adalah Set atau Array dari ID pekerjaan favorit
-  // Jika userFavoriteJobIds adalah Set:
   return jobStore.userFavoriteJobIds?.size || 0;
-  // Jika userFavoriteJobIds adalah Array:
-  // return jobStore.userFavoriteJobIds?.length || 0;
 });
 
+
+// ==========================================================
+// KODE PERUBAHAN ADA DI BAGIAN INI
+// ==========================================================
 const acceptedApplicationsCount = computed(() => {
-  // Asumsi jobStore.userAppliedJobs adalah array, dan setiap item memiliki properti status_lamaran
-  // Ganti 'status_lamaran' dan 'diterima' sesuai dengan struktur data Anda
-  const acceptedStatus = 'diterima'; // Status untuk lamaran yang diterima
-  return jobStore.userAppliedJobs?.filter(
-    (jobApplication) => jobApplication.status_lamaran?.toLowerCase() === acceptedStatus
-  ).length || 0;
+  // Pastikan jobStore.userAppliedJobs adalah sebuah array
+  if (!Array.isArray(jobStore.userAppliedJobs)) {
+    return 0;
+  }
+  
+  // Memfilter lamaran dengan `status` 'accepted' atau 'approved'
+  return jobStore.userAppliedJobs.filter(application => {
+    // Menggunakan properti 'status', bukan 'status_lamaran'
+    const status = application.status?.toLowerCase();
+    // Memeriksa nilai 'accepted' atau 'approved'
+    return status === 'accepted' || status === 'approved';
+  }).length;
 });
+// ==========================================================
+
 
 // Fetch data on component mount
 onMounted(async () => {
   isLoadingStats.value = true;
   try {
-    // Pastikan token pengguna tersedia sebelum melakukan fetch
     if (authStore.tokenUser) {
-      // Panggil aksi dari store untuk mengambil data yang relevan
-      // Aksi ini harus mempopulasikan jobStore.userAppliedJobs dan jobStore.userFavoriteJobIds
+      // Memanggil data yang diperlukan untuk statistik
       await Promise.all([
-        jobStore.fetchUserAppliedJobs(authStore.tokenUser), // Asumsi aksi ini ada
-        jobStore.fetchUserFavoriteJobs(authStore.tokenUser, { page: 1, limit: 10000 }) // Asumsi aksi ini ada & mengambil semua ID favorit
+        jobStore.fetchUserAppliedJobs(authStore.tokenUser, { page: 1, limit: 10000 }), // Ambil semua data lamaran untuk perhitungan akurat
+        jobStore.fetchUserFavoriteJobs(authStore.tokenUser, { page: 1, limit: 10000, isFullRefreshOfFavoriteIds: true })
       ]);
     } else {
       console.warn("User token not available. Stats might not be loaded.");
     }
   } catch (error) {
     console.error("Error fetching user job stats:", error);
-    // Anda bisa menambahkan penanganan error di sini, misalnya menampilkan pesan ke pengguna
   } finally {
     isLoadingStats.value = false;
   }
 });
 
-// Logging untuk debugging
-console.log('Current User from AuthStore:', user.value);
-
 </script>
 
 <style scoped>
-/* Anda bisa menambahkan style tambahan di sini jika diperlukan */
 .outline-slate-300 {
-  outline-color: #cbd5e1; /* Warna outline yang lebih lembut dari slate-400 */
+  outline-color: #cbd5e1;
 }
 </style>

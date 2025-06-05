@@ -53,9 +53,8 @@
       class="text-center py-8 bg-red-50 rounded-md shadow-sm"
     >
       <p class="text-red-600 font-semibold text-lg">
-        Terjadi kesalahan saat memuat pekerjaan:
+        Anda belum menambahkan pekerjaan
       </p>
-      <p class="text-red-500 mt-2">{{ jobsStore.error }}</p>
     </div>
 
     <div
@@ -302,18 +301,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, onActivated, watch } from "vue"; // Pastikan onActivated diimpor
 import { Icon } from "@iconify/vue";
-import { JobsCompany } from "@/stores/jobs/companyjob"; // Sesuaikan path ini
+import { JobsCompany } from "@/stores/jobs/companyjob"; // Sesuaikan path ini jika perlu
 
 const jobsStore = JobsCompany();
 const searchQuery = ref("");
 
-// State untuk paginasi client-side
 const currentPageForPagination = ref(1);
 const itemsPerPageForPagination = ref(10); // Atur jumlah item per halaman
 
-// 1. Data yang sudah difilter berdasarkan searchQuery dari semua data di store
+// Computed properties (filteredJobs, totalPagesForPagination, displayedJobs, visiblePageNumbers)
+// tetap sama seperti kode Anda sebelumnya. Saya akan singkat di sini untuk fokus pada perubahan.
 const filteredJobs = computed(() => {
   if (!jobsStore.allCompanyJobs) return [];
   if (!searchQuery.value) {
@@ -327,13 +326,11 @@ const filteredJobs = computed(() => {
   );
 });
 
-// 2. Total halaman berdasarkan data yang sudah difilter
 const totalPagesForPagination = computed(() => {
   if (!filteredJobs.value) return 0;
   return Math.ceil(filteredJobs.value.length / itemsPerPageForPagination.value);
 });
 
-// 3. Data yang akan ditampilkan di halaman saat ini (hasil paginasi client-side)
 const displayedJobs = computed(() => {
   if (!filteredJobs.value) return [];
   const start = (currentPageForPagination.value - 1) * itemsPerPageForPagination.value;
@@ -341,79 +338,66 @@ const displayedJobs = computed(() => {
   return filteredJobs.value.slice(start, end);
 });
 
-// 4. Logika untuk nomor halaman yang terlihat di paginasi (dengan elipsis)
 const visiblePageNumbers = computed(() => {
   const total = totalPagesForPagination.value;
   const current = currentPageForPagination.value;
-  const pageRange = 1; // Jumlah halaman di setiap sisi halaman saat ini (misal: C-1, C, C+1)
+  const pageRange = 1;
   let pages = [];
 
-  if (total <= 1) return []; // Jika hanya 1 halaman atau tidak ada, tidak ada nomor halaman 'tengah'
+  if (total <= 1) return [];
 
-  // Jika total halaman sedikit, tombol paginasi sudah ditangani oleh template v-if="totalPagesForPagination <= 5"
-  // Jadi, visiblePageNumbers akan berisi halaman antara 1 dan total jika tidak ada elipsis.
-  // Untuk kasus elipsis (total > 5):
-  let start = current - pageRange;
-  let end = current + pageRange;
-
-  // Pastikan start dan end tidak melewati batas halaman 1 dan total
-  // dan tidak tumpang tindih dengan tombol halaman 1 atau terakhir yang sudah eksplisit
-  if (start <= 1) start = 2;
-  if (end >= total) end = total - 1;
-  
-  // Jika karena penyesuaian start jadi lebih besar dari end (misal saat current = 1 atau current = total)
-  // atau tidak ada halaman di antara 1 dan total, kosongkan pages.
-  if (start > end) return [];
-
-  for (let i = start; i <= end; i++) {
-    // Hanya tambahkan jika halaman tersebut bukan halaman pertama atau terakhir KARENA
-    // halaman 1 dan totalPagesForPagination sudah ditampilkan secara eksplisit di template elipsis
-    if (i > 1 && i < total) {
-       pages.push(i);
-    }
-  }
-  
-  // Penyesuaian khusus agar lebih banyak nomor ditampilkan jika dekat tepi dan ada elipsis
-  // Misal, jika current page = 2 dan total > 5, kita ingin [2, 3] (jika pageRange=1)
-  // Jika current page = 3 dan total > 5, kita ingin [2, 3, 4]
   if (total > 5) {
-    pages = []; // Reset untuk logika elipsis
-    if (current <= 3) { // Dekat awal: tampilkan 2, 3, mungkin 4
-        for(let i = 2; i <= Math.min(4, total - 1); i++) pages.push(i);
-    } else if (current >= total - 2) { // Dekat akhir: tampilkan total-3, total-2, total-1
-        for(let i = Math.max(2, total - 3); i <= total - 1; i++) pages.push(i);
-    } else { // Di tengah: tampilkan current-1, current, current+1
-        for(let i = current - pageRange; i <= current + pageRange; i++) {
-            if (i > 1 && i < total) pages.push(i);
-        }
+    pages = [];
+    if (current <= 3) {
+      for(let i = 2; i <= Math.min(4, total - 1); i++) pages.push(i);
+    } else if (current >= total - 2) {
+      for(let i = Math.max(2, total - 3); i <= total - 1; i++) pages.push(i);
+    } else {
+      for(let i = current - pageRange; i <= current + pageRange; i++) {
+        if (i > 1 && i < total) pages.push(i);
+      }
     }
   }
   return pages;
 });
 
-// Fungsi untuk mengubah halaman
 function changePage(page) {
   if (page >= 1 && page <= totalPagesForPagination.value) {
     currentPageForPagination.value = page;
-    window.scrollTo(0, 0); // Opsional: scroll ke atas halaman
+    window.scrollTo(0, 0);
   }
 }
 
-// Panggil fungsi untuk mengambil SEMUA daftar pekerjaan saat komponen dimuat
-onMounted(() => {
-  jobsStore.fetchAllCompanyJobsOnce();
-});
+// Fungsi untuk memuat data pekerjaan
+const loadJobs = async () => {
+  try {
+    // Panggil metode yang ADA di store Anda: fetchAllCompanyJobsOnce()
+    // Ini akan mengambil semua data pekerjaan dari awal setiap kali dipanggil.
+    console.log("Component: Calling fetchAllCompanyJobsOnce from loadJobs"); // Untuk debugging
+    await jobsStore.fetchAllCompanyJobsOnce();
+    console.log("Component: fetchAllCompanyJobsOnce completed. Jobs count:", jobsStore.allCompanyJobs?.length); // Untuk debugging
+  } catch (error) {
+    console.error("Component: Error in loadJobs:", error);
+    // Penanganan error spesifik komponen bisa ditambahkan di sini jika perlu,
+    // meskipun store Anda juga menangani error.
+  }
+};
 
-// Watcher untuk searchQuery: reset ke halaman 1 jika query pencarian berubah
+// Panggil fungsi untuk mengambil daftar pekerjaan saat komponen dimuat
+onMounted(loadJobs);
+
+// Panggil juga saat komponen diaktifkan kembali (jika menggunakan <keep-alive>)
+onActivated(loadJobs);
+
 watch(searchQuery, () => {
   currentPageForPagination.value = 1;
 });
 
-// Watcher untuk total data (allCompanyJobs): reset ke halaman 1 jika data master berubah
-watch(() => jobsStore.allCompanyJobs.length, () => {
+watch(() => jobsStore.allCompanyJobs?.length, (newLength, oldLength) => {
+  console.log("Component: Watcher allCompanyJobs.length changed from", oldLength, "to", newLength); // Debugging
   if (currentPageForPagination.value > totalPagesForPagination.value && totalPagesForPagination.value > 0) {
     currentPageForPagination.value = totalPagesForPagination.value;
-  } else if (totalPagesForPagination.value === 0) {
+  } else if (totalPagesForPagination.value === 0 && filteredJobs.value.length === 0) {
     currentPageForPagination.value = 1;
   } else if (totalPagesForPagination.value === 1 && currentPageForPagination.value !== 1) {
      currentPageForPagination.value = 1;

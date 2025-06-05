@@ -87,10 +87,8 @@
         <div class="flex pt-2 md:pt-5 gap-x-2 md:gap-x-4 items-center">
           <button
             @click="toggleFavoriteHandler"
-            :disabled="
-              jobStore.isCreatingFavorite || jobStore.isDeletingFavorite
-            "
-            class="p-1.5 rounded-full hover:bg-gray-200 active:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+            :disabled="isTogglingFavorite"
+            class="p-1.5 rounded-full hover:bg-gray-200 active:bg-gray-300 ..."
             :title="
               isCurrentJobFavorited
                 ? 'Remove from Favorites'
@@ -98,23 +96,29 @@
             "
           >
             <Icon
+              v-if="isTogglingFavorite"
+              icon="eos-icons:loading"
+              width="36"
+              height="36"
+            />
+            <Icon
+              v-else
               :icon="
                 isCurrentJobFavorited
                   ? 'material-symbols:bookmark-rounded'
                   : 'material-symbols:bookmark-outline'
               "
-              width="30"
-              height="30"
-              md:width="36"
-              md:height="36"
+              width="36"
+              height="36"
               :style="{ color: isCurrentJobFavorited ? '#0C4A6E' : '#606060' }"
             />
           </button>
-
           <button
             @click="handleApplyNow"
             :disabled="
-              isApplying || isEffectivelyApplied || jobDetail.status === 'inactive'
+              isApplying ||
+              isEffectivelyApplied ||
+              jobDetail.status === 'inactive'
             "
             :class="[
               'text-white w-auto min-w-[128px] md:min-w-[160px] px-3 md:px-4 py-1.5 md:pt-2 text-center h-8 md:h-10 relative rounded-md text-xs md:text-sm flex items-center justify-center transition-colors duration-150 ease-in-out',
@@ -125,18 +129,31 @@
           >
             <span v-if="isApplying">Melamar...</span>
             <span v-else-if="isEffectivelyApplied">Delivered</span>
-            <span v-else-if="jobDetail.status === 'inactive'">Lowongan Ditutup</span>
+            <span v-else-if="jobDetail.status === 'inactive'"
+              >Lowongan Ditutup</span
+            >
             <span v-else>Apply</span>
             <Icon
-              v-if="!isApplying && !isEffectivelyApplied && jobDetail.status !== 'inactive'"
+              v-if="
+                !isApplying &&
+                !isEffectivelyApplied &&
+                jobDetail.status !== 'inactive'
+              "
               icon="pepicons-pencil:arrow-right"
-              width="18" height="18" md:width="24" md:height="24"
+              width="18"
+              height="18"
+              md:width="24"
+              md:height="24"
               style="color: #ffff"
-              class="ml-2" />
+              class="ml-2"
+            />
             <Icon
               v-if="isApplying"
               icon="eos-icons:loading"
-              width="18" height="18" md:width="20" md:height="20"
+              width="18"
+              height="18"
+              md:width="20"
+              md:height="20"
               style="color: #ffff"
               class="ml-2"
             />
@@ -152,20 +169,25 @@
             class="px-4 py-3 md:px-10 md:py-8 w-full border-b md:border-b-0 md:border-r border-slate-300"
           >
             <p class="font-semibold text-xl md:text-3xl">Salary</p>
+
             <p class="text-green-500 font-medium text-xs md:text-base">
               {{ formatSalary(jobDetail.salary_min, jobDetail.salary_max) }}
             </p>
           </div>
+
           <div
             class="px-4 py-3 md:px-10 md:py-8 w-full border-b md:border-b-0 md:border-r border-slate-300"
           >
             <p class="font-semibold text-xl md:text-3xl">Location</p>
+
             <p class="text-gray-600 font-medium text-xs md:text-base">
               {{ jobDetail.location }}
             </p>
           </div>
+
           <div class="px-4 py-3 md:px-10 md:py-8 w-full">
             <p class="font-semibold text-xl md:text-3xl">Type</p>
+
             <p class="text-gray-600 font-medium text-xs md:text-base">
               {{ jobDetail.job_type }}
             </p>
@@ -177,11 +199,13 @@
         <h2 class="font-bold text-lg md:text-xl pb-4 md:pb-10">
           Job Description
         </h2>
+
         <div
           v-if="jobDetail.description"
           class="text-justify text-gray-600 text-sm md:text-base leading-relaxed prose max-w-none"
           v-html="jobDetail.description"
         ></div>
+
         <p
           v-else
           class="text-justify text-gray-600 text-sm md:text-base leading-relaxed"
@@ -203,7 +227,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue"; // watch tidak jadi digunakan di sini
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { useActiveJobRecommendationsStore } from "@/stores/jobs/userjob";
@@ -225,26 +249,30 @@ const currentJobId = computed(() => {
 const jobDetail = computed(() => jobStore.currentJobDetail);
 
 const loadingInitialData = ref(true);
-// Menggunakan pageError lokal agar error sinkronisasi favorit/lamaran tidak langsung mengganti tampilan utama
-const pageError = ref(null); // Ini akan diisi jika fetchJobDetailById gagal
+const pageError = ref(null);
 
 const isApplying = ref(false);
-// Menandai jika user berhasil apply di sesi ini, untuk feedback langsung
 const hasAppliedThisSession = ref(false);
 const isLogoError = ref(false);
+// PERUBAHAN DI SINI: State loading lokal untuk tombol favorit
+const isTogglingFavorite = ref(false);
 
-// Computed property untuk mengecek apakah pekerjaan saat ini sudah ada di daftar lamaran dari store
 const hasAppliedBasedOnStore = computed(() => {
-  if (!authStore.tokenUser || !currentJobId.value || !jobStore.userAppliedJobs || jobStore.userAppliedJobs.length === 0) {
+  if (
+    !authStore.tokenUser ||
+    !currentJobId.value ||
+    !jobStore.userAppliedJobs ||
+    jobStore.userAppliedJobs.length === 0
+  ) {
     return false;
   }
-  // Sesuaikan 'application.Job?.id' atau 'application.job_id' dengan struktur data Anda
   return jobStore.userAppliedJobs.some(
-    (application) => (application.Job?.id === currentJobId.value) || (application.job_id === currentJobId.value)
+    (application) =>
+      application.Job?.id === currentJobId.value ||
+      application.job_id === currentJobId.value
   );
 });
 
-// Computed property gabungan untuk status "sudah melamar"
 const isEffectivelyApplied = computed(() => {
   return hasAppliedBasedOnStore.value || hasAppliedThisSession.value;
 });
@@ -255,8 +283,7 @@ const isCurrentJobFavorited = computed(() => {
 });
 
 const handleImageError = (event) => {
-  // event.target.style.display = "none"; // Anda bisa memilih untuk menyembunyikan atau mengganti src
-  event.target.src = ""; // Mengosongkan src akan memicu alt text atau fallback dari CSS jika ada
+  event.target.src = "";
   isLogoError.value = true;
 };
 
@@ -266,12 +293,19 @@ const formatSalary = (min, max) => {
   const numericMin = parseFloat(cleanMin);
   const numericMax = parseFloat(cleanMax);
 
-  if (!isNaN(numericMin) && !isNaN(numericMax) && numericMin > 0 && numericMax > 0) // Cek > 0 agar tidak menampilkan "Rp0 - Rp0"
+  if (
+    !isNaN(numericMin) &&
+    !isNaN(numericMax) &&
+    numericMin > 0 &&
+    numericMax > 0
+  )
     return `${formatCurrency(numericMin)} - ${formatCurrency(numericMax)}`;
-  if (!isNaN(numericMin) && numericMin > 0) return `Mulai dari ${formatCurrency(numericMin)}`;
-  if (!isNaN(numericMax) && numericMax > 0) return `Hingga ${formatCurrency(numericMax)}`;
-
-  if (min && String(min).toLowerCase() !== 'null' && String(min) !== '') return String(min); // Tampilkan gaji non-numerik jika ada
+  if (!isNaN(numericMin) && numericMin > 0)
+    return `Mulai dari ${formatCurrency(numericMin)}`;
+  if (!isNaN(numericMax) && numericMax > 0)
+    return `Hingga ${formatCurrency(numericMax)}`;
+  if (min && String(min).toLowerCase() !== "null" && String(min) !== "")
+    return String(min);
   return "N/A";
 };
 
@@ -286,106 +320,95 @@ const formatCurrency = (value) => {
   }).format(numericValue);
 };
 
-const initializePageData = async (isRetry = false) => {
+// File: job-user-detail.vue
+
+// File: job-user-detail.vue
+
+const initializePageData = async () => {
   loadingInitialData.value = true;
-  pageError.value = null; // Reset error halaman utama
+  pageError.value = null;
   isLogoError.value = false;
-  hasAppliedThisSession.value = false; // Reset status apply sesi ini
+  hasAppliedThisSession.value = false;
 
   if (!currentJobId.value) {
-    console.warn("Job ID is missing from route params.");
-    pageError.value = { message: "Job ID is missing in the URL." };
+    pageError.value = { message: "Job ID tidak ditemukan di URL." };
     loadingInitialData.value = false;
     return;
   }
 
-  // Tidak perlu cek authStore.tokenUser di sini jika job detail bisa publik
-  // Biarkan fetchJobDetailById yang menentukan apakah token diperlukan atau tidak
-
   try {
-    const promisesToAwait = [
-      jobStore.fetchJobDetailById(currentJobId.value, authStore.tokenUser), // token bisa null jika API memperbolehkan
-    ];
+    // LANGKAH 1: Muat data KRITIS (detail pekerjaan) terlebih dahulu.
+    await jobStore.fetchJobDetailById(currentJobId.value, authStore.tokenUser);
 
-    if (authStore.tokenUser) {
-      promisesToAwait.push(
-        jobStore.fetchUserFavoriteJobs(authStore.tokenUser, {
-          page: 1,
-          limit: 1000, // Ambil semua ID favorit
-          isFullRefreshOfFavoriteIds: true, // Pastikan Set ID favorit di-refresh
-        })
-      );
-      promisesToAwait.push(
-        jobStore.fetchUserAppliedJobs(authStore.tokenUser, {
-          page: 1,
-          limit: 500, // Ambil cukup banyak riwayat lamaran untuk pengecekan
-          // Tidak perlu isFullRefreshOfAppliedJobIds karena kita cek array utuh
-        })
-      );
-    }
-
-    await Promise.all(promisesToAwait);
-
-    // Cek error spesifik dari store setelah semua fetch selesai
-    // Terutama untuk job detail yang krusial
+    // Jika data kritis ini GAGAL, hentikan proses dan tampilkan halaman error.
     if (jobStore.errorJobDetail) {
-      throw jobStore.errorJobDetail; // Lemparkan untuk ditangkap oleh catch di bawah
+      throw jobStore.errorJobDetail;
     }
-    // Error untuk favorit atau applied jobs bisa ditangani lebih halus jika diinginkan (misal, toast)
-    // Untuk saat ini, jika salah satu gagal dalam Promise.all, akan masuk ke catch
 
+    // LANGKAH 2: Jika data kritis BERHASIL, muat data TAMBAHAN (favorit & lamaran)
+    // di latar belakang tanpa menghentikan tampilan utama.
+    if (authStore.tokenUser) {
+      // Panggil fungsi ini tanpa 'await' di dalam try-catch utama.
+      // Biarkan mereka berjalan sendiri. UI akan update jika sudah selesai.
+      jobStore.fetchUserFavoriteJobs(authStore.tokenUser, {
+        page: 1,
+        limit: 1000,
+        isFullRefreshOfFavoriteIds: true,
+      });
+      jobStore.fetchUserAppliedJobs(authStore.tokenUser, {
+        page: 1,
+        limit: 500,
+      });
+    }
   } catch (e) {
-    console.error("Failed to initialize page data:", e);
-    pageError.value = e; // Set error halaman utama jika ada kegagalan krusial
+    // Blok catch ini sekarang HANYA untuk menangani kegagalan data kritis.
+    console.error("Gagal memuat data detail pekerjaan:", e);
+    pageError.value = e;
   } finally {
+    // Hentikan loading utama setelah data kritis selesai,
+    // agar halaman bisa segera ditampilkan.
     loadingInitialData.value = false;
   }
 };
+// PERUBAHAN DI SINI: Logika toggleFavoriteHandler diperbarui
+// File: job-user-detail.vue
 
 const toggleFavoriteHandler = async () => {
-  // ... (Logika toggleFavoriteHandler Anda yang sudah diperbaiki dari sebelumnya)
-  // Pastikan Anda menggunakan favoriteEntry.id saat memanggil deleteFavoriteJob
-   if (!authStore.tokenUser) {
-    Swal.fire('Akses Ditolak', 'Silakan login untuk menambahkan atau menghapus favorit.', 'warning');
+  if (!authStore.tokenUser) {
+    Swal.fire("Akses Ditolak", "Silakan login untuk mengubah favorit.", "warning");
     return;
   }
   if (!jobDetail.value || !currentJobId.value) {
-    Swal.fire('Error', 'Detail pekerjaan tidak tersedia untuk difavoritkan.', 'error');
+    Swal.fire("Error", "Detail pekerjaan tidak tersedia.", "error");
     return;
   }
 
-  const jobIdToOperateOn = currentJobId.value;
+  // Mulai loading state
+  isTogglingFavorite.value = true;
 
-  if (isCurrentJobFavorited.value) {
-    const favoriteEntry = jobStore.userFavoriteJobs.find(fav => fav.job_id === jobIdToOperateOn);
-    if (favoriteEntry && favoriteEntry.id) {
-      try {
-        await jobStore.deleteFavoriteJob(favoriteEntry.id, authStore.tokenUser);
-      } catch (error) {
-        console.error("Gagal menghapus favorit di komponen:", error);
-        // Tampilkan toast atau notifikasi kecil, jangan error halaman penuh
-        Swal.fire({toast: true, icon: 'error', title: 'Gagal sinkronisasi favorit', position: 'top-end', showConfirmButton: false, timer: 3000});
-      }
+  try {
+    const jobId = currentJobId.value;
+
+    if (isCurrentJobFavorited.value) {
+      // Panggil aksi hapus favorit dengan JOB ID, bukan favorite ID.
+      // Biarkan store yang mencari favorite ID jika diperlukan.
+      // Ini membuat kode komponen lebih bersih dan andal.
+      await jobStore.deleteFavoriteJob(jobId, authStore.tokenUser);
     } else {
-      console.warn(`Favorite entry ID untuk job ID ${jobIdToOperateOn} tidak ditemukan.`);
-      Swal.fire('Gagal Sinkronisasi', 'Data favorit mungkin tidak sinkron. Coba muat ulang.', 'warning');
+      // Aksi tambah favorit sudah benar.
+      await jobStore.createFavoriteJob(jobId, authStore.tokenUser);
     }
-  } else { // Menambahkan favorit
-    try {
-      await jobStore.createFavoriteJob(jobIdToOperateOn, authStore.tokenUser);
-    } catch (error) {
-      console.error("Gagal menambahkan favorit di komponen:", error);
-      if (error.response && error.response.data && error.response.data.message === "Job already favorited") {
-        if (!jobStore.userFavoriteJobIds.has(jobIdToOperateOn) && authStore.tokenUser) {
-           await jobStore.fetchUserFavoriteJobs(authStore.tokenUser, { page: 1, limit: 1000, isFullRefreshOfFavoriteIds: true });
-        }
-      } else {
-        Swal.fire({toast: true, icon: 'error', title: 'Gagal sinkronisasi favorit', position: 'top-end', showConfirmButton: false, timer: 3000});
-      }
-    }
+  } catch (error) {
+    console.error("Gagal mengubah status favorit di komponen:", error);
+    // SweetAlert untuk error sudah ditangani di dalam store,
+    // jadi tidak perlu ditambahkan di sini kecuali untuk kasus khusus.
+  } finally {
+    // Hentikan loading state, baik berhasil maupun gagal
+    isTogglingFavorite.value = false;
   }
 };
 
+// ... sisa script (handleApplyNow, onMounted) tidak berubah ...
 const handleApplyNow = async () => {
   if (!authStore.tokenUser) {
     Swal.fire({
@@ -405,19 +428,27 @@ const handleApplyNow = async () => {
   }
 
   if (!jobDetail.value || !currentJobId.value) {
-    Swal.fire("Error", "Detail pekerjaan tidak ditemukan untuk dilamar.", "error");
+    Swal.fire(
+      "Error",
+      "Detail pekerjaan tidak ditemukan untuk dilamar.",
+      "error"
+    );
     return;
   }
 
   if (
     jobDetail.value.status === "inactive" ||
-    jobDetail.value.is_active === "deactive" // Pastikan properti ini ada di API Anda
+    jobDetail.value.is_active === "deactive"
   ) {
-    Swal.fire("Lowongan Ditutup", "Maaf, lowongan pekerjaan ini sudah tidak aktif.", "info");
+    // Pastikan properti ini ada di API Anda
+    Swal.fire(
+      "Lowongan Ditutup",
+      "Maaf, lowongan pekerjaan ini sudah tidak aktif.",
+      "info"
+    );
     return;
-  }
+  } // Cek sekali lagi jika sudah pernah melamar (double check, karena isEffectivelyApplied sudah ada)
 
-  // Cek sekali lagi jika sudah pernah melamar (double check, karena isEffectivelyApplied sudah ada)
   if (isEffectivelyApplied.value) {
     Swal.fire("Informasi", "Anda sudah pernah melamar pekerjaan ini.", "info");
     return;
@@ -428,12 +459,8 @@ const handleApplyNow = async () => {
     const response = await jobStore.applyToJob(
       currentJobId.value,
       authStore.tokenUser
-    );
-    // Swal sukses sudah dari store
-    hasAppliedThisSession.value = true; // Tandai berhasil apply di sesi ini
-
-    // Opsional: refresh daftar lamaran di store untuk konsistensi data langsung
-    // await jobStore.fetchUserAppliedJobs(authStore.tokenUser, { page: 1, limit: 10 });
+    ); // Swal sukses sudah dari store
+    hasAppliedThisSession.value = true; // Tandai berhasil apply di sesi ini // Opsional: refresh daftar lamaran di store untuk konsistensi data langsung // await jobStore.fetchUserAppliedJobs(authStore.tokenUser, { page: 1, limit: 10 });
 
     setTimeout(() => {
       router.push({ name: "applied" }); // Arahkan ke halaman daftar lamaran
@@ -441,14 +468,24 @@ const handleApplyNow = async () => {
   } catch (error) {
     // Swal error sudah dari store
     // Jika error karena sudah apply, update state lokal juga
-    if (error.response && error.response.data && error.response.data.message === "Job already applied") {
-      hasAppliedThisSession.value = true; // atau panggil fetchUserAppliedJobs untuk sinkronisasi penuh
-      // Untuk memastikan `hasAppliedBasedOnStore` juga update jika error "Job already applied" berarti data backend sudah ada
+    if (
+      error.response &&
+      error.response.data &&
+      error.response.data.message === "Job already applied"
+    ) {
+      hasAppliedThisSession.value = true; // atau panggil fetchUserAppliedJobs untuk sinkronisasi penuh // Untuk memastikan `hasAppliedBasedOnStore` juga update jika error "Job already applied" berarti data backend sudah ada
       if (authStore.tokenUser) {
-          await jobStore.fetchUserAppliedJobs(authStore.tokenUser, { page: 1, limit: 500 });
+        await jobStore.fetchUserAppliedJobs(authStore.tokenUser, {
+          page: 1,
+          limit: 500,
+        });
       }
     }
-    if (error.response && error.response.data && error.response.data.message === "Harus isi Profile terlebih dahulu") {
+    if (
+      error.response &&
+      error.response.data &&
+      error.response.data.message === "Harus isi Profile terlebih dahulu"
+    ) {
       Swal.fire({
         title: "Profil Belum Lengkap",
         text: "Silakan lengkapi profil Anda terlebih dahulu untuk melamar pekerjaan.",
@@ -459,8 +496,7 @@ const handleApplyNow = async () => {
           router.push({ name: "user-profile-edit" });
         }
       });
-    }
-    // Error lain ditangani oleh Swal di store
+    } // Error lain ditangani oleh Swal di store
   } finally {
     isApplying.value = false;
   }
@@ -469,7 +505,6 @@ const handleApplyNow = async () => {
 onMounted(() => {
   initializePageData();
 });
-
 </script>
 <style scoped>
 /* Untuk render HTML dari v-html (deskripsi pekerjaan) */
@@ -495,5 +530,4 @@ onMounted(() => {
   margin-top: 1em;
   font-weight: bold;
 }
-/* ... sisa style ... */
 </style>

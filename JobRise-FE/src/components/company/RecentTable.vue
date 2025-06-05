@@ -24,7 +24,7 @@
   </div>
   <div v-else-if="jobsStore.error" class="text-center py-8 bg-red-50 rounded-md shadow-sm">
     <p class="text-red-600 font-semibold text-lg">
-      Gagal memuat data pekerjaan:
+      Belum ada data posting job:
     </p>
     <p class="text-red-500 mt-2">{{ jobsStore.error }}</p>
   </div>

@@ -34,22 +34,29 @@
       <div
         class="bg-[#F1F4FA] w-full sm:w-auto sm:max-w-xs flex-grow rounded-lg outline outline-slate-400 px-6 py-4 sm:px-10 md:px-16 text-center"
       >
-        <h2 class="font-bold text-2xl md:text-3xl">XXX</h2> <p class="text-md font-semibold text-slate-700 mt-1">Candidates</p>
+        <h2 class="font-bold text-2xl md:text-3xl">{{ totalCandidates }}</h2> <p class="text-md font-semibold text-slate-700 mt-1">Candidates</p>
       </div>
     </div>
-    <div v-if="jobsStore.error && !isLoadingData" class="mt-4 text-red-500">
-        Failed to load job data: {{ jobsStore.error }}
-    </div>
+    
   </div>
 </template>
 
 <script setup>
 import { JobsCompany } from '@/stores/jobs/companyjob'; // Pastikan path ini benar
 import { ref, computed, onMounted } from 'vue';
+import { useCompanyApplicationStore } from '@/stores/jobs/companyaplication';
 
 const jobsStore = JobsCompany();
 const isLoadingData = ref(true);
+const candidates = useCompanyApplicationStore()
 
+const totalCandidates = computed(() => {
+  if(!candidates.jobApplicants) {
+    return 0;
+  }
+
+  return candidates.jobApplicants.length
+})
 // Computed property untuk total pekerjaan yang berstatus "active" (Open Jobs)
 const totalOpenJobs = computed(() => {
   if (!jobsStore.allCompanyJobs) {

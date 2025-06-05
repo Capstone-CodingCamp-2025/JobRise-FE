@@ -1,6 +1,6 @@
 <template>
   <div class="py-6 px-4 md:py-10 md:px-16 relative">
-    <router-link :to="{ name: 'job-list' }" class="absolute right-10 top-5">
+    <router-link :to="{ name: 'job-list' }" class="absolute right-10 top-5 z-20">
       <Icon
         icon="material-symbols:close-rounded"
         width="32"
@@ -9,7 +9,15 @@
       />
     </router-link>
 
-    <div v-if="jobsStore.isLoading">Loading detail pekerjaan...</div>
+    <div
+      v-if="jobsStore.isLoading"
+      class="absolute inset-0 bg-white/80 flex items-center justify-center z-10"
+    >
+      <div
+        class="animate-spin rounded-full h-24 w-24 border-t-4 border-b-4 border-blue-700"
+      ></div>
+    </div>
+
     <div v-else-if="jobsStore.error">{{ jobsStore.error }}</div>
     <div v-else-if="jobsStore.jobDetail">
       <div
@@ -17,10 +25,10 @@
       >
         <div class="flex gap-x-10">
           <div
-            class="w-20 h-20 md:w-28 md:h-28 bg-amber-300 rounded-sm"
+            class="w-20 h-20 md:w-28 md:h-28 bg-amber-300 rounded-sm overflow-hidden"
           >
             <img
-              :src="jobsStore.jobDetail.company_logo ? `http://localhost:3888/public/${jobsStore.jobDetail.company_logo}` : 'https://placehold.co/48x48/cccccc/000000?text=Logo'"
+              :src="jobsStore.jobDetail.company_logo ? `http://localhost:3888/public/${jobsStore.jobDetail.company_logo}` : 'https://placehold.co/112x112/cccccc/000000?text=Logo'"
               :alt="jobsStore.jobDetail.company_name"
               class="object-cover w-full h-full"
             />
@@ -51,7 +59,7 @@
                     'text-green-500': selectedStatus === 'active',
                     'text-red-500': selectedStatus === 'deactive',
                   }"
-                >{{ selectedStatus === 'active' ? 'Active' : 'Deactive' }}</span>
+                >{{ selectedStatus === 'active' ? 'Active' : 'Inactive' }}</span>
                 <Icon icon="iconoir:nav-arrow-down-solid" width="20" height="20" />
               </div>
             </button>
@@ -68,7 +76,7 @@
                 @click="selectStatus('deactive')"
                 class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                 :class="{ 'text-red-500': selectedStatus === 'deactive' }"
-              >Deactive</button>
+              >Inactive</button>
             </div>
           </div>
         </div>
