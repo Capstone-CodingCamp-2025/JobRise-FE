@@ -1,16 +1,19 @@
 <template>
   <div class="px-4 pb-10 sm:px-8">
     <h1 class="font-bold text-xl sm:text-2xl py-4">Post a Job</h1>
-    <div class="bg-[#D5DEEF] w-full px-4 py-4 sm:px-8 sm:py-6 rounded-md shadow-xs">
+    <div
+      class="bg-[#D5DEEF] w-full px-4 py-4 sm:px-8 sm:py-6 rounded-md shadow-xs"
+    >
       <div>
         <form @submit.prevent="handleSubmit" class="flex flex-col gap-y-2">
           <div class="flex flex-col gap-y-1">
-            <label for="title" class="font-semibold text-sm sm:text-base">Job Tittle</label>
+            <label for="title" class="font-semibold text-sm sm:text-base"
+              >Job Tittle <span class="text-red-500">*</span></label
+            >
             <input
               type="text"
               id="title"
               v-model="jobForm.title"
-              
               class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
               placeholder="Misal: FullStack Developer"
             />
@@ -18,13 +21,18 @@
 
           <div class="flex flex-col sm:flex-row gap-x-4 gap-y-2">
             <div class="flex flex-col gap-y-1 w-full">
-              <label for="job_type" class="font-semibold text-sm sm:text-base">Job Type</label>
+              <label for="job_type" class="font-semibold text-sm sm:text-base"
+                >Job Type <span class="text-red-500">*</span></label
+              >
               <select
                 id="job_type"
                 v-model="jobForm.job_type"
-                
-                class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base"
+                class="bg-white px-2 h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base"
+                :class="{ 'select-placeholder': jobForm.job_type === '' }"
               >
+                <option value="" disabled selected>
+                  Pilih Tipe Pekerjaan...
+                </option>
                 <option value="Full Time">Full Time</option>
                 <option value="Part Time">Part Time</option>
                 <option value="Contract">Kontrak</option>
@@ -32,12 +40,13 @@
               </select>
             </div>
             <div class="flex flex-col gap-y-1 w-full">
-              <label for="location" class="font-semibold text-sm sm:text-base">Location</label>
+              <label for="location" class="font-semibold text-sm sm:text-base"
+                >Location <span class="text-red-500">*</span></label
+              >
               <input
                 type="text"
                 id="location"
                 v-model="jobForm.location"
-                
                 class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
                 placeholder="Misal: Jakarta Timur"
               />
@@ -45,39 +54,50 @@
           </div>
 
           <div>
-            <p class="text-blue-800/90 font-bold text-sm sm:text-base">Salary</p>
+            <p class="text-blue-800/90 font-bold text-sm sm:text-base">
+              Salary
+            </p>
             <div class="flex flex-col sm:flex-row gap-x-4 gap-y-2">
               <div class="flex flex-col gap-y-1 w-full">
-                <label for="salary_min" class="font-semibold text-sm sm:text-base">Min.</label>
+                <label
+                  for="salary_min"
+                  class="font-semibold text-sm sm:text-base"
+                  >Min. <span class="text-red-500">*</span></label
+                >
                 <input
-                  type="text"
+                  type="number"
                   id="salary_min"
                   v-model="jobForm.salary_min"
-                  
+                  min="0"
                   class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
-                  placeholder="Misal: 4 juta"
+                  placeholder="Misal: 4000000"
                 />
               </div>
               <div class="flex flex-col gap-y-1 w-full">
-                <label for="salary_max" class="font-semibold text-sm sm:text-base">Max.</label>
+                <label
+                  for="salary_max"
+                  class="font-semibold text-sm sm:text-base"
+                  >Max. <span class="text-red-500">*</span></label
+                >
                 <input
-                  type="text"
+                  type="number"
                   id="salary_max"
                   v-model="jobForm.salary_max"
-                  
+                  min="0"
                   class="bg-white h-8 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
-                  placeholder="Misal: 6 juta"
+                  placeholder="Misal: 6000000"
                 />
               </div>
             </div>
           </div>
           <div class="flex flex-col gap-y-1">
-            <label for="description" class="font-semibold text-sm sm:text-base">Description job</label>
+            <label for="description" class="font-semibold text-sm sm:text-base"
+              >Description job <span class="text-red-500">*</span></label
+            >
             <textarea
               id="description"
               v-model="jobForm.description"
-              
-              class="bg-white h-24 sm:h-38 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
+              class="bg-white h-24 sm:h-38 pt-1 rounded-sm outline outline-blue-800 text-sm sm:text-base px-2"
               placeholder="Jelaskan tanggung jawab, kualifikasi, dll."
             ></textarea>
           </div>
@@ -89,9 +109,25 @@
                 class="bg-blue-950/90 text-white cursor-pointer rounded-md px-4 py-1 text-sm sm:text-base flex items-center justify-center"
               >
                 <span v-if="jobsStore.isLoading" class="flex items-center">
-                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Posting...
                 </span>
@@ -106,22 +142,22 @@
 </template>
 
 <script setup>
-import { JobsCompany } from '@/stores/jobs/companyjob';
-import { ref } from 'vue';
+import { JobsCompany } from "@/stores/jobs/companyjob";
+import { ref } from "vue";
 // Import SweetAlert
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 // Menggunakan store Pinia
 const jobsStore = JobsCompany();
 
 // Data form untuk input pekerjaan
 const jobForm = ref({
-  title: '',
-  description: '',
-  salary_min: '',
-  salary_max: '',
-  location: '',
-  job_type: 'Full Time', // Nilai default
+  title: "",
+  description: "",
+  salary_min: "",
+  salary_max: "",
+  location: "",
+  job_type: "", // Nilai default
 });
 
 /**
@@ -129,49 +165,45 @@ const jobForm = ref({
  * Memanggil aksi `createJobPost` dari store Pinia.
  */
 const handleSubmit = async () => {
-  const isTitleFilled = jobForm.value.title !== '';
-  const isDescriptionFilled = jobForm.value.description !== '';
-  const isSalaryMinFilled = jobForm.value.salary_min !== '';
-  const isSalaryMaxFilled = jobForm.value.salary_max !== '';
-  const isLocationFilled = jobForm.value.location !== '';
-  const isJobTypeFilled = jobForm.value.job_type !== '';
+  // Buat daftar semua field yang wajib diisi dan nama tampilannya
+  const requiredFields = {
+    title: "Job Tittle",
+    job_type: "Job Type", // <-- Tambahkan job_type ke daftar wajib
+    location: "Location",
+    salary_min: "Minimum Salary",
+    salary_max: "Maximum Salary",
+    description: "Description",
+  };
 
-  if (
-    isTitleFilled &&
-    isDescriptionFilled &&
-    isSalaryMinFilled &&
-    isSalaryMaxFilled &&
-    isLocationFilled &&
-    isJobTypeFilled
-  ) {
-    await jobsStore.createJobPost(jobForm.value);
-
-    // Opsional: Reset form setelah berhasil jika tidak ada error
-    // Store Pinia sudah menangani SweetAlert dan redirect
-    if (!jobsStore.error) {
-      jobForm.value = {
-        title: '',
-        description: '',
-        salary_min: '',
-        salary_max: '',
-        location: '',
-        job_type: 'Full Time',
-      };
+  // Lakukan perulangan untuk mengecek setiap field
+  for (const field in requiredFields) {
+    if (!jobForm.value[field] || String(jobForm.value[field]).trim() === "") {
+      Swal.fire({
+        icon: "error",
+        title: "Input Tidak Lengkap",
+        text: `Harap lengkapi semua data`,
+      });
+      return; // Hentikan fungsi jika ada yang kosong
     }
-  } else {
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Harap isi semua kolom yang wajib diisi!',
-    });
+  }
+
+  // Jika semua validasi lolos, lanjutkan proses
+  await jobsStore.createJobPost(jobForm.value);
+
+  if (!jobsStore.error) {
+    jobForm.value = {
+      title: "",
+      description: "",
+      salary_min: "",
+      salary_max: "",
+      location: "",
+      job_type: "", // Reset ke string kosong juga
+    };
   }
 };
 </script>
-
 <style scoped>
-/*
-  Styling menggunakan Tailwind CSS classes.
-  Pastikan Tailwind CSS sudah terinstal dan dikonfigurasi di project Vue Anda.
-  Tidak ada CSS kustom tambahan yang diperlukan di sini karena semua sudah ditangani oleh Tailwind.
-*/
+.select-placeholder {
+  color: #6b7280; /* Ini adalah warna abu-abu (Tailwind's gray-500) */
+}
 </style>

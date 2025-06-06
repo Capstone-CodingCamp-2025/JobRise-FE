@@ -65,15 +65,18 @@
           >
             <td class="py-4 pl-4 text-left">
               <div class="flex items-center">
-                <img
-                  :src="
-                    application.company_logo
-                      ? `${baseImageUrl}${application.company_logo}`
-                      : ''
-                  "
-                  :alt="application.title || 'Company Logo'"
-                  class="object-cover w-10 h-10 rounded-md mr-2 md:w-14 md:h-14 md:mr-4 flex-shrink-0"
-                />
+                <div>
+                  <img
+                    :src="
+                      application.company_logo
+                        ? `${baseImageUrl}${application.company_logo}`
+                        : 'https://placehold.co/48x48/cccccc/000000?text=Logo'
+                    "
+                    :alt="application.title || 'Company Logo'"
+                    class="object-cover w-10 h-10 rounded-md mr-2 md:w-12 md:h-12 md:mr-4 flex-shrink-0"
+                  />
+
+                </div>
                 <div>
                   <p class="font-semibold text-sm md:text-base">
                     {{ application.title }}
@@ -233,12 +236,41 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString("id-ID", options); // Menggunakan id-ID untuk format Indonesia
 };
 
+// ▼▼▼ FUNGSI INI TELAH DIPERBARUI ▼▼▼
+/**
+ * Mengubah angka gaji menjadi format ringkas (jt) atau format Rupiah standar.
+ * @param {string|number} min Gaji minimum.
+ * @param {string|number} max Gaji maksimum.
+ * @returns {string} String gaji yang sudah diformat.
+ */
 const formatSalary = (min, max) => {
-  if (min && max) return `Rp. ${min} - Rp. ${max}`;
-  if (min) return `Rp. ${min}`;
-  if (max) return `Hingga Rp. ${max}`;
-  return "N/A";
+  // Helper function untuk memformat satu angka
+  const format = (num) => {
+    if (num === null || num === undefined || num === '') return null;
+    const numberValue = Number(num);
+    if (isNaN(numberValue)) return null;
+
+    // Jika 1 juta atau lebih, ubah ke format "jt"
+    if (numberValue >= 1000000) {
+      const valueInJt = (numberValue / 1000000).toFixed(1);
+      // Ganti .0 menjadi "" (1.0 -> 1) dan . menjadi , (1.5 -> 1,5)
+      return valueInJt.replace('.0', '').replace('.', ',') + ' jt';
+    }
+
+    // Jika di bawah 1 juta, gunakan format ribuan standar
+    return new Intl.NumberFormat('id-ID').format(numberValue);
+  };
+
+  const formattedMin = format(min);
+  const formattedMax = format(max);
+
+  // Gabungkan hasilnya menjadi string akhir
+  if (formattedMin && formattedMax) return `Rp ${formattedMin} - Rp ${formattedMax}`;
+  if (formattedMin) return `Mulai dari Rp ${formattedMin}`;
+  if (formattedMax) return `Hingga Rp ${formattedMax}`;
+  return 'N/A'; // Fallback jika tidak ada data
 };
+
 
 const getStatusTextClass = (status) => {
   if (!status) return "bg-gray-200 text-gray-700";
@@ -247,7 +279,7 @@ const getStatusTextClass = (status) => {
       return "text-orange-400 ";
     case "interview":
       return "text-yellow-700";
-    case "accepted": // Asumsi 'approved' dari template sebelumnya adalah 'accepted'
+    case "accepted":
     case "approved":
       return "text-green-700";
     case "rejected":
@@ -260,31 +292,24 @@ const getStatusTextClass = (status) => {
 const loadAppliedJobs = async (page = 1) => {
   if (!authStore.tokenUser) {
     console.warn("User not authenticated. Cannot fetch applied jobs.");
-    // Anda mungkin ingin menampilkan pesan error atau mengarahkan ke login
-    // jobStore.errorUserAppliedJobs = { message: "Please login to see your applications." };
     return;
   }
   try {
-    // Menggunakan limit 10 per halaman, sesuaikan jika perlu
     await jobStore.fetchUserAppliedJobs(authStore.tokenUser, {
       page: page,
       limit: 10,
     });
   } catch (e) {
     console.error("Failed to load applied jobs in component:", e);
-    // Error sudah ditangani di store, tapi bisa ditambahkan logika UI di sini
   }
 };
 
 onMounted(() => {
-  // Ambil halaman pertama saat komponen dimuat
   loadAppliedJobs(1);
 });
 </script>
 
 <style scoped>
-/* Gaya spesifik untuk komponen ini jika ada */
-/* Pastikan gambar tidak meluap jika terlalu besar */
 .table-auto img {
   max-width: 100%;
   height: auto;

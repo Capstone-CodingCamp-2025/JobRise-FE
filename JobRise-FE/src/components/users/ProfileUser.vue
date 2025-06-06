@@ -10,12 +10,12 @@
   <form
     v-else
     @submit.prevent="handleSubmit"
-    class="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-slate-300/30 p-8 rounded-md shadow-md"
+    class="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-[#F1F4FA] p-8 rounded-md shadow-md"
     enctype="multipart/form-data"
   >
     <div class="flex flex-col items-center gap-6 col-span-1">
       <div
-        class="w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden relative cursor-pointer"
+        class="w-40 h-40 rounded-full bg-[#F1F4FA] outline flex items-center justify-center overflow-hidden relative cursor-pointer"
         @click="isEditing && $refs.fileInput.click()"
       >
         <input
@@ -74,7 +74,7 @@
         <input
           id="email"
           type="text"
-          class="bg-gray-100 w-full rounded-lg py-2 px-3 outline outline-blue-900 text-center"
+          class="bg-[#F1F4FA] w-full rounded-lg py-2 px-3 outline outline-blue-900 text-center"
           :value="authUserStore.currentUser?.email"
           disabled
         />
@@ -86,7 +86,7 @@
           id="linkedin"
           v-model="profileForm.linkedin"
           type="text"
-          class="bg-gray-300 w-full rounded-lg py-2 px-3 outline outline-blue-900 text-center"
+          class="z w-full rounded-lg py-2 px-3 outline outline-blue-900 text-center"
           :disabled="!isEditing"
         />
       </div>
@@ -99,7 +99,7 @@
           id="portofolio_url"
           v-model="profileForm.portofolio_url"
           type="text"
-          class="bg-gray-300 w-full rounded-lg py-2 px-3 outline outline-blue-900 text-center"
+          class="z w-full rounded-lg py-2 px-3 outline outline-blue-900 text-center"
           :disabled="!isEditing"
         />
       </div>
@@ -116,7 +116,7 @@
           :class="{
             'bg-gray-100':
               authUserStore.userProfile && authUserStore.userProfile.username,
-            'bg-gray-300': !(
+            'z': !(
               authUserStore.userProfile && authUserStore.userProfile.username
             ),
           }"
@@ -134,7 +134,7 @@
           id="full_name"
           v-model="profileForm.full_name"
           type="text"
-          class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
+          class="z rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           :disabled="!isEditing"
         />
       </div>
@@ -145,7 +145,7 @@
           id="phone"
           v-model="profileForm.phone"
           type="text"
-          class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
+          class="z rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           :disabled="!isEditing"
         />
       </div>
@@ -156,7 +156,7 @@
           id="age"
           v-model="profileForm.age"
           type="text"
-          class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
+          class="z rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           :disabled="!isEditing"
         />
       </div>
@@ -167,7 +167,7 @@
           id="address"
           v-model="profileForm.address"
           type="text"
-          class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
+          class="z rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           :disabled="!isEditing"
         />
       </div>
@@ -178,7 +178,7 @@
           id="city"
           v-model="profileForm.city"
           type="text"
-          class="bg-gray-300 rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
+          class="z rounded-lg w-full py-2 px-3 outline outline-blue-900 text-center"
           :disabled="!isEditing"
         />
       </div>
@@ -190,7 +190,7 @@
           v-model="profileForm.bio"
           rows="5"
           placeholder="isilah bio yang bagus untuk bagian cv anda juga"
-          class="bg-gray-300 w-full rounded-lg py-2 px-3 outline outline-blue-900 resize-none text-left"
+          class="z w-full rounded-lg py-2 px-3 outline outline-blue-900 resize-none text-left"
           :disabled="!isEditing"
         ></textarea>
       </div>
@@ -201,7 +201,7 @@
           type="submit"
           class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md cursor-pointer"
         >
-          Simpan Profil
+          Save
         </button>
 
         <template v-else>
@@ -211,14 +211,14 @@
             class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md cursor-pointer"
             @click="isEditing = true"
           >
-            Edit Profil
+            Edit 
           </button>
           <button
             v-else
             type="submit"
             class="text-white bg-blue-950/80 font-semibold text-lg px-6 py-2 rounded-lg shadow-md cursor-pointer"
           >
-            Simpan Perubahan
+            Save
           </button>
         </template>
       </div>
@@ -229,7 +229,7 @@
     class="fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center z-50"
   >
     <div
-      class="rounded-md shadow bg-gray-300 py-6 md:py-10 px-6 md:px-8 w-98 sm:w-md"
+      class="rounded-md shadow z py-6 md:py-10 px-6 md:px-8 w-98 sm:w-md"
     >
       <form @submit.prevent="handleVerifyOtp">
         <div class="flex flex-col gap-y-2">

@@ -42,7 +42,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         toast: true,
         position: "top-end",
         icon: "success",
-        title: "Akun Berhasil Dibuat",
+        title: "Account Creating Successfully",
         showConfirmButton: false,
         timer: 3000,
       });
@@ -53,7 +53,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         toast: true,
         position: "top-end",
         icon: "warning",
-        title: "Pendaftaran Gagal",
+        title: "Register Failed",
         showConfirmButton: false,
         timer: 2000,
       });
@@ -78,7 +78,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         toast: true,
         position: "top-end",
         icon: "success",
-        title: "Berhasil Masuk",
+        title: "Login Success",
         showConfirmButton: false,
         timer: 2000,
       });
@@ -95,7 +95,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         toast: true,
         position: "top-end",
         icon: "error",
-        title: "Login Gagal",
+        title: "Login Failed",
         showConfirmButton: false,
         timer: 2000,
       });
@@ -116,7 +116,7 @@ export const AuthUserStorage = defineStore("auth", () => {
 
       return response.data.data;
     } catch (error) {
-      console.error("Gagal mengambil data user:", error);
+      console.error("Failed Get Data:", error);
 
       if (error.response?.status === 401) {
         logout();
@@ -160,12 +160,12 @@ export const AuthUserStorage = defineStore("auth", () => {
       });
       return data;
     } catch (error) {
-      console.error("Gagal mengirim OTP verifikasi:", error);
+      console.error("Failed Sent OTP Verification:", error);
       Swal.fire({
         toast: true,
         position: "top-end",
         icon: "error",
-        title: error.response?.data?.message || "Gagal mengirim OTP.",
+        title:  "Failed Send OTP",
         showConfirmButton: false,
         timer: 3000,
       });
@@ -188,7 +188,7 @@ export const AuthUserStorage = defineStore("auth", () => {
         toast: true,
         position: "top-end",
         icon: "success",
-        title: response.data.message,
+        title: "Email Verify Successfully",
         showConfirmButton: false,
         timer: 3000,
       });
@@ -197,12 +197,12 @@ export const AuthUserStorage = defineStore("auth", () => {
       localStorage.setItem("user", JSON.stringify(currentUser.value));
       return response.data;
     } catch (error) {
-      console.error("Gagal memverifikasi OTP email:", error);
+      console.error("Failed Verify Email OTP:", error);
       Swal.fire({
         toast: true,
         position: "top-end",
         icon: "error",
-        title: error.response?.data?.message || "Gagal memverifikasi OTP.",
+        title: "Failed Verification Email",
         showConfirmButton: false,
         timer: 3000,
       });
@@ -223,18 +223,18 @@ export const AuthUserStorage = defineStore("auth", () => {
         toast: true,
         position: "top-end",
         icon: "success",
-        title: "Profil Berhasil Dibuat",
+        title: "Profile Creating Successfully",
         showConfirmButton: false,
         timer: 3000,
       });
       return data.data;
     } catch (error) {
-      console.error("Gagal membuat profil:", error);
+      console.error("Failed Load Profile:", error);
       Swal.fire({
         toast: true,
         position: "top-end",
         icon: "error",
-        title: error.response?.data?.message || "Gagal membuat profil.",
+        title: "Failed Create Profile",
         showConfirmButton: false,
         timer: 3000,
       });
@@ -253,9 +253,24 @@ const fetchUserProfile = async () => {
     userProfile.value = response.data.data; // Ini akan dengan benar memetakan 'data' dari respons backend
     return response.data.data;
   } catch (error) {
-    console.error("Gagal mengambil profil pengguna:", error);
+    console.error("Failed Get Profile:", error);
     if (error.response?.status === 404) {
-      userProfile.value = null; // Profil tidak ditemukan, set ke null
+
+      // Tampilkan SweetAlert2
+      Swal.fire({
+        icon: 'warning',
+        title: 'Profil Tidak Ditemukan',
+        text: 'Sepertinya Anda belum melengkapi profil. Silakan lengkapi profil Anda terlebih dahulu.',
+        confirmButtonText: 'Lengkapi Profil',
+        allowOutsideClick: false, // Mencegah pengguna menutup dengan klik di luar
+      }).then((result) => {
+        // Jika pengguna menekan tombol "Lengkapi Profil"
+        if (result.isConfirmed) {
+          router.push({ name: 'profile' }); // Arahkan ke halaman profil
+        }
+      });
+      // Tidak perlu melempar error lagi karena alurnya sudah ditangani
+      return; 
     }
     throw error;
   }
@@ -277,18 +292,18 @@ const fetchUserProfile = async () => {
         toast: true,
         position: "top-end",
         icon: "success",
-        title: "Profil berhasil diperbarui!",
+        title: "Profile Updating Successfully",
         timer: 3000,
         showConfirmButton: false,
       });
       return data.data;
     } catch (error) {
-      console.error("Gagal memperbarui profil:", error);
+      console.error("Failed Update Profile:", error);
       Swal.fire({
         toast: true,
         position: "top-end",
         icon: "error",
-        title: error.response?.data?.message || "Gagal memperbarui profil.",
+        title: "Failed Update Profile",
         showConfirmButton: false,
         timer: 3000,
       });

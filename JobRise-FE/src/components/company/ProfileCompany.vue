@@ -17,7 +17,11 @@
         @submit.prevent="saveProfile"
         class="flex flex-col md:flex-row gap-y-6 md:gap-x-10"
       >
-        <div class="flex flex-col gap-y-4">
+        <div class="flex flex-col gap-y-2">
+          <!-- ▼▼▼ LABEL DINAMIS UNTUK LOGO ▼▼▼ -->
+          <label class="font-medium text-sm md:text-base text-center md:text-left">
+            Company Logo <span v-if="!logoPreview" class="text-red-500">*</span>
+          </label>
           <div
             class="w-32 h-32 md:w-40 md:h-40 rounded-md outline outline-blue-900 bg-blue-400/10 flex items-center justify-center m-auto md:m-0 overflow-hidden relative"
             :class="{
@@ -55,7 +59,7 @@
             />
           </div>
 
-          <div class="flex flex-col gap-y-2">
+          <div class="flex flex-col gap-y-2 mt-2">
             <div class="flex justify-between items-center">
               <label
                 for="companyEmail"
@@ -95,9 +99,9 @@
           class="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-9 gap-y-3 w-full"
         >
           <div class="flex flex-col gap-y-2">
-            <label for="companyName" class="font-medium text-sm md:text-base"
-              >Company Name</label
-            >
+            <label for="companyName" class="font-medium text-sm md:text-base">
+              Company Name <span v-if="!profileData.company_name.trim()" class="text-red-600">*</span>
+            </label>
             <input
               type="text"
               id="companyName"
@@ -119,9 +123,9 @@
             />
           </div>
           <div class="flex flex-col gap-y-2">
-            <label for="industry" class="font-medium text-sm md:text-base"
-              >Industry</label
-            >
+            <label for="industry" class="font-medium text-sm md:text-base">
+              Industry <span v-if="!profileData.industry.trim()" class="text-red-600">*</span>
+            </label>
             <input
               type="text"
               id="industry"
@@ -131,9 +135,9 @@
             />
           </div>
           <div class="flex flex-col gap-y-2">
-            <label for="address" class="font-medium text-sm md:text-base"
-              >Address</label
-            >
+            <label for="address" class="font-medium text-sm md:text-base">
+              Address <span v-if="!profileData.address.trim()" class="text-red-600">*</span>
+            </label>
             <input
               type="text"
               id="address"
@@ -143,13 +147,13 @@
             />
           </div>
           <div class="flex flex-col gap-y-2 col-span-1 md:col-span-2">
-            <label for="description" class="font-medium text-sm md:text-base"
-              >Description</label
-            >
+            <label for="description" class="font-medium text-sm md:text-base">
+              Description <span v-if="!profileData.description.trim()" class="text-red-600">*</span>
+            </label>
             <textarea
               id="description"
               v-model="profileData.description"
-              class="pl-2 md:pl-3 bg-blue-400/10 rounded-sm outline outline-blue-900 h-24 md:h-32 w-full text-sm disabled:bg-gray-200/50 disabled:cursor-not-allowed"
+              class="pl-2 md:pl-3 bg-blue-400/10 pt-2 rounded-sm outline outline-blue-900 h-24 md:h-32 w-full text-sm disabled:bg-gray-200/50 disabled:cursor-not-allowed"
               :disabled="!isEditing"
             ></textarea>
           </div>
@@ -189,7 +193,43 @@
     v-if="showOtpPopup"
     class="fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center z-50"
   >
+    <div
+      class="rounded-md shadow bg-gray-300 py-6 md:py-10 px-6 md:px-8 w-98 sm:w-md"
+    >
+      <form @submit.prevent="handleVerifyOtp">
+        <div class="flex flex-col gap-y-2">
+          <label for="otp" class="font-medium text-sm md:text-base">
+            Masukkan kode OTP <span class="text-red-600">*</span>
+          </label>
+          <input
+            type="text"
+            id="otp"
+            v-model="otpCode"
+            class="bg-blue-400/30 outline outline-blue-900 rounded-sm h-7 md:h-8 text-center text-sm"
+            required
+          />
+        </div>
+
+        <div
+          class="flex flex-col sm:flex-row justify-center gap-2 mt-4 md:mt-6"
+        >
+          <button
+            type="button"
+            class="bg-gray-400 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
+            @click="showOtpPopup = false"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            class="bg-blue-950/90 text-white w-full rounded-sm py-1 text-sm cursor-pointer"
+          >
+            Verifikasi Kode OTP
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -206,7 +246,7 @@ const router = useRouter();
 const { companyProfile, currentCompany } = storeToRefs(authCompanyStore);
 
 const isLoading = ref(true);
-const isEditing = ref(false); // Default to false
+const isEditing = ref(false);
 const fileInput = ref(null);
 const showOtpPopup = ref(false);
 const otpCode = ref("");
@@ -218,7 +258,6 @@ const logoPreview = computed(() => {
   }
   if (companyProfile.value?.logo) {
     const baseURL = "http://localhost:3888/public/";
-    // This logic can be simplified, assuming the path is consistent
     return new URL(companyProfile.value.logo, baseURL).href;
   }
   return null;
@@ -258,6 +297,36 @@ const handleLogoUpload = (event) => {
 };
 
 const saveProfile = async () => {
+  // --- Start Validation ---
+  const requiredFields = {
+    company_name: "Company Name",
+    industry: "Industry",
+    address: "Address",
+    description: "Description",
+  };
+
+  for (const field in requiredFields) {
+    if (!profileData.value[field] || profileData.value[field].trim() === "") {
+      Swal.fire({
+        icon: "error",
+        title: "Input Tidak Lengkap",
+        text: `Harap isi kolom "${requiredFields[field]}" terlebih dahulu.`,
+      });
+      return; // Stop execution
+    }
+  }
+
+  // Validate Logo (only when creating a new profile)
+  if (!companyProfile.value?.id && !logoFile.value) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Logo Dibutuhkan',
+        text: 'Harap unggah logo perusahaan untuk membuat profil.',
+      });
+      return; // Stop execution
+  }
+  // --- End Validation ---
+
   const formData = new FormData();
   formData.append("company_name", profileData.value.company_name);
   formData.append("address", profileData.value.address);
@@ -270,7 +339,6 @@ const saveProfile = async () => {
   }
 
   try {
-    // Update existing profile
     if (companyProfile.value?.id && isEditing.value) {
       await authCompanyStore.updateProfileCompany(formData);
       Swal.fire({
@@ -281,18 +349,8 @@ const saveProfile = async () => {
         timer: 3000,
         showConfirmButton: false,
       });
-      isEditing.value = false; // Back to read-only mode
-    }
-    // Create new profile
-    else if (!companyProfile.value?.id) {
-      if (!logoFile.value && !companyProfile.value?.logo) {
-        Swal.fire({
-          icon: "warning",
-          title: "Warning",
-          text: "Please upload a company logo.",
-        });
-        return;
-      }
+      isEditing.value = false;
+    } else if (!companyProfile.value?.id) {
       await authCompanyStore.createProfileCompany(formData);
       Swal.fire({
         toast: true,
@@ -302,12 +360,11 @@ const saveProfile = async () => {
         timer: 3000,
         showConfirmButton: false,
       });
-      isEditing.value = false; // Switch to read-only after creation
+      isEditing.value = false;
     }
-    // Refresh data from server
     await authCompanyStore.fetchProfileCompany();
     await authCompanyStore.getCompanyByAuth();
-    fillProfileData(companyProfile.value); // Re-fill form with new data
+    fillProfileData(companyProfile.value);
   } catch (error) {
     console.error("Failed to save/update profile", error);
     Swal.fire({
@@ -328,11 +385,11 @@ const enterEditMode = () => {
 
 const cancelEditMode = () => {
   isEditing.value = false;
-  // Reset form data to its original state from the store
   fillProfileData(companyProfile.value);
-  // Reset logo file input if user selected a new one but cancelled
   logoFile.value = null;
-  fileInput.value.value = ""; // Clear file input
+  if(fileInput.value) {
+    fileInput.value.value = "";
+  }
 };
 
 const sendOTPVerification = async () => {
@@ -344,14 +401,22 @@ const sendOTPVerification = async () => {
   }
 };
 
-const handleVerifyOtpSubmit = async () => {
+const handleVerifyOtp = async () => {
+  if (!otpCode.value || otpCode.value.trim() === "") {
+    Swal.fire({
+      icon: "error",
+      title: "Kode OTP Kosong",
+      text: "Harap masukkan kode OTP yang telah Anda terima.",
+    });
+    return;
+  }
+
   try {
     await authCompanyStore.verifyEmailOTP(otpCode.value);
     showOtpPopup.value = false;
     otpCode.value = "";
-    await authCompanyStore.getCompanyByAuth(); // Refresh company data
+    await authCompanyStore.getCompanyByAuth();
   } catch (error) {
-    // Error is handled in the store, just ensure popup closes
     showOtpPopup.value = false;
   }
 };
@@ -365,14 +430,11 @@ onMounted(async () => {
 
     fillProfileData(companyProfile.value);
 
-    // If there is NO profile, enter edit mode immediately.
-    // Otherwise, stay in read-only mode.
     if (!companyProfile.value?.id) {
       isEditing.value = true;
     }
   } catch (error) {
     console.error("Failed to load company data:", error);
-    // Even on error, allow user to create a profile
     isEditing.value = true;
   } finally {
     isLoading.value = false;

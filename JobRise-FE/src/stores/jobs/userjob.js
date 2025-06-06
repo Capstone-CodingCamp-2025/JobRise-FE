@@ -155,7 +155,7 @@ export const useActiveJobRecommendationsStore = defineStore(
             toast: true,
             position: "top-end",
             icon: "success",
-            title: response.data.message || "Lamaran berhasil dikirim!",
+            title:"Applicant Successfully Sent",
             showConfirmButton: false,
             timer: 2000,
           });
@@ -314,7 +314,7 @@ export const useActiveJobRecommendationsStore = defineStore(
             toast: true,
             position: "top-end",
             icon: "success",
-            title: response.data.message || "Pekerjaan ditambahkan ke favorit!",
+            title: response.data.message || "Favorite Adding Successfully",
             showConfirmButton: false,
             timer: 2000,
           });
@@ -478,7 +478,7 @@ export const useActiveJobRecommendationsStore = defineStore(
             toast: true,
             position: "top-end",
             icon: "success",
-            title: response.data.message || "Pekerjaan dihapus dari favorit!",
+            title: "Favorite Delete Succesfully",
             showConfirmButton: false,
             timer: 2000,
           });

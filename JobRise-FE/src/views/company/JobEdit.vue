@@ -123,29 +123,27 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { useRoute } from "vue-router";
-import { JobsCompany } from "@/stores/jobs/companyjob"; // Sesuaikan path ini
+import { useRoute, useRouter } from "vue-router"; 
+import { JobsCompany } from "@/stores/jobs/companyjob";
 
 const jobsStore = JobsCompany();
 const route = useRoute();
+const router = useRouter(); 
 const jobId = ref(parseInt(route.params.id));
 
-// Form data yang akan di-bind ke input
 const jobForm = ref({
   title: '',
   description: '',
   salary_min: '',
   salary_max: '',
   location: '',
-  job_type: 'Full-Time', // Default value
+  job_type: 'Full-Time',
 });
 
-// Ambil detail pekerjaan saat komponen dimuat
 onMounted(() => {
   jobsStore.fetchJobDetail(jobId.value);
 });
 
-// Watch jobsStore.jobDetail untuk mengisi form setelah data diambil
 watch(() => jobsStore.jobDetail, (newDetail) => {
   if (newDetail) {
     jobForm.value = {
@@ -157,15 +155,17 @@ watch(() => jobsStore.jobDetail, (newDetail) => {
       job_type: newDetail.job_type,
     };
   }
-}, { immediate: true }); // immediate: true agar dijalankan saat pertama kali dimuat jika jobDetail sudah ada
+}, { immediate: true });
 
-// Fungsi untuk menangani submit form
 const handleSubmit = async () => {
-  await jobsStore.updateJobPost(jobId.value, jobForm.value);
+  const isSuccess = await jobsStore.updateJobPost(jobId.value, jobForm.value);
+
+  if (isSuccess) {
+    router.push({ 
+      name: 'job-list', 
+      params: { id: jobId.value } 
+    });
+  }
 };
 </script>
 
-<style scoped>
-/* Pastikan Tailwind CSS sudah terinstal dan dikonfigurasi di project Vue Anda. */
-/* Tidak ada CSS kustom tambahan yang diperlukan di sini karena semua sudah ditangani oleh Tailwind. */
-</style>

@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 md:px-8 lg:px-12 py-4">
-    <p class="font-semibold text-gray-400 text-md py-3">This your candidates</p>
+    <p class="font-semibold text-gray-400 text-md py-3">Your Candidate Overview</p>
     <div v-if="isLoadingData" class="flex justify-center items-center py-10">
         <svg
           class="animate-spin h-8 w-8 text-blue-600"

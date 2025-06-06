@@ -58,7 +58,9 @@
     </div>
 
     <div
-      v-else-if="!jobsStore.allCompanyJobs || jobsStore.allCompanyJobs.length === 0"
+      v-else-if="
+        !jobsStore.allCompanyJobs || jobsStore.allCompanyJobs.length === 0
+      "
       class="text-center py-8 bg-yellow-50 rounded-md shadow-sm"
     >
       <p class="text-yellow-700 font-semibold text-lg">
@@ -112,7 +114,7 @@
                   <img
                     :src="
                       job.company_logo
-                        ? `http://localhost:3888/public/${job.company_logo}` 
+                        ? `http://localhost:3888/public/${job.company_logo}`
                         : 'https://images.unsplash.com/photo-1728577740843-5f29c7586afe?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D'
                     "
                     :alt="job.company_name || 'Company Logo'"
@@ -137,7 +139,8 @@
                     <p
                       class="text-gray-700 text-xs md:text-sm mt-1 font-medium"
                     >
-                      Rp. {{ job.salary_min }} - {{ job.salary_max }}
+                      {{ formatGajiRingkas(job.salary_min) }} -
+                      {{ formatGajiRingkas(job.salary_max) }}
                     </p>
                   </div>
                 </div>
@@ -244,14 +247,17 @@
           :class="[
             'px-3 py-1',
             {
-              'font-semibold bg-blue-200 rounded-md': currentPageForPagination === 1,
+              'font-semibold bg-blue-200 rounded-md':
+                currentPageForPagination === 1,
             },
           ]"
         >
           1
         </button>
 
-        <span v-if="currentPageForPagination > 3" class="px-1 py-1 self-center">...</span>
+        <span v-if="currentPageForPagination > 3" class="px-1 py-1 self-center"
+          >...</span
+        >
 
         <button
           v-for="page in visiblePageNumbers"
@@ -268,15 +274,20 @@
           {{ page }}
         </button>
 
-        <span v-if="currentPageForPagination < totalPagesForPagination - 2" class="px-1 py-1 self-center">...</span>
+        <span
+          v-if="currentPageForPagination < totalPagesForPagination - 2"
+          class="px-1 py-1 self-center"
+          >...</span
+        >
 
         <button
-          v-if="totalPagesForPagination > 1" 
+          v-if="totalPagesForPagination > 1"
           @click="changePage(totalPagesForPagination)"
           :class="[
             'px-3 py-1',
             {
-              'font-semibold bg-blue-200 rounded-md': currentPageForPagination === totalPagesForPagination,
+              'font-semibold bg-blue-200 rounded-md':
+                currentPageForPagination === totalPagesForPagination,
             },
           ]"
         >
@@ -333,7 +344,8 @@ const totalPagesForPagination = computed(() => {
 
 const displayedJobs = computed(() => {
   if (!filteredJobs.value) return [];
-  const start = (currentPageForPagination.value - 1) * itemsPerPageForPagination.value;
+  const start =
+    (currentPageForPagination.value - 1) * itemsPerPageForPagination.value;
   const end = start + itemsPerPageForPagination.value;
   return filteredJobs.value.slice(start, end);
 });
@@ -349,11 +361,11 @@ const visiblePageNumbers = computed(() => {
   if (total > 5) {
     pages = [];
     if (current <= 3) {
-      for(let i = 2; i <= Math.min(4, total - 1); i++) pages.push(i);
+      for (let i = 2; i <= Math.min(4, total - 1); i++) pages.push(i);
     } else if (current >= total - 2) {
-      for(let i = Math.max(2, total - 3); i <= total - 1; i++) pages.push(i);
+      for (let i = Math.max(2, total - 3); i <= total - 1; i++) pages.push(i);
     } else {
-      for(let i = current - pageRange; i <= current + pageRange; i++) {
+      for (let i = current - pageRange; i <= current + pageRange; i++) {
         if (i > 1 && i < total) pages.push(i);
       }
     }
@@ -375,7 +387,10 @@ const loadJobs = async () => {
     // Ini akan mengambil semua data pekerjaan dari awal setiap kali dipanggil.
     console.log("Component: Calling fetchAllCompanyJobsOnce from loadJobs"); // Untuk debugging
     await jobsStore.fetchAllCompanyJobsOnce();
-    console.log("Component: fetchAllCompanyJobsOnce completed. Jobs count:", jobsStore.allCompanyJobs?.length); // Untuk debugging
+    console.log(
+      "Component: fetchAllCompanyJobsOnce completed. Jobs count:",
+      jobsStore.allCompanyJobs?.length
+    ); // Untuk debugging
   } catch (error) {
     console.error("Component: Error in loadJobs:", error);
     // Penanganan error spesifik komponen bisa ditambahkan di sini jika perlu,
@@ -393,15 +408,64 @@ watch(searchQuery, () => {
   currentPageForPagination.value = 1;
 });
 
-watch(() => jobsStore.allCompanyJobs?.length, (newLength, oldLength) => {
-  console.log("Component: Watcher allCompanyJobs.length changed from", oldLength, "to", newLength); // Debugging
-  if (currentPageForPagination.value > totalPagesForPagination.value && totalPagesForPagination.value > 0) {
-    currentPageForPagination.value = totalPagesForPagination.value;
-  } else if (totalPagesForPagination.value === 0 && filteredJobs.value.length === 0) {
-    currentPageForPagination.value = 1;
-  } else if (totalPagesForPagination.value === 1 && currentPageForPagination.value !== 1) {
-     currentPageForPagination.value = 1;
-  }
-}, { immediate: false });
+watch(
+  () => jobsStore.allCompanyJobs?.length,
+  (newLength, oldLength) => {
+    console.log(
+      "Component: Watcher allCompanyJobs.length changed from",
+      oldLength,
+      "to",
+      newLength
+    ); // Debugging
+    if (
+      currentPageForPagination.value > totalPagesForPagination.value &&
+      totalPagesForPagination.value > 0
+    ) {
+      currentPageForPagination.value = totalPagesForPagination.value;
+    } else if (
+      totalPagesForPagination.value === 0 &&
+      filteredJobs.value.length === 0
+    ) {
+      currentPageForPagination.value = 1;
+    } else if (
+      totalPagesForPagination.value === 1 &&
+      currentPageForPagination.value !== 1
+    ) {
+      currentPageForPagination.value = 1;
+    }
+  },
+  { immediate: false }
+);
 
+/**
+ * Mengubah angka gaji menjadi format ringkas (juta/miliar) atau Rupiah standar.
+ * @param {number | string} value Angka yang akan diformat.
+ * @returns {string} String yang sudah diformat, contoh: "Rp 1,5 Juta".
+ */
+const formatGajiRingkas = (value) => {
+  const numberValue = Number(value);
+
+  if (isNaN(numberValue) || value === null || value === "") {
+    return "N/A";
+  }
+
+  // Jika angka 1 Miliar atau lebih
+  if (numberValue >= 1000000000) {
+    const formatted = (numberValue / 1000000000).toFixed(1).replace(".0", "");
+    return `Rp ${formatted} Miliar`;
+  }
+
+  // Jika angka 1 Juta atau lebih
+  if (numberValue >= 1000000) {
+    const formatted = (numberValue / 1000000).toFixed(1).replace(".0", "");
+    return `Rp ${formatted} Juta`;
+  }
+
+  // Jika di bawah 1 Juta, gunakan format Rupiah biasa
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(numberValue);
+};
 </script>

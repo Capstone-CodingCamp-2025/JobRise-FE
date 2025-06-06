@@ -71,7 +71,7 @@
                   v-if="job.company_logo"
                   :src="`${baseImageUrl}${job.company_logo}`"
                   :alt="job.company_name"
-                  class="object-contain w-full h-full"
+                  class="object-cover w-full h-full"
                 />
                 <span v-else class="text-xs text-gray-500">No Logo</span>
               </div>
@@ -93,11 +93,11 @@
 <script setup>
 import { onMounted } from 'vue';
 import { Icon } from "@iconify/vue";
-import { useJobStore } from '@/stores/jobNoAuth'; // Import store pekerjaan
+import { jobNoAuth } from '@/stores/jobNoAuth'; // Import store pekerjaan
 import { storeToRefs } from 'pinia'; // Import storeToRefs untuk menjaga reaktivitas
 
 // Inisialisasi store
-const jobStore = useJobStore();
+const jobStore = jobNoAuth();
 
 // Gunakan storeToRefs agar state (featuredJobs, dll.) bisa digunakan di template dan tetap reaktif
 const { featuredJobs, isLoadingFeatured, errorFeatured } = storeToRefs(jobStore);
@@ -113,11 +113,38 @@ onMounted(() => {
   }
 });
 
-// Fungsi bantuan untuk menampilkan format gaji dengan lebih baik
+// ▼▼▼ FUNGSI INI TELAH DIPERBARUI ▼▼▼
+/**
+ * Mengubah angka gaji menjadi format ringkas (jt) atau format Rupiah standar.
+ * @param {string|number} min Gaji minimum.
+ * @param {string|number} max Gaji maksimum.
+ * @returns {string} String gaji yang sudah diformat.
+ */
 const formatSalary = (min, max) => {
-  if (min && max) return `${min} - ${max}`;
-  if (min) return `Mulai dari ${min}`;
-  if (max) return `Hingga ${max}`;
-  return "N/A";
+  // Helper function untuk memformat satu angka
+  const format = (num) => {
+    if (num === null || num === undefined || num === '') return null;
+    const numberValue = Number(num);
+    if (isNaN(numberValue)) return null;
+
+    // Jika 1 juta atau lebih, ubah ke format "jt"
+    if (numberValue >= 1000000) {
+      const valueInJt = (numberValue / 1000000).toFixed(1);
+      // Ganti .0 menjadi "" (1.0 -> 1) dan . menjadi , (1.5 -> 1,5)
+      return valueInJt.replace('.0', '').replace('.', ',') + ' jt';
+    }
+
+    // Jika di bawah 1 juta, gunakan format ribuan standar
+    return new Intl.NumberFormat('id-ID').format(numberValue);
+  };
+
+  const formattedMin = format(min);
+  const formattedMax = format(max);
+
+  // Gabungkan hasilnya menjadi string akhir
+  if (formattedMin && formattedMax) return `Rp ${formattedMin} - Rp ${formattedMax}`;
+  if (formattedMin) return `Mulai dari Rp ${formattedMin}`;
+  if (formattedMax) return `Hingga Rp ${formattedMax}`;
+  return 'N/A'; // Fallback jika tidak ada data
 };
 </script>

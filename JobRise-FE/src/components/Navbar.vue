@@ -311,7 +311,7 @@ const logout = async () => {
       toast: true,
       position: "top-end",
       icon: "success",
-      title: "Logged out successfully",
+      title: "Logout successfully",
       showConfirmButton: false,
       timer: 2000,
     });

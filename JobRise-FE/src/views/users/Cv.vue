@@ -1,12 +1,12 @@
 <template>
   <div class="px-4 py-2 md:px-10 md:py-4">
     <div class="flex flex-col md:flex-row justify-between items-center mb-3">
-      <h1 class="font-bold text-xl md:text-2xl md:pl-52 lg:pl-38 xl:pl-48">
+      <h1 class="font-bold text-xl md:text-2xl md:pl-52 lg:pl-38 xl:pl-48 2xl:pl-[500px]">
         Curriculum Vitae
       </h1>
       <h1
         v-if="!isMobile"
-        class="font-bold text-xl md:text-2xl mb-3 md:pr-28 lg:pr-44 xl:pr-66 md:hidden lg:block"
+        class="font-bold text-xl md:text-2xl mb-3 md:pr-28 lg:pr-48 xl:pr-66 2xl:pr-[570px] md:hidden lg:block"
       >
         Preview
       </h1>
@@ -1278,14 +1278,24 @@ const saveEducation = async () => {
   try {
     if (currentEducation.value.id) {
       await educationStore.updateEducation(currentEducation.value.id, payload);
-      Swal.fire("Berhasil!", "Data pendidikan berhasil diupdate.", "success");
+      Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Educatin Updating Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
     } else {
       await educationStore.createEducation(payload);
-      Swal.fire(
-        "Berhasil!",
-        "Data pendidikan berhasil ditambahkan.",
-        "success"
-      );
+      Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Education Adding Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
     }
     resetEducationForm();
   } catch (error) {
@@ -1308,26 +1318,33 @@ const editEducation = (edu) => {
 };
 const deleteEducation = async (id) => {
   Swal.fire({
-    title: "Apakah Anda yakin?",
-    text: "Data pendidikan ini akan dihapus secara permanen!",
+    title: "Are Your Sure?",
+    text: "This Data Will Deleting Permanent!",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Ya, hapus!",
-    cancelButtonText: "Batal",
+    confirmButtonText: "Deleting!",
+    cancelButtonText: "Cancel",
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
         await educationStore.deleteEducation(id);
         if (currentEducation.value.id === id) resetEducationForm();
-        Swal.fire("Dihapus!", "Data pendidikan telah dihapus.", "success");
+        Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Edducation Delete Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
       } catch (error) {
         console.error("Failed to delete education:", error);
         Swal.fire({
           icon: "error",
-          title: "Gagal Menghapus",
-          text: "Terjadi kesalahan saat menghapus data pendidikan. Silakan coba lagi.",
+          title: "Failed Deleting",
+          text: "Try Again",
         });
       }
     }
@@ -1356,8 +1373,8 @@ const saveProject = async () => {
   ) {
     Swal.fire({
       icon: "warning",
-      title: "Input Kosong",
-      text: "Harap isi semua inputan yang wajib diisi (Judul, Tanggal Mulai, Deskripsi).",
+      title: "Input Null",
+      text: "You Shoul Adding (Title, Start Date, Description).",
     });
     return;
   }
@@ -1372,18 +1389,32 @@ const saveProject = async () => {
   try {
     if (currentProject.value.id) {
       await projectStore.updateProject(currentProject.value.id, payload);
-      Swal.fire("Berhasil!", "Data proyek berhasil diupdate.", "success");
+      Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Project Updating Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
     } else {
       await projectStore.createProject(payload);
-      Swal.fire("Berhasil!", "Data proyek berhasil ditambahkan.", "success");
+      Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Project Adding Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
     }
     resetProjectForm();
   } catch (error) {
     console.error("Failed to save project:", error);
     Swal.fire({
       icon: "error",
-      title: "Gagal Menyimpan",
-      text: "Terjadi kesalahan saat menyimpan data proyek. Silakan coba lagi.",
+      title: "Try Again",
+      text: "Pliss Try Again",
     });
   }
 };
@@ -1401,26 +1432,33 @@ const editProject = (project) => {
 };
 const deleteProjectFromStore = async (id) => {
   Swal.fire({
-    title: "Apakah Anda yakin?",
-    text: "Data proyek ini akan dihapus secara permanen!",
+    title: "Are You Sure?",
+    text: "This Data Will Deleting Permanent",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Ya, hapus!",
-    cancelButtonText: "Batal",
+    confirmButtonText: "Deleting!",
+    cancelButtonText: "Cancel",
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
         await projectStore.deleteProject(id);
         if (currentProject.value.id === id) resetProjectForm();
-        Swal.fire("Dihapus!", "Data proyek telah dihapus.", "success");
+        Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Project Deleting Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
       } catch (error) {
         console.error("Failed to delete project:", error);
         Swal.fire({
           icon: "error",
-          title: "Gagal Menghapus",
-          text: "Terjadi kesalahan saat menghapus data proyek. Silakan coba lagi.",
+          title: "Failed Deleting",
+          text: "Pliss Try Again",
         });
       }
     }
@@ -1449,8 +1487,8 @@ const saveExperience = async () => {
   ) {
     Swal.fire({
       icon: "warning",
-      title: "Input Kosong",
-      text: "Harap isi semua inputan yang wajib diisi (Judul, Perusahaan, Tanggal Mulai, Deskripsi).",
+      title: "Input Null",
+      text: "Pliss Complete Input (title, Company, Start Date, Description).",
     });
     return;
   }
@@ -1472,22 +1510,32 @@ const saveExperience = async () => {
         currentExperience.value.id,
         payload
       );
-      Swal.fire("Berhasil!", "Data pengalaman berhasil diupdate.", "success");
+      Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Experience Updating Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
     } else {
       await experienceStore.createExperience(payload);
-      Swal.fire(
-        "Berhasil!",
-        "Data pengalaman berhasil ditambahkan.",
-        "success"
-      );
+      Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Experience Adding Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
     }
     resetExperienceForm();
   } catch (error) {
     console.error("Failed to save experience:", error);
     Swal.fire({
       icon: "error",
-      title: "Gagal Menyimpan",
-      text: "Terjadi kesalahan saat menyimpan data pengalaman. Silakan coba lagi.",
+      title: "Failed Saving",
+      text: "Pliss Try Again",
     });
   }
 };
@@ -1502,26 +1550,33 @@ const editExperience = (exp) => {
 };
 const deleteExperience = async (id) => {
   Swal.fire({
-    title: "Apakah Anda yakin?",
-    text: "Data pengalaman ini akan dihapus secara permanen!",
+    title: "Are You Sure?",
+    text: "This Data Will Deleting Permanent!",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Ya, hapus!",
-    cancelButtonText: "Batal",
+    confirmButtonText: "Deleting!",
+    cancelButtonText: "Cancel",
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
         await experienceStore.deleteExperience(id);
         if (currentExperience.value.id === id) resetExperienceForm();
-        Swal.fire("Dihapus!", "Data pengalaman telah dihapus.", "success");
+        Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Experience Deleting Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
       } catch (error) {
         console.error("Failed to delete experience:", error);
         Swal.fire({
           icon: "error",
-          title: "Gagal Menghapus",
-          text: "Terjadi kesalahan saat menghapus data pengalaman. Silakan coba lagi.",
+          title: "Failed Deleting",
+          text: "Pliss Try Again",
         });
       }
     }
@@ -1545,8 +1600,8 @@ const saveSkill = async () => {
   if (!currentSkill.value.name || !currentSkill.value.level) {
     Swal.fire({
       icon: "warning",
-      title: "Input Kosong",
-      text: "Harap isi semua inputan yang wajib diisi (Nama Skill, Level).",
+      title: "Input Null",
+      text: "Pliis Input (Name Skill, Level).",
     });
     return;
   }
@@ -1558,18 +1613,32 @@ const saveSkill = async () => {
   try {
     if (currentSkill.value.id) {
       await skillStore.updateSkill(currentSkill.value.id, payload);
-      Swal.fire("Berhasil!", "Data skill berhasil diupdate.", "success");
+      Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Skill Updating Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
     } else {
       await skillStore.createSkill(payload);
-      Swal.fire("Berhasil!", "Data skill berhasil ditambahkan.", "success");
+      Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Skill Adding Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
     }
     resetSkillForm();
   } catch (error) {
     console.error("Failed to save skill:", error);
     Swal.fire({
       icon: "error",
-      title: "Gagal Menyimpan",
-      text: "Terjadi kesalahan saat menyimpan data skill. Silakan coba lagi.",
+      title: "Failed Save",
+      text: "Pliss Try Again",
     });
   }
 };
@@ -1578,26 +1647,33 @@ const editSkill = (skill) => {
 };
 const deleteSkillFromStore = async (id) => {
   Swal.fire({
-    title: "Apakah Anda yakin?",
-    text: "Data skill ini akan dihapus secara permanen!",
+    title: "Are You Sure?",
+    text: "This Data Deleting Permanent!",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Ya, hapus!",
-    cancelButtonText: "Batal",
+    confirmButtonText: "Deleting!",
+    cancelButtonText: "Cancel",
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
         await skillStore.deleteSkill(id);
         if (currentSkill.value.id === id) resetSkillForm();
-        Swal.fire("Dihapus!", "Data skill telah dihapus.", "success");
+        Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Skill Deletin Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
       } catch (error) {
         console.error("Failed to delete skill:", error);
         Swal.fire({
           icon: "error",
-          title: "Gagal Menghapus",
-          text: "Terjadi kesalahan saat menghapus data skill. Silakan coba lagi.",
+          title: "Failed Deleting",
+          text: "Pliss Try Again",
         });
       }
     }
@@ -1618,8 +1694,8 @@ const saveCertification = async () => {
   ) {
     Swal.fire({
       icon: "warning",
-      title: "Input Kosong",
-      text: "Harap isi semua inputan yang wajib diisi (Nama Sertifikasi, Tahun, Dikeluarkan Oleh).",
+      title: "Input Null",
+      text: "Pliss Input (Name Certification, Year, Issued By).",
     });
     return;
   }
@@ -1648,22 +1724,32 @@ const saveCertification = async () => {
         currentCertification.value.id,
         updateData
       );
-      Swal.fire("Berhasil!", "Data sertifikasi berhasil diupdate.", "success");
+      Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Certifation Upadting Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
     } else {
       await certificationStore.createCertification(payload);
-      Swal.fire(
-        "Berhasil!",
-        "Data sertifikasi berhasil ditambahkan.",
-        "success"
-      );
+      Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Certification Adding Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
     }
     resetCertificationForm();
   } catch (error) {
     console.error("Failed to save certification:", error);
     Swal.fire({
       icon: "error",
-      title: "Gagal Menyimpan",
-      text: "Terjadi kesalahan saat menyimpan data sertifikasi. Silakan coba lagi.",
+      title: "Failed Save",
+      text: "Pliss Try Again",
     });
   }
 };
@@ -1681,14 +1767,14 @@ const editCertification = (cert) => {
 
 const deleteCertificationFromStore = async (id) => {
   Swal.fire({
-    title: "Apakah Anda yakin?",
-    text: "Data sertifikasi ini akan dihapus secara permanen!",
+    title: "Are You Sure?",
+    text: "This Data will Deleting Permanent!",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Ya, hapus!",
-    cancelButtonText: "Batal",
+    confirmButtonText: "Deleting!",
+    cancelButtonText: "Cancel",
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
@@ -1696,13 +1782,20 @@ const deleteCertificationFromStore = async (id) => {
         if (currentCertification.value.id === id) {
           resetCertificationForm();
         }
-        Swal.fire("Dihapus!", "Data sertifikasi telah dihapus.", "success");
+        Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: "success",
+            title:"Certification Deleting Successfully",
+            showConfirmButton: false,
+            timer: 2000,
+          });
       } catch (error) {
         console.error("Failed to delete certification:", error);
         Swal.fire({
           icon: "error",
-          title: "Gagal Menghapus",
-          text: "Terjadi kesalahan saat menghapus data sertifikasi. Silakan coba lagi.",
+          title: "Failde Delete",
+          text: "Pliss Try Again",
         });
       }
     }
