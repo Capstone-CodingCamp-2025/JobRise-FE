@@ -243,6 +243,8 @@ export const AuthUserStorage = defineStore("auth", () => {
   };
 
   // Dari Pinia store Anda:
+// stores/auth/userAuth.js
+
 const fetchUserProfile = async () => {
   try {
     const response = await apiClient.get("/profile", {
@@ -250,28 +252,35 @@ const fetchUserProfile = async () => {
         Authorization: `Bearer ${tokenUser.value}`,
       },
     });
-    userProfile.value = response.data.data; // Ini akan dengan benar memetakan 'data' dari respons backend
+    userProfile.value = response.data.data;
     return response.data.data;
   } catch (error) {
     console.error("Failed Get Profile:", error);
-    if (error.response?.status === 404) {
 
-      // Tampilkan SweetAlert2
-      Swal.fire({
-        icon: 'warning',
-        title: 'Profil Tidak Ditemukan',
-        text: 'Sepertinya Anda belum melengkapi profil. Silakan lengkapi profil Anda terlebih dahulu.',
-        confirmButtonText: 'Lengkapi Profil',
-        allowOutsideClick: false, // Mencegah pengguna menutup dengan klik di luar
-      }).then((result) => {
-        // Jika pengguna menekan tombol "Lengkapi Profil"
-        if (result.isConfirmed) {
-          router.push({ name: 'profile' }); // Arahkan ke halaman profil
-        }
-      });
-      // Tidak perlu melempar error lagi karena alurnya sudah ditangani
-      return; 
+    // Cek jika error adalah 404 (Not Found)
+    if (error.response?.status === 404) {
+      
+      // ===== INI SOLUSINYA =====
+      // Hanya tampilkan pop-up jika pengguna TIDAK sedang berada di halaman profil.
+      if (router.currentRoute.value.name !== 'profile') {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Profil Tidak Ditemukan',
+          text: 'Sepertinya Anda belum melengkapi profil. Silakan lengkapi profil Anda terlebih dahulu.',
+          confirmButtonText: 'Lengkapi Profil',
+          allowOutsideClick: false, 
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.push({ name: 'profile' });
+          }
+        });
+      }
+      // Kita tetap perlu melempar error agar komponen yang memanggil tahu fetch gagal
+      // dan bisa menghentikan state loading.
+      throw new Error("Profile not found");
     }
+    
+    // Untuk error selain 404, kita lempar lagi agar bisa ditangani
     throw error;
   }
 };
