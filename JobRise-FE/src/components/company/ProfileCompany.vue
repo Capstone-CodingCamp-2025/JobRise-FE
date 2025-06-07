@@ -257,7 +257,7 @@ const logoPreview = computed(() => {
     return URL.createObjectURL(logoFile.value);
   }
   if (companyProfile.value?.logo) {
-    const baseURL = "http://localhost:3888/public/";
+    const baseURL = "https://jobrise.hotelmarisrangkas.com/public/";
     return new URL(companyProfile.value.logo, baseURL).href;
   }
   return null;

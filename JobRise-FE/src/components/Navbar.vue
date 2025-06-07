@@ -116,13 +116,13 @@
       <div class="flex items-center cursor-pointer" @click="toggleAvatar">
         <img
           v-if="isLoggedIn && isUser && userProfile?.image"
-          :src="`http://localhost:3888/public/${userProfile.image}`"
+          :src="`https://jobrise.hotelmarisrangkas.com/public/${userProfile.image}`"
           alt="User Avatar"
           class="w-10 h-10 rounded-full object-cover"
         />
         <img
           v-else-if="isLoggedIn && isCompany && companyProfile?.logo"
-          :src= "`http://localhost:3888/public/${companyProfile.logo}`"
+          :src= "`https://jobrise.hotelmarisrangkas.com/public/${companyProfile.logo}`"
           alt="Company Logo"
           class="w-10 h-10 rounded-full object-cover"
         />

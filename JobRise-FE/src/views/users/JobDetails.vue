@@ -239,7 +239,7 @@ const router = useRouter();
 const jobStore = useActiveJobRecommendationsStore();
 const authStore = AuthUserStorage();
 
-const baseImageUrl = ref("http://localhost:3888/public/");
+const baseImageUrl = ref("https://jobrise.hotelmarisrangkas.com/public/");
 
 const currentJobId = computed(() => {
   const id = route.params.id;

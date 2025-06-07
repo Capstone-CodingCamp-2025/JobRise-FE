@@ -394,7 +394,7 @@ import Swal from "sweetalert2";
 
 const authStore = AuthUserStorage();
 const jobStore = useActiveJobRecommendationsStore(); 
-const baseImageUrl = ref("http://localhost:3888/public/");
+const baseImageUrl = ref("https://jobrise.hotelmarisrangkas.com/public/");
 
 const allJobsFromStore = computed(() => jobStore.activeJobRecommendations);
 const isErrorJobs = computed(() => jobStore.errorJobs); 

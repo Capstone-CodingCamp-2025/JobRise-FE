@@ -212,7 +212,7 @@ import Swal from "sweetalert2";
 const jobStore = useActiveJobRecommendationsStore();
 const authStore = AuthUserStorage();
 
-const baseImageUrl = ref("http://localhost:3888/public/");
+const baseImageUrl = ref("https://jobrise.hotelmarisrangkas.com/public/");
 const logoErrors = ref({});
 
 const displayedFavoriteJobs = computed(() => jobStore.userFavoriteJobs);

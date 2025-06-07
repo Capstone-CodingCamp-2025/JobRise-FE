@@ -103,7 +103,7 @@ const jobStore = jobNoAuth();
 const { featuredJobs, isLoadingFeatured, errorFeatured } = storeToRefs(jobStore);
 
 // Base URL untuk gambar (sesuaikan dengan alamat backend Anda)
-const baseImageUrl = 'http://localhost:3888/public/'; 
+const baseImageUrl = 'https://jobrise.hotelmarisrangkas.com/public/'; 
 
 // Panggil action untuk mengambil data saat komponen pertama kali dimuat
 onMounted(() => {

@@ -214,7 +214,7 @@ import { AuthUserStorage } from "@/stores/auth/userAuth"; // Sesuaikan path jika
 const jobStore = useActiveJobRecommendationsStore();
 const authStore = AuthUserStorage();
 
-const baseImageUrl = ref("http://localhost:3888/public/"); // Sesuaikan jika URL API Anda berbeda
+const baseImageUrl = ref("https://jobrise.hotelmarisrangkas.com/public/"); // Sesuaikan jika URL API Anda berbeda
 
 // Menggunakan state dari store untuk data, loading, dan error
 const displayedAppliedJobs = computed(() => jobStore.userAppliedJobs);

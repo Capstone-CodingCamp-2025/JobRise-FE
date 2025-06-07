@@ -28,7 +28,7 @@
             class="w-20 h-20 md:w-28 md:h-28 bg-amber-300 rounded-sm overflow-hidden flex-shrink-0"
           >
             <img
-              :src="jobsStore.jobDetail.company_logo ? `http://localhost:3888/public/${jobsStore.jobDetail.company_logo}` : 'https://placehold.co/112x112/e2e8f0/64748b?text=Logo'"
+              :src="jobsStore.jobDetail.company_logo ? `https://jobrise.hotelmarisrangkas.com/public/${jobsStore.jobDetail.company_logo}` : 'https://placehold.co/112x112/e2e8f0/64748b?text=Logo'"
               :alt="jobsStore.jobDetail.company_name"
               class="object-cover w-full h-full"
             />

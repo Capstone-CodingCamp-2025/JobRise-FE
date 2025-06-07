@@ -295,7 +295,7 @@ const isEditing = ref(false);
 const showOtpPopup = ref(false);
 const otpCode = ref("");
 
-const BASE_IMAGE_URL = "http://localhost:3888/public/";
+const BASE_IMAGE_URL = "https://jobrise.hotelmarisrangkas.com/public/";
 
 const fullImageUrl = computed(() => {
   if (imagePreview.value) {

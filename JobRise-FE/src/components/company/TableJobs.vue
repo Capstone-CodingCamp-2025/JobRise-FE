@@ -114,7 +114,7 @@
                   <img
                     :src="
                       job.company_logo
-                        ? `http://localhost:3888/public/${job.company_logo}`
+                        ? `https://jobrise.hotelmarisrangkas.com/public/${job.company_logo}`
                         : 'https://images.unsplash.com/photo-1728577740843-5f29c7586afe?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D'
                     "
                     :alt="job.company_name || 'Company Logo'"
