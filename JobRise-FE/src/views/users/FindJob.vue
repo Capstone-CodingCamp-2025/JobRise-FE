@@ -93,7 +93,7 @@
         <div
           v-for="job in paginatedAndFilteredJobs"
           :key="job.id"
-          class="p-4 rounded-lg bg-[#b8caecda] outline-1 outline-blue-800 shadow-md hover:shadow-lg transition-shadow duration-300 relative"
+          class="p-4 rounded-lg bg-[#F1F4FA] outline-1 outline-blue-800 shadow-md hover:shadow-lg transition-shadow duration-300 relative"
         >
           <router-link
             :to="{ name: 'job-user-detail', params: { id: job.id } }"
@@ -115,7 +115,7 @@
               <p
                 class="text-[10px] md:text-xs text-gray-700 font-bold whitespace-nowrap"
               >
-                Salary: {{ formatSalary(job.salary_min, job.salary_max) }}
+                Salary: {{ formatGajiRingkas(job.salary_min) }} - {{ formatGajiRingkas(job.salary_max) }}
               </p>
             </div>
             <div class="flex items-center gap-x-4">
@@ -557,6 +557,34 @@ const fullyFilteredJobs = computed(() => {
   return jobsToFilter;
 });
 
+
+const formatGajiRingkas = (value) => {
+  const numberValue = Number(value);
+
+  if (isNaN(numberValue) || value === null || value === '') {
+    return "N/A";
+  }
+
+  // Jika angka 1 Miliar atau lebih
+  if (numberValue >= 1000000000) {
+    const formatted = (numberValue / 1000000000).toFixed(1).replace(".0", "");
+    return `Rp ${formatted.replace('.',',')} Miliar`;
+  }
+
+  // Jika angka 1 Juta atau lebih
+  if (numberValue >= 1000000) {
+    const formatted = (numberValue / 1000000).toFixed(1).replace(".0", "");
+    return `Rp ${formatted.replace('.',',')} Juta`;
+  }
+ 
+  // Jika di bawah 1 Juta, gunakan format Rupiah biasa
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(numberValue);
+};
+
 const openFilterPopup = () => (isFilterPopupOpen.value = true);
 const closeFilterPopup = () => (isFilterPopupOpen.value = false);
 
@@ -623,29 +651,7 @@ const visiblePages = computed(() => {
 });
 
 
-const formatSalary = (min, max) => {
-  const numericMin = min
-    ? parseFloat(String(min).replace(/[^\d.-]/g, ""))
-    : null;
-  const numericMax = max
-    ? parseFloat(String(max).replace(/[^\d.-]/g, ""))
-    : null;
 
-  if (
-    numericMin !== null &&
-    numericMax !== null &&
-    !isNaN(numericMin) &&
-    !isNaN(numericMax)
-  ) {
-    if (numericMin === numericMax) return formatCurrency(numericMin);
-    return `${formatCurrency(numericMin)} - ${formatCurrency(numericMax)}`;
-  } else if (numericMin !== null && !isNaN(numericMin)) {
-    return `Mulai ${formatCurrency(numericMin)}`;
-  } else if (numericMax !== null && !isNaN(numericMax)) {
-    return `Hingga ${formatCurrency(numericMax)}`;
-  }
-  return "N/A";
-};
 
 const formatCurrency = (value) => {
   if (value === null || isNaN(parseFloat(value))) return "N/A";

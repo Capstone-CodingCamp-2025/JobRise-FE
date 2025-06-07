@@ -75,7 +75,6 @@
                     :alt="application.title || 'Company Logo'"
                     class="object-cover w-10 h-10 rounded-md mr-2 md:w-12 md:h-12 md:mr-4 flex-shrink-0"
                   />
-
                 </div>
                 <div>
                   <p class="font-semibold text-sm md:text-base">
@@ -94,12 +93,7 @@
                     <span>{{ application.location || "N/A" }}</span>
                   </div>
                   <p class="text-gray-700 text-xs md:text-sm mt-1">
-                    {{
-                      formatSalary(
-                        application.salary_min,
-                        application.salary_max
-                      )
-                    }}
+                    {{ formatGajiRingkas(application.salary_min) }} - {{ formatGajiRingkas(application.salary_max) }}
                   </p>
                 </div>
               </div>
@@ -224,6 +218,32 @@ const displayedAppliedJobs = computed(() => jobStore.userAppliedJobs);
 const isLoading = computed(() => jobStore.loadingUserAppliedJobs);
 const error = computed(() => jobStore.errorUserAppliedJobs);
 
+const formatGajiRingkas = (value) => {
+  const numberValue = Number(value);
+
+  if (isNaN(numberValue) || value === null || value === "") {
+    return "N/A";
+  }
+
+  // Jika angka 1 Miliar atau lebih
+  if (numberValue >= 1000000000) {
+    const formatted = (numberValue / 1000000000).toFixed(1).replace(".0", "");
+    return `Rp ${formatted.replace(".", ",")} Miliar`;
+  }
+
+  // Jika angka 1 Juta atau lebih
+  if (numberValue >= 1000000) {
+    const formatted = (numberValue / 1000000).toFixed(1).replace(".0", "");
+    return `Rp ${formatted.replace(".", ",")} Juta`;
+  }
+
+  // Jika di bawah 1 Juta, gunakan format Rupiah biasa
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(numberValue);
+};
 const formatDate = (dateString) => {
   if (!dateString) return "N/A";
   const options = {
@@ -246,7 +266,7 @@ const formatDate = (dateString) => {
 const formatSalary = (min, max) => {
   // Helper function untuk memformat satu angka
   const format = (num) => {
-    if (num === null || num === undefined || num === '') return null;
+    if (num === null || num === undefined || num === "") return null;
     const numberValue = Number(num);
     if (isNaN(numberValue)) return null;
 
@@ -254,23 +274,23 @@ const formatSalary = (min, max) => {
     if (numberValue >= 1000000) {
       const valueInJt = (numberValue / 1000000).toFixed(1);
       // Ganti .0 menjadi "" (1.0 -> 1) dan . menjadi , (1.5 -> 1,5)
-      return valueInJt.replace('.0', '').replace('.', ',') + ' jt';
+      return valueInJt.replace(".0", "").replace(".", ",") + " jt";
     }
 
     // Jika di bawah 1 juta, gunakan format ribuan standar
-    return new Intl.NumberFormat('id-ID').format(numberValue);
+    return new Intl.NumberFormat("id-ID").format(numberValue);
   };
 
   const formattedMin = format(min);
   const formattedMax = format(max);
 
   // Gabungkan hasilnya menjadi string akhir
-  if (formattedMin && formattedMax) return `Rp ${formattedMin} - Rp ${formattedMax}`;
+  if (formattedMin && formattedMax)
+    return `Rp ${formattedMin} - Rp ${formattedMax}`;
   if (formattedMin) return `Mulai dari Rp ${formattedMin}`;
   if (formattedMax) return `Hingga Rp ${formattedMax}`;
-  return 'N/A'; // Fallback jika tidak ada data
+  return "N/A"; // Fallback jika tidak ada data
 };
-
 
 const getStatusTextClass = (status) => {
   if (!status) return "bg-gray-200 text-gray-700";

@@ -1,12 +1,12 @@
 <template>
   <div class="px-4 py-2 md:px-10 md:py-4">
     <div class="flex flex-col md:flex-row justify-between items-center mb-3">
-      <h1 class="font-bold text-xl md:text-2xl md:pl-52 lg:pl-38 xl:pl-48 2xl:pl-[500px]">
+      <h1 class="font-bold text-xl md:text-2xl md:pl-54 lg:pl-38 xl:pl-48 2xl:pl-[500px]">
         Curriculum Vitae
       </h1>
       <h1
         v-if="!isMobile"
-        class="font-bold text-xl md:text-2xl mb-3 md:pr-28 lg:pr-48 xl:pr-66 2xl:pr-[570px] md:hidden lg:block"
+        class="font-bold text-xl md:text-2xl mb-3 md:pr-28 lg:pr-46 xl:pr-70 2xl:pr-[570px] md:hidden lg:block"
       >
         Preview
       </h1>
@@ -117,7 +117,7 @@
         </div>
 
         <div
-          class="bg-slate-300 px-3 py-2 md:px-6 md:py-3"
+          class="bg-[#F1F4FA] px-3 py-2 md:px-6 md:py-3"
           v-if="step === 'education'"
         >
           <form
@@ -203,7 +203,7 @@
         </div>
 
         <div
-          class="bg-slate-300 px-3 py-2 md:px-6 md:py-3"
+          class="bg-[#F1F4FA] px-3 py-2 md:px-6 md:py-3"
           v-else-if="step === 'project'"
         >
           <form
@@ -279,7 +279,7 @@
         </div>
 
         <div
-          class="bg-slate-300 px-3 py-2 md:px-6 md:py-3"
+          class="bg-[#F1F4FA] px-3 py-2 md:px-6 md:py-3"
           v-else-if="step === 'experience'"
         >
           <form
@@ -355,7 +355,7 @@
         </div>
 
         <div
-          class="bg-slate-300 px-3 py-2 md:px-6 md:py-3"
+          class="bg-[#F1F4FA] px-3 py-2 md:px-6 md:py-3"
           v-else-if="step === 'skills'"
         >
           <form
@@ -402,7 +402,7 @@
         </div>
 
         <div
-          class="bg-slate-300 px-3 py-2 md:px-6 md:py-3"
+          class="bg-[#F1F4FA] px-3 py-2 md:px-6 md:py-3"
           v-else-if="step === 'certifications'"
         >
           <form
@@ -502,7 +502,7 @@
             v-else-if="educationStore.educations.length > 0"
             v-for="edu in educationStore.educations"
             :key="edu.id"
-            class="bg-[#82b4e4b7] rounded-md shadow-xs shadow-slate-600 px-3 py-2 text-sm md:px-4 md:py-3"
+            class="bg-[#F1F4FA] outline outline-blue-900 rounded-md  px-3 py-2 text-sm md:px-4 md:py-3"
           >
             <p class="font-medium">{{ edu.name_school }}</p>
             <p>{{ edu.major }}</p>
@@ -559,7 +559,7 @@
             v-else-if="projectStore.projects.length > 0"
             v-for="project in projectStore.projects"
             :key="project.id"
-            class="bg-[#82b4e4b7] rounded-md shadow-xs shadow-slate-600 px-3 py-2 text-sm md:px-4 md:py-3"
+            class="bg-[#F1F4FA] outline outline-blue-900 rounded-md  px-3 py-2 text-sm md:px-4 md:py-3"
           >
             <p class="font-medium">{{ project.title }}</p>
             <p class="text-blue-700 text-xs" v-if="project.link_url">
@@ -618,7 +618,7 @@
             v-else-if="experienceStore.experiences.length > 0"
             v-for="exp in experienceStore.experiences"
             :key="exp.id"
-            class="bg-[#82b4e4b7] rounded-md shadow-xs shadow-slate-600 px-3 py-2 text-sm md:px-4 md:py-3"
+            class="bg-[#F1F4FA] outline outline-blue-900 rounded-md  px-3 py-2 text-sm md:px-4 md:py-3"
           >
             <p class="font-medium">{{ exp.title }}</p>
             <p>{{ exp.company_name }}</p>
@@ -650,7 +650,7 @@
         </div>
 
         <div
-          class="pt-3 grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-2 md:pt-6 md:gap-x-4"
+          class="pt-3 grid grid-cols-1  md:grid-cols-2 gap-x-2 gap-y-2 md:pt-6 md:gap-x-4"
           v-if="step === 'skills'"
         >
           <p
@@ -674,7 +674,7 @@
             v-else-if="skillStore.skills.length > 0"
             v-for="skill in skillStore.skills"
             :key="skill.id"
-            class="bg-[#82b4e4b7] rounded-md shadow-xs shadow-slate-600 px-3 py-2 text-sm md:px-4 md:py-3"
+            class="bg-[#F1F4FA] outline outline-blue-900 rounded-md  px-3 py-2 text-sm md:px-4 md:py-3"
           >
             <p class="font-medium">{{ skill.name }}</p>
             <p>Level: {{ skill.level }}</p>
@@ -726,7 +726,7 @@
             v-else-if="displayedCertifications.length > 0"
             v-for="cert in displayedCertifications"
             :key="cert.id"
-            class="bg-[#82b4e4b7] rounded-md shadow-xs shadow-slate-600 px-3 py-2 text-sm md:px-4 md:py-3"
+            class="bg-[#F1F4FA] outline outline-blue-900 rounded-md  px-3 py-2 text-sm md:px-4 md:py-3"
           >
             <p class="font-medium">{{ cert.name }}</p>
             <p>Year: {{ cert.year }}</p>

@@ -396,6 +396,8 @@ const handleViewCv = async (applicationId) => {
   }
 };
 
+
+
 const handleDeleteCurrentJobApplications = async () => {
   if (!authToken.value) {
     Swal.fire("Error", "Authentication token is missing.", "error");
@@ -403,7 +405,7 @@ const handleDeleteCurrentJobApplications = async () => {
   }
   Swal.fire({
     title: "Apakah Anda yakin?",
-    text: `Anda akan menghapus semua lamaran untuk Job ID ${currentJobId.value}. Tindakan ini tidak dapat dibatalkan.`,
+    text: `Anda akan menghapus semua lamaran. Tindakan ini tidak dapat dibatalkan.`,
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#d33",

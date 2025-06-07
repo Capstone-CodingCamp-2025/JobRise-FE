@@ -100,9 +100,7 @@
                 <p
                   class="text-slate-600 text-[10px] md:text-xs font-medium whitespace-nowrap"
                 >
-                  {{
-                    formatSalary(favJobItem.salary_min, favJobItem.salary_max)
-                  }}
+                  {{ formatGajiRingkas(favJobItem.salary_min) }} - {{ formatGajiRingkas(favJobItem.salary_max) }}
                 </p>
               </div>
               <div
@@ -118,7 +116,7 @@
             </div>
           </div>
 
-          <div class="pt-4 md:pt-0 ">
+          <div class="pt-4 md:pt-0">
             <div class="flex items-center gap-x-10 md:gap-x-4">
               <button
                 @click="handleDeleteFavorite(favJobItem.job_id)"
@@ -144,7 +142,6 @@
                   icon="material-symbols:bookmark-rounded"
                   width="36"
                   height="36"
-                  
                   class="text-blue-950"
                 />
               </button>
@@ -227,6 +224,32 @@ const handleImageError = (event, jobId) => {
   // event.target.src = 'URL_PLACEHOLDER_JIKA_PERLU'; // Ganti dengan placeholder jika ada
 };
 
+const formatGajiRingkas = (value) => {
+  const numberValue = Number(value);
+
+  if (isNaN(numberValue) || value === null || value === "") {
+    return "N/A";
+  }
+
+  // Jika angka 1 Miliar atau lebih
+  if (numberValue >= 1000000000) {
+    const formatted = (numberValue / 1000000000).toFixed(1).replace(".0", "");
+    return `Rp ${formatted.replace(".", ",")} Miliar`;
+  }
+
+  // Jika angka 1 Juta atau lebih
+  if (numberValue >= 1000000) {
+    const formatted = (numberValue / 1000000).toFixed(1).replace(".0", "");
+    return `Rp ${formatted.replace(".", ",")} Juta`;
+  }
+
+  // Jika di bawah 1 Juta, gunakan format Rupiah biasa
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(numberValue);
+};
 const formatSalary = (min, max) => {
   const cleanMin = String(min || "").replace(/[^0-9.-]+/g, "");
   const cleanMax = String(max || "").replace(/[^0-9.-]+/g, "");

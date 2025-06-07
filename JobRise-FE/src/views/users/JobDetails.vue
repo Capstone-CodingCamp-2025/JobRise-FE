@@ -166,29 +166,29 @@
           class="flex flex-col md:flex-row justify-around bg-[#F0F3FA] w-full text-center my-4 md:my-10 rounded-md overflow-hidden"
         >
           <div
-            class="px-4 py-3 md:px-10 md:py-8 w-full border-b md:border-b-0 md:border-r border-slate-300"
+            class="px-4 py-3 md:px-10 md:py-8 w-full border-b border-l border-t border-r border-slate-300"
           >
             <p class="font-semibold text-xl md:text-3xl">Salary</p>
 
             <p class="text-green-500 font-medium text-xs md:text-base">
-              {{ formatSalary(jobDetail.salary_min, jobDetail.salary_max) }}
+              {{ formatGajiRingkas(jobDetail.salary_min) }} - {{ formatGajiRingkas(jobDetail.salary_max) }}
             </p>
           </div>
 
           <div
-            class="px-4 py-3 md:px-10 md:py-8 w-full border-b md:border-b-0 md:border-r border-slate-300"
+            class="px-4 py-3 md:px-10 md:py-8 w-full border-b border-r border-t border-slate-300"
           >
             <p class="font-semibold text-xl md:text-3xl">Location</p>
 
-            <p class="text-gray-600 font-medium text-xs md:text-base">
+            <p class="text-gray-400 font-medium text-xs md:text-base">
               {{ jobDetail.location }}
             </p>
           </div>
 
-          <div class="px-4 py-3 md:px-10 md:py-8 w-full">
+          <div class="px-4 py-3 md:px-10 md:py-8 w-full border-b border-slate-300 border-t border-r">
             <p class="font-semibold text-xl md:text-3xl">Type</p>
 
-            <p class="text-gray-600 font-medium text-xs md:text-base">
+            <p class="text-gray-400 font-medium text-xs md:text-base">
               {{ jobDetail.job_type }}
             </p>
           </div>
@@ -321,7 +321,32 @@ const formatCurrency = (value) => {
 };
 
 // File: job-user-detail.vue
+const formatGajiRingkas = (value) => {
+  const numberValue = Number(value);
 
+  if (isNaN(numberValue) || value === null || value === '') {
+    return "N/A";
+  }
+
+  // Jika angka 1 Miliar atau lebih
+  if (numberValue >= 1000000000) {
+    const formatted = (numberValue / 1000000000).toFixed(1).replace(".0", "");
+    return `Rp ${formatted.replace('.',',')} Miliar`;
+  }
+
+  // Jika angka 1 Juta atau lebih
+  if (numberValue >= 1000000) {
+    const formatted = (numberValue / 1000000).toFixed(1).replace(".0", "");
+    return `Rp ${formatted.replace('.',',')} Juta`;
+  }
+ 
+  // Jika di bawah 1 Juta, gunakan format Rupiah biasa
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(numberValue);
+};
 // File: job-user-detail.vue
 
 const initializePageData = async () => {
