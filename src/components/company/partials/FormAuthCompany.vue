@@ -151,7 +151,7 @@ const handleSubmit = async () => {
       >
       <input
         id="companyName"
-        class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8"
+        class="bg-gray-100 rounded-sm text-center outline px-2 outline-blue-900 h-8"
         :class="{ 'border-red-500': errors.name }"
         type="text"
         placeholder="Your Company Name"
@@ -167,7 +167,7 @@ const handleSubmit = async () => {
       >
       <input
         id="companyEmail"
-        class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8"
+        class="bg-gray-100 rounded-sm text-center outline px-2 outline-blue-900 h-8"
         :class="{ 'border-red-500': errors.email }"
         type="email"
         placeholder="Enter Email"
@@ -186,7 +186,7 @@ const handleSubmit = async () => {
       <div class="relative">
         <input
           id="companyPassword"
-          class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8 w-full"
+          class="bg-gray-100 rounded-sm text-center outline px-6 outline-blue-900 h-8 w-full"
           :class="{ 'border-red-500': errors.password }"
           :type="showPassword ? 'text' : 'password'"
           placeholder="Enter Password"
@@ -242,7 +242,7 @@ const handleSubmit = async () => {
       <div class="relative">
         <input
           id="confirmPassword"
-          class="bg-gray-100 rounded-sm text-center outline outline-blue-900 h-8 w-full"
+          class="bg-gray-100 rounded-sm text-center outline px-6 outline-blue-900 h-8 w-full"
           :class="{ 'border-red-500': errors.confirm_password }"
           :type="showConfirmPassword ? 'text' : 'password'"
           placeholder="Confirm Password"

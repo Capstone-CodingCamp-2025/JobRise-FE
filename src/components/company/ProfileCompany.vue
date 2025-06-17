@@ -210,7 +210,7 @@
             type="text"
             id="otp"
             v-model="otpCode"
-            class="bg-blue-400/30 outline outline-blue-900 rounded-sm h-7 md:h-8 text-center text-sm"
+            class="bg-blue-400/30 outline outline-blue-900 px-2 rounded-sm h-7 md:h-8 text-center text-sm"
             required
           />
         </div>

@@ -45,10 +45,27 @@
               >
                 {{ msg.text }}
               </div>
-              <div class="w-8 h-8 rounded-full bg-gray-300 mr-2"></div>
+              <div
+                class="w-8 h-8 rounded-full bg-gray-300 mr-2 overflow-hidden"
+              >
+                {{ console.log("avatar", userAvatar) }}
+                <img
+                  :src="userAvatar"
+                  alt="User Avatar"
+                  class="w-full h-full object-cover"
+                />
+              </div>
             </div>
             <div v-else class="flex items-start">
-              <div class="w-8 h-8 rounded-full bg-gray-300 mr-2"></div>
+              <div
+                class="w-8 h-8 rounded-full bg-gray-300 mr-2 overflow-hidden"
+              >
+                <img
+                  src="https://plus.unsplash.com/premium_vector-1732191809273-a4827e61d3a3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGhpcmluZ3xlbnwwfHwwfHx8MA%3D%3D"
+                  alt="Admin Avatar"
+                  class="w-full h-full object-cover"
+                />
+              </div>
               <div
                 class="bg-white p-2 rounded shadow text-sm border-l-4 border-[#002766] w-54"
               >
@@ -88,7 +105,7 @@
     class="absolute -top-28 bg-slate-400/80 h-[980px] w-full z-50 place-content-center"
     v-if="showDepret"
   >
-    <div class="max-w-xl mx-auto bg-white ">
+    <div class="max-w-xl mx-auto bg-white">
       <div class="bg-[#D5DEEF] flex justify-between px-4">
         <img src="/src/assets/jobrise.png" alt="jobrise" class="w-28" />
         <button
@@ -144,7 +161,10 @@
 import { Icon } from "@iconify/vue";
 import { ref } from "vue";
 import axios from "axios";
-
+import { AuthUserStorage } from "@/stores/auth/userAuth";
+import { onMounted } from "vue";
+import { computed } from "vue";
+const authStore = AuthUserStorage();
 const showChat = ref(false);
 const showDepret = ref(false);
 const newMessage = ref("");
@@ -161,6 +181,32 @@ const emojis = [
   { icon: "noto:slightly-smiling-face", scale: 4 },
   { icon: "noto:beaming-face-with-smiling-eyes", scale: 5 },
 ];
+
+const userAvatar = computed(() => {
+  // PENTING: Ganti 'photo_profile' dengan nama field dari API Anda untuk gambar.
+  const baseUrl = "https://jobrise.hotelmarisrangkas.com/public/"; // Jika API mengembalikan path relatif
+  const imagePath = authStore.userProfile?.image;
+
+  if (imagePath) {
+    // Cek jika path sudah URL lengkap atau path relatif
+    return imagePath.startsWith("http") ? imagePath : `${baseUrl}${imagePath}`;
+  }
+
+  // Gambar fallback jika tidak ada profil atau tidak ada foto
+  return "/src/assets/default-avatar.png"; // Pastikan Anda punya gambar default ini
+});
+
+// Panggil fetchUserProfile saat komponen dipasang
+onMounted(() => {
+  if (!authStore.userProfile) {
+    authStore.fetchUserProfile().catch((error) => {
+      console.error(
+        "Chat component: failed to fetch profile on mount.",
+        error.message
+      );
+    });
+  }
+});
 
 const articlesByScale = {
   1: [
@@ -313,9 +359,12 @@ const sendMessage = async () => {
   chatHistory.value.push(userMessage);
 
   try {
-    const response = await axios.post("https://machine-learning-production.up.railway.app/predict", {
-      text: newMessage.value,
-    });
+    const response = await axios.post(
+      "https://jobrise-chatbot-ml-production.up.railway.app/predict",
+      {
+        text: newMessage.value,
+      }
+    );
 
     console.log("API Response:", response.data);
 

@@ -324,7 +324,7 @@
               :key="position"
               :value="position"
             >
-              {{ position }}
+              {{ formatTitle(position) }}
             </option>
           </select>
         </div>

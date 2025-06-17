@@ -81,7 +81,7 @@
       </div>
 
       <div class="w-full">
-        <label for="linkedin" class="font-semibold text-lg">Linkedin(fill input to display on the CV)</label>
+        <label for="linkedin" class="font-semibold text-lg">Linkedin</label>
         <input
           id="linkedin"
           v-model="profileForm.linkedin"
@@ -131,7 +131,7 @@
 
       <div>
         <label for="full_name" class="font-semibold text-lg"
-          >Full Name <span class="text-red-600">*</span>(fill input to display on the CV)</label
+          >Full Name <span class="text-red-600">*</span></label
         >
         <input
           id="full_name"
@@ -144,7 +144,7 @@
       </div>
 
       <div>
-        <label for="phone" class="font-semibold text-lg">Phone <span class="text-red-600">*</span>(fill input to display on the CV)</label>
+        <label for="phone" class="font-semibold text-lg">Phone <span class="text-red-600">*</span></label>
         <input
           id="phone"
           v-model="profileForm.phone"
@@ -192,7 +192,7 @@
       </div>
 
       <div class="md:col-span-2">
-        <label for="bio" class="font-semibold text-lg">Bio <span class="text-red-600">*</span>(fill input to display on the CV)</label>
+        <label for="bio" class="font-semibold text-lg">Bio <span class="text-red-600">*</span></label>
         <textarea
           id="bio"
           v-model="profileForm.bio"
@@ -248,7 +248,7 @@
             type="text"
             id="otp"
             v-model="otpCode"
-            class="bg-blue-400/30 outline outline-blue-900 rounded-sm h-7 md:h-8 text-center text-sm"
+            class="bg-blue-400/30 outline outline-blue-900 px-2 rounded-sm h-7 md:h-8 text-center text-sm"
             required
           />
         </div>

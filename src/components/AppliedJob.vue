@@ -66,10 +66,9 @@
             <td class="py-4 pl-4 text-left">
               <div class="flex items-center">
                 <img
-                  :src="
-                    application.company_logo
-                      ? `${baseImageUrl}${application.company_logo}`
-                      : ''
+                  :src=" application.company_logo.startsWith('http') 
+                  ? application.company_logo : `${baseImageUrl}${application.company_logo}`
+                      
                   "
                   :alt="application.title || 'Company Logo'"
                   class="object-cover w-10 h-10 rounded-md mr-2 md:w-14 md:h-14 md:mr-4 flex-shrink-0"

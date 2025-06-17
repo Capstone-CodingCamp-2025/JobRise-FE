@@ -127,10 +127,10 @@
                 : 'bg-blue-950/80 hover:bg-blue-900 disabled:opacity-70 disabled:cursor-not-allowed',
             ]"
           >
-            <span v-if="isApplying">Melamar...</span>
+            <span v-if="isApplying">applying...</span>
             <span v-else-if="isEffectivelyApplied">Delivered</span>
             <span v-else-if="jobDetail.status === 'inactive'"
-              >Lowongan Ditutup</span
+              >Job Opening Closed</span
             >
             <span v-else>Apply</span>
             <Icon

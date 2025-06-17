@@ -68,9 +68,9 @@
                 <div>
                   <img
                     :src="
-                      application.company_logo
-                        ? `${baseImageUrl}${application.company_logo}`
-                        : 'https://placehold.co/48x48/cccccc/000000?text=Logo'
+                      application.company_logo.startsWith('http')
+                        ? application.company_logo
+                        : `${baseImageUrl}${application.company_logo}`
                     "
                     :alt="application.title || 'Company Logo'"
                     class="object-cover w-10 h-10 rounded-md mr-2 md:w-12 md:h-12 md:mr-4 flex-shrink-0"
@@ -90,10 +90,13 @@
                       class="mr-1 flex-shrink-0"
                       style="color: #718096"
                     />
-                    <span>{{ formatTitle(application.location) || "N/A" }}</span>
+                    <span>{{
+                      formatTitle(application.location) || "N/A"
+                    }}</span>
                   </div>
                   <p class="text-gray-700 text-xs md:text-sm mt-1">
-                    {{ formatGajiRingkas(application.salary_min) }} - {{ formatGajiRingkas(application.salary_max) }}
+                    {{ formatGajiRingkas(application.salary_min) }} -
+                    {{ formatGajiRingkas(application.salary_max) }}
                   </p>
                 </div>
               </div>
@@ -218,12 +221,11 @@ const displayedAppliedJobs = computed(() => jobStore.userAppliedJobs);
 const isLoading = computed(() => jobStore.loadingUserAppliedJobs);
 const error = computed(() => jobStore.errorUserAppliedJobs);
 
-
 const formatTitle = (title) => {
   return title
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 };
 const formatGajiRingkas = (value) => {
   const numberValue = Number(value);

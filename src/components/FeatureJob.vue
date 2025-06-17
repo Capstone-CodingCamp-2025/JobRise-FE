@@ -51,7 +51,7 @@
 
     <div v-else-if="featuredJobs.length > 0" class="grid md:grid-cols-2 gap-x-4 gap-y-8 lg:gap-x-10 xl:grid-cols-3">
       <router-link 
-        v-for="job in featuredJobs" 
+        v-for="job in featuredJobs.slice(0, 12)" 
         :key="job.id" 
         :to="{ name: 'role-login' }"
         class="block"
@@ -69,7 +69,8 @@
               <div class="flex-shrink-0 w-16 h-16 rounded-md bg-white flex items-center justify-center overflow-hidden">
                 <img
                   v-if="job.company_logo"
-                  :src="`${baseImageUrl}${job.company_logo}`"
+                  :src="job.company_logo.startsWith('http')
+                  ? job.company_logo : `${baseImageUrl}${job.company_logo}`"
                   :alt="job.company_name"
                   class="object-cover w-full h-full"
                 />

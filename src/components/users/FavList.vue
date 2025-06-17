@@ -62,7 +62,8 @@
             >
               <img
                 v-if="favJobItem.company_logo"
-                :src="`${baseImageUrl}${favJobItem.company_logo}`"
+                :src="favJobItem.company_logo.startsWith('http')
+                ? favJobItem.company_logo :`${baseImageUrl}${favJobItem.company_logo}`"
                 :alt="favJobItem.company_name || favJobItem.title"
                 class="object-fill w-full h-full"
                 @error="handleImageError($event, favJobItem.job_id)"
